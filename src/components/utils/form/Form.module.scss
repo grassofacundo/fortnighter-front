@@ -1,0 +1,47 @@
+.form {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 5px;
+
+    div {
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+
+        label {
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+    }
+}
+
+.errorMessageWrapper {
+    position: absolute;
+    bottom: var(--errorBottom);
+    left: var(--errorLeft);
+
+    .errorPorUp {
+        position: relative;
+        width: 200px;
+        border: 1px solid var(--contrastColor);
+        background-color: var(--mainColor);
+        text-align: center;
+        padding: 10px 5px;
+
+        &::before {
+            --beforeWidth: 25px;
+
+            content: "";
+            position: absolute;
+            bottom: 12px;
+            left: calc((-1 * var(--beforeWidth)) - 2px);
+            width: var(--beforeWidth);
+            height: 0;
+            border: 1px solid var(--contrastColor);
+            display: block;
+        }
+    }
+}

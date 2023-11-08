@@ -1,0 +1,48 @@
+@use "../../style/placeholders";
+
+.loginContainer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+
+    .returningUserForm {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+
+        p {
+            font-size: xx-large;
+            margin: 15px 0;
+        }
+
+        button {
+            display: block;
+
+            &.thankYouButton {
+                margin-bottom: 15px;
+            }
+
+            &.textButton {
+                @extend %text-button;
+
+                align-self: center;
+            }
+        }
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateX(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

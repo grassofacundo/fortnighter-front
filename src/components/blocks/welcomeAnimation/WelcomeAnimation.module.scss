@@ -1,0 +1,34 @@
+.textWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    background-color: var(--mainColor);
+
+    p {
+        display: inline-block;
+        color: var(--textColor);
+        opacity: 0;
+        transform: translateY(30px);
+        font-family: "monomaniac_oneregular";
+        font-size: 6em;
+        animation: 1s cubic-bezier(0, 0.9, 1, 0) slideUp forwards;
+
+        @media (hover: none) {
+            font-size: 4em;
+        }
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

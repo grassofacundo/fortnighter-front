@@ -1,0 +1,23 @@
+.textWrapper {
+    p {
+        display: inline-block;
+        color: white;
+        opacity: 0;
+        transform: translateY(30px);
+        font-family: "monomaniac_oneregular";
+        font-size: 6em;
+        animation: 500ms cubic-bezier(0, 0.9, 1, 0) slideUp forwards;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

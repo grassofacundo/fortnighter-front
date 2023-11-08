@@ -1,0 +1,16 @@
+.calendar {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.daysWrapper {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    padding: 0 10px;
+    overflow: auto;
+    scrollbar-gutter: stable both-edges;
+}
