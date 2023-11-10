@@ -1,18 +1,27 @@
 //#region Dependency list
-import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
+import {
+    FunctionComponent,
+    useState,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+} from "react";
 import FormManager from "../utils/form/FormManager";
-import dbService from "../../services/dbService";
+import dbService from "../../services/JobService";
+import styles from "./jobPanel.module.scss";
+import { jobPosition, newJobPosition } from "../../types/job/Position";
 //#endregion
 
 type thisProps = {
-    jobPositionList: jobPosition[];
-    onSetJobPositionList: Dispatch<SetStateAction<jobPosition[]>>;
+    selectedPosition: jobPosition | null;
+    onSetSelectedPosition: Dispatch<SetStateAction<jobPosition | null>>;
 };
 
 const JobPanel: FunctionComponent<thisProps> = ({
-    jobPositionList,
-    onSetJobPositionList,
+    selectedPosition,
+    onSetSelectedPosition,
 }) => {
+    const [jobPositionList, setJobPositionList] = useState<jobPosition[]>([]);
     const [errorMsg, setErrorMsg] = useState("");
     const [Loading, setLoading] = useState<boolean>(false);
 
@@ -48,57 +57,87 @@ const JobPanel: FunctionComponent<thisProps> = ({
             cycleEnd,
         };
         const responseDb = await dbService.createJobPosition(newJobPosition);
-        if (!responseDb.ok) {
-            setErrorMsg(responseDb.errorMessage);
+        if (!responseDb.ok && responseDb.error) {
+            setErrorMsg(responseDb.error.message);
             return;
         }
-        const list: jobPosition[] = JSON.parse(JSON.stringify(jobPositionList));
-        list.forEach((job) => (job.isSelected = false));
-        if (responseDb.ok) {
-            onSetJobPositionList([
+
+        if (responseDb.ok && responseDb.content) {
+            const jobPosition: jobPosition = {
+                id: responseDb.content._id,
+                name: positionName,
+                hourPrice,
+                cycleEnd,
+                isFortnightly,
+            };
+            const list: jobPosition[] = JSON.parse(
+                JSON.stringify(jobPositionList)
+            );
+            setJobPositionList([
                 ...list,
                 {
-                    id: stringService.parseAsId(positionName),
-                    name: positionName,
-                    isSelected: true,
+                    ...jobPosition,
                 },
             ]);
         }
     }
 
+    useEffect(() => {
+        dbService.getJobPositions().then((jobList) => {
+            if (jobList.length > 0) onSetSelectedPosition(jobList[0]);
+            setJobPositionList(jobList);
+        });
+    }, [onSetSelectedPosition]);
+
     return (
-        <FormManager
-            inputs={[
-                {
-                    type: "text",
-                    id: "positionName",
-                    placeholder: "Position name",
-                    isOptional: false,
-                },
-                {
-                    type: "number",
-                    id: "hourPrice",
-                    placeholder: "Price per hour",
-                    isOptional: false,
-                },
-                {
-                    type: "customDate",
-                    id: "cycleEnd",
-                    placeholder: "Date of you next payslip",
-                    isOptional: false,
-                },
-                {
-                    type: "checkbox",
-                    id: "isFortnightly",
-                    label: "Fortnightly payment?",
-                    isOptional: false,
-                },
-            ]}
-            submitCallback={handleSubmit}
-            submitText={hasAccount ? "Log in" : "Sign in"}
-            Loading={Loading}
-            serverErrorMsg={errorMsg}
-        />
+        <div className={styles.jobSection}>
+            {jobPositionList.length > 0 && (
+                <select id="cars">
+                    {jobPositionList.map((position) => (
+                        <option
+                            value={position.id}
+                            selected={selectedPosition?.id === position.id}
+                        >
+                            {position.name}
+                        </option>
+                    ))}
+                </select>
+            )}
+            <div className={styles.formSection}>
+                <FormManager
+                    inputs={[
+                        {
+                            type: "text",
+                            id: "positionName",
+                            placeholder: "Position name",
+                            isOptional: false,
+                        },
+                        {
+                            type: "number",
+                            id: "hourPrice",
+                            placeholder: "Price per hour",
+                            isOptional: false,
+                        },
+                        {
+                            type: "customDate",
+                            id: "cycleEnd",
+                            placeholder: "Date of you next payslip",
+                            isOptional: false,
+                        },
+                        {
+                            type: "checkbox",
+                            id: "isFortnightly",
+                            label: "Fortnightly payment?",
+                            isOptional: false,
+                        },
+                    ]}
+                    submitCallback={handleSubmit}
+                    submitText={"Create job"}
+                    Loading={Loading}
+                    serverErrorMsg={errorMsg}
+                />
+            </div>
+        </div>
     );
 };
 

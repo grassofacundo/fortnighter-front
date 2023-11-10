@@ -9,7 +9,7 @@ import {
 import FormManager from "../utils/form/FormManager";
 import AuthContext from "../contexts/AuthContext";
 import authService from "../../services/authService";
-import dbService from "../../services/dbService";
+import dbService from "../../services/JobService";
 import styles from "./Login.module.scss";
 
 type LoginProps = {

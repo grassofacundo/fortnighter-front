@@ -1,17 +1,16 @@
+import { eventReturn } from "../types/database/databaseTypes";
 import authService from "./authService";
 
 export default class FetchService {
-    static async fetchPost({
+    static async fetchPost<contentType>({
         url,
         method,
         contentType,
         body,
-    }: fetchApi): Promise<EventReturn> {
-        const eventReturn: EventReturn = {
+    }: fetchApi): Promise<eventReturn<contentType>> {
+        const eventReturn: eventReturn<contentType> = {
             ok: true,
             status: 500,
-            errorMessage: "",
-            content: null,
         };
         try {
             const response = await fetch(url, {
@@ -22,43 +21,69 @@ export default class FetchService {
                 },
                 body: JSON.stringify(body),
             });
+
             eventReturn.ok = response.ok;
             eventReturn.status = response.status;
             const result = await response.json();
             if (!eventReturn.ok) {
-                eventReturn.errorMessage = result.message;
+                eventReturn.error = { message: result.message };
             } else {
-                eventReturn.content = result;
+                eventReturn.content = result as contentType;
             }
-            return eventReturn;
         } catch (error) {
-            return eventReturn;
-        }
-    }
-
-    static async fetchGet(url: string): Promise<EventReturn> {
-        const eventReturn: EventReturn = {
-            ok: true,
-            status: 500,
-            errorMessage: "",
-            content: null,
-        };
-        const response = await fetch(url, {
-            headers: { Authorization: `Bearer ${authService.token}` },
-        });
-        eventReturn.ok = response.ok;
-        eventReturn.status = response.status;
-        const result = await response.json();
-        if (!eventReturn.ok) {
-            eventReturn.errorMessage = result.message;
-        } else {
-            eventReturn.content = result;
+            eventReturn.error = {
+                message: `Error during ${method} request`,
+                content: error,
+            };
         }
         if (eventReturn.status === 401) {
-            const customEvent: authError = "autherror";
-            const logOutEvent = new Event(customEvent);
+            const logOutEvent = new Event("autherror");
             dispatchEvent(logOutEvent);
         }
         return eventReturn;
     }
+
+    static async fetchGet<contentType>(
+        url: string
+    ): Promise<eventReturn<contentType>> {
+        const eventReturn: eventReturn<contentType> = {
+            ok: false,
+            status: 500,
+        };
+        try {
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${authService.token}`,
+                },
+            });
+            eventReturn.ok = response.ok;
+            eventReturn.status = response.status;
+            const result = await response.json();
+            if (!this.isOk(eventReturn)) {
+                eventReturn.error = {
+                    message: result.message,
+                };
+            } else {
+                eventReturn.content = result as contentType;
+            }
+        } catch (error) {
+            eventReturn.error = {
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : "Error during GET request",
+                content: error,
+            };
+        } finally {
+            if (eventReturn.status === 401) {
+                const logOutEvent = new Event("autherror");
+                dispatchEvent(logOutEvent);
+            }
+        }
+        return eventReturn;
+    }
+
+    static isOk = (resp: eventReturn<unknown>) =>
+        resp.ok && resp.status <= 200 && resp.status <= 299;
 }

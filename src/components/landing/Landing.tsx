@@ -1,12 +1,14 @@
-import { useState, FunctionComponent, useEffect, useContext } from "react";
+//#region Dependency list
+import { useState, FunctionComponent, useContext } from "react";
 import AuthContext from "../contexts/AuthContext";
 import WelcomeAnimation from "../blocks/welcomeAnimation/WelcomeAnimation";
 import InOutAnim from "../utils/InOutAnim";
 import Login from "../login/Login";
 import Dashboard from "../dashboard/Dashboard";
-import styles from "./Landing.module.scss";
 import ThemeContext from "../contexts/ThemeContext";
 import authService from "../../services/authService";
+import styles from "./Landing.module.scss";
+//#endregion
 
 const Landing: FunctionComponent = () => {
     const authContext = useContext(AuthContext);

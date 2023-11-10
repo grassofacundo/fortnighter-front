@@ -1,3 +1,4 @@
+import { eventReturn } from "../types/database/databaseTypes";
 import FetchService from "./fetchService";
 
 class AuthService {
@@ -39,10 +40,13 @@ class AuthService {
         return new Date(this.expiryDate).getTime() - new Date().getTime();
     }
 
-    async logIn({ email, password }: credentials): Promise<EventReturn> {
+    async logIn({
+        email,
+        password,
+    }: credentials): Promise<eventReturn<undefined>> {
         const url = `${this.url}/login`;
         const body = { email, password };
-        let response: EventReturn = {
+        let response: eventReturn<undefined> = {
             ok: false,
             status: 500,
             errorMessage: "Couldn't process Sign Up",
@@ -58,10 +62,10 @@ class AuthService {
         return response;
     }
 
-    async signUp({ email, password }: credentials): Promise<EventReturn> {
+    async signUp({ email, password }: credentials): Promise<eventReturn> {
         const url = `${this.url}/signup`;
         const body = { email, password };
-        let response: EventReturn = {
+        let response: eventReturn = {
             ok: false,
             status: 500,
             errorMessage: "Couldn't process Sign Up",

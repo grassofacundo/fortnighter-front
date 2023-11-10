@@ -1,7 +1,7 @@
 import { FunctionComponent, useState } from "react";
 import styles from "./Day.module.scss";
 import FormManager from "../utils/form/FormManager";
-import dbService from "../../services/dbService";
+import dbService from "../../services/JobService";
 import dateService from "../../services/dateService";
 
 type thisProps = {

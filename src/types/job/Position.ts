@@ -1,4 +1,4 @@
-interface jobPosition {
+export interface jobPosition {
     id: string;
     name: string;
     hourPrice: number;
@@ -7,10 +7,20 @@ interface jobPosition {
     companyName?: string;
     description?: string;
     address?: string;
-    isSelected: boolean;
 }
 
-interface newJobPosition {
+export interface modelJobPosition {
+    _id: string;
+    name: string;
+    hourPrice: number;
+    cycleEnd: Date;
+    isFortnightly: boolean;
+    companyName: string;
+    description: string;
+    address: string;
+}
+
+export interface newJobPosition {
     name: string;
     hourPrice: number;
     cycleEnd: Date;
@@ -20,7 +30,7 @@ interface newJobPosition {
     address?: string;
 }
 
-interface shift {
+export interface shift {
     date: Date;
     timeWorked: number;
     isSaturday: boolean;

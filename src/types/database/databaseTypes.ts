@@ -1,10 +1,9 @@
-interface EventReturn {
+export interface eventReturn<contentType> {
     ok: boolean;
     status: number;
-    errorMessage: string;
-    content?: unknown;
-}
-
-enum Collections {
-    position = "job-positions",
+    content?: contentType;
+    error?: {
+        message: string;
+        content?: unknown;
+    };
 }
