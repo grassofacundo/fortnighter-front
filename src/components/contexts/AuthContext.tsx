@@ -5,8 +5,11 @@ import {
     useEffect,
     useRef,
     useState,
+    useCallback,
 } from "react";
 import authService from "../../services/authService";
+import { eventReturn } from "../../types/database/databaseTypes";
+import { authError, logInResponse } from "../../types/auth/user";
 
 type thisProps = {
     children: ReactNode;
@@ -14,8 +17,11 @@ type thisProps = {
 
 type authContext = {
     isAuth: boolean | null;
-    createAccount(email: string, password: string): Promise<EventReturn>;
-    logIn(email: string, password: string): Promise<EventReturn>;
+    createAccount(
+        email: string,
+        password: string
+    ): Promise<eventReturn<undefined>>;
+    logIn(email: string, password: string): Promise<eventReturn<logInResponse>>;
 };
 
 const AuthContext = createContext<authContext | null>(null);
@@ -25,6 +31,24 @@ export const UserProvider: FunctionComponent<thisProps> = ({ children }) => {
     const timeOutRef = useRef<null | NodeJS.Timeout>(null);
     const customEvent: authError = "autherror";
 
+    const handleLogOut = useCallback(() => {
+        authService.logOut();
+        removeEventListener(customEvent, handleLogOut);
+        if (timeOutRef.current) clearTimeout(timeOutRef.current);
+        setIsAuth(false);
+    }, []);
+
+    const checkUnauthenticatedError = useCallback(() => {
+        removeEventListener(customEvent, handleLogOut); //To avoid duplicates
+        addEventListener(customEvent, handleLogOut);
+    }, [handleLogOut]);
+
+    const handleLogIn = useCallback(() => {
+        setAutoLogout();
+        checkUnauthenticatedError();
+        setIsAuth(true);
+    }, [checkUnauthenticatedError]);
+
     function setAutoLogout() {
         timeOutRef.current = setTimeout(() => {
             authService.logOut();
@@ -32,44 +56,29 @@ export const UserProvider: FunctionComponent<thisProps> = ({ children }) => {
         }, authService.getTokenTime());
     }
 
-    function checkUnauthenticatedError() {
-        removeEventListener(customEvent, handleLogOut); //To avoid duplicates
-        addEventListener(customEvent, handleLogOut);
-    }
-
-    function handleLogIn() {
-        setAutoLogout();
-        checkUnauthenticatedError();
-        setIsAuth(true);
-    }
-
-    function handleLogOut() {
-        authService.logOut();
-        removeEventListener(customEvent, handleLogOut);
-        if (timeOutRef.current) clearTimeout(timeOutRef.current);
-        setIsAuth(false);
-    }
-
     async function createAccount(
         email: string,
         password: string
-    ): Promise<EventReturn> {
+    ): Promise<eventReturn<undefined>> {
         const response = await authService.signUp({ email, password });
         return response;
     }
 
-    async function logIn(
-        email: string,
-        password: string
-    ): Promise<EventReturn> {
-        const response = await authService.logIn({ email, password });
-        if (response.ok) {
-            const { token, user } = response.content as logInResponse;
-            authService.setSession(token, user);
-            handleLogIn();
-        }
-        return response;
-    }
+    const logIn = useCallback(
+        async (
+            email: string,
+            password: string
+        ): Promise<eventReturn<logInResponse>> => {
+            const response = await authService.logIn({ email, password });
+            if (response.ok && response.content) {
+                const { token, user } = response.content as logInResponse;
+                authService.setSession(token, user);
+                handleLogIn();
+            }
+            return response;
+        },
+        [handleLogIn]
+    );
 
     useEffect(() => {
         if (authService.hasSession()) {
@@ -77,7 +86,7 @@ export const UserProvider: FunctionComponent<thisProps> = ({ children }) => {
         } else {
             handleLogOut();
         }
-    }, []);
+    }, [handleLogIn, handleLogOut]);
 
     return (
         <AuthContext.Provider value={{ isAuth, createAccount, logIn }}>

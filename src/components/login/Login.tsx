@@ -1,32 +1,15 @@
-import {
-    Dispatch,
-    FunctionComponent,
-    SetStateAction,
-    useContext,
-    useEffect,
-    useState,
-} from "react";
+import { FunctionComponent, useContext, useState } from "react";
 import FormManager from "../utils/form/FormManager";
 import AuthContext from "../contexts/AuthContext";
-import authService from "../../services/authService";
-import dbService from "../../services/JobService";
 import styles from "./Login.module.scss";
 
-type LoginProps = {
-    onLogIn: Dispatch<SetStateAction<boolean>>;
-};
+type LoginProps = null;
 
-const Login: FunctionComponent<LoginProps> = ({ onLogIn }) => {
+const Login: FunctionComponent<LoginProps> = () => {
     const authContext = useContext(AuthContext);
     const [hasAccount, setHasAccount] = useState<boolean>(true);
     const [Loading, setLoading] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState("");
-
-    function handleNewUser() {
-        setHasAccount(false);
-        onLogIn(false);
-        authService.logOut();
-    }
 
     function handleOptionChange() {
         setHasAccount((prevState) => !prevState);
@@ -60,14 +43,20 @@ const Login: FunctionComponent<LoginProps> = ({ onLogIn }) => {
                 password
             );
             if (!signUpResponse.ok) {
-                setErrorMsg(signUpResponse.errorMessage);
+                setErrorMsg(
+                    signUpResponse?.error?.message ?? "Error creating account"
+                );
                 setLoading(false);
                 return;
             }
 
             const logInResponse = await authContext.logIn(email, password);
             if (!logInResponse.ok) {
-                setErrorMsg(logInResponse.errorMessage);
+                setErrorMsg(
+                    logInResponse?.error?.message ??
+                        "Error logging in after creating account"
+                );
+                setHasAccount(true);
                 setLoading(false);
                 return;
             }
@@ -79,7 +68,7 @@ const Login: FunctionComponent<LoginProps> = ({ onLogIn }) => {
 
             const logInResponse = await authContext.logIn(email, password);
             if (!logInResponse.ok) {
-                setErrorMsg(logInResponse.errorMessage);
+                setErrorMsg(logInResponse?.error?.message ?? "Couldn't log in");
                 setLoading(false);
                 return;
             }

@@ -59,8 +59,8 @@ class JobService {
     // async updateShift(
     //     shift: shift,
     //     jobPosition: string
-    // ): Promise<FirebaseeventReturn> {
-    //     const response: FirebaseeventReturn = {
+    // ): Promise<> {
+    //     const response:  = {
     //         ok: true,
     //         errorMessage: "",
     //         content: null,

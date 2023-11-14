@@ -1,22 +1,22 @@
-interface user extends input {
+export interface user extends input {
     email: string;
     name?: string;
     job?: string;
 }
 
-type credentials = {
+export type credentials = {
     email: string;
     password: string;
 };
 
-type signUpResponse = {
+export type signUpResponse = {
     message: string;
     userId: string;
 };
 
-type logInResponse = {
+export type logInResponse = {
     token: string;
     user: user;
 };
 
-type authError = "autherror";
+export type authError = "autherror";

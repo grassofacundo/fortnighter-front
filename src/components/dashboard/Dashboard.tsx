@@ -1,10 +1,7 @@
 //#region Dependency list
-import { FunctionComponent, useState, useEffect } from "react";
+import { FunctionComponent, useState } from "react";
 import Calendar from "../calendar/Calendar";
-import FormManager from "../utils/form/FormManager";
 import styles from "./Dashboard.module.scss";
-import dbService from "../../services/JobService";
-import stringService from "../../services/stringService";
 import Summary from "../summary/Summary";
 import JobPanel from "../jobPanel/jobPanel";
 import { jobPosition } from "../../types/job/Position";

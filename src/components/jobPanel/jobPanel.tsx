@@ -7,7 +7,7 @@ import {
     useEffect,
 } from "react";
 import FormManager from "../utils/form/FormManager";
-import dbService from "../../services/JobService";
+import jobService from "../../services/JobService";
 import styles from "./jobPanel.module.scss";
 import { jobPosition, newJobPosition } from "../../types/job/Position";
 //#endregion
@@ -56,7 +56,7 @@ const JobPanel: FunctionComponent<thisProps> = ({
             isFortnightly,
             cycleEnd,
         };
-        const responseDb = await dbService.createJobPosition(newJobPosition);
+        const responseDb = await jobService.createJobPosition(newJobPosition);
         if (!responseDb.ok && responseDb.error) {
             setErrorMsg(responseDb.error.message);
             return;
@@ -83,7 +83,7 @@ const JobPanel: FunctionComponent<thisProps> = ({
     }
 
     useEffect(() => {
-        dbService.getJobPositions().then((jobList) => {
+        jobService.getJobPositions().then((jobList) => {
             if (jobList.length > 0) onSetSelectedPosition(jobList[0]);
             setJobPositionList(jobList);
         });
