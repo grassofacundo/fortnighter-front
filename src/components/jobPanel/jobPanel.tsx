@@ -39,9 +39,41 @@ const JobPanel: FunctionComponent<thisProps> = ({
             .filter((answer) => answer.id === "cycleEnd")
             .at(0);
         const positionName = positionNameAnswer?.value as string;
-        const hourPrice = hourPriceAnswer?.value as number;
-        const isFortnightly = isFortnightlyAnswer?.value as boolean;
-        const cycleEnd = cycleEndAnswer?.value as Date;
+        let hourPrice = 0;
+        try {
+            hourPrice = Number(hourPriceAnswer?.value);
+        } catch (error) {
+            setErrorMsg(
+                error instanceof Error
+                    ? error.message
+                    : "Error parsing hour price number"
+            );
+        }
+        let isFortnightly = false;
+        try {
+            isFortnightly = Boolean(isFortnightlyAnswer?.value);
+        } catch (error) {
+            setErrorMsg(
+                error instanceof Error
+                    ? error.message
+                    : "Error if payment is weekly or fortnightly"
+            );
+        }
+        let cycleEnd = new Date();
+        try {
+            cycleEnd = new Date(cycleEndAnswer?.value as Date);
+            // const offsetMinutes = cycleEnd.getTimezoneOffset();
+            // const localTime = new Date(
+            //     cycleEnd.getTime() + offsetMinutes * 60 * 1000
+            // );
+            // cycleEnd = localTime;
+        } catch (error) {
+            setErrorMsg(
+                error instanceof Error
+                    ? error.message
+                    : "Error parsing cycle date"
+            );
+        }
 
         if (!positionName || !hourPrice || !cycleEnd) {
             setErrorMsg("Error on form answers");
@@ -64,7 +96,7 @@ const JobPanel: FunctionComponent<thisProps> = ({
 
         if (responseDb.ok && responseDb.content) {
             const jobPosition: jobPosition = {
-                id: responseDb.content._id,
+                id: responseDb.content.id,
                 name: positionName,
                 hourPrice,
                 cycleEnd,
@@ -73,12 +105,7 @@ const JobPanel: FunctionComponent<thisProps> = ({
             const list: jobPosition[] = JSON.parse(
                 JSON.stringify(jobPositionList)
             );
-            setJobPositionList([
-                ...list,
-                {
-                    ...jobPosition,
-                },
-            ]);
+            setJobPositionList([...list, { ...jobPosition }]);
         }
     }
 
@@ -95,6 +122,7 @@ const JobPanel: FunctionComponent<thisProps> = ({
                 <select id="cars">
                     {jobPositionList.map((position) => (
                         <option
+                            key={position.id}
                             value={position.id}
                             selected={selectedPosition?.id === position.id}
                         >
