@@ -10,7 +10,7 @@ export default class FetchService {
     }: fetchApi): Promise<eventReturn<contentType>> {
         const eventReturn: eventReturn<contentType> = {
             ok: false,
-            status: authService.hasSession() ? 401 : 500,
+            status: 500,
         };
         try {
             const response = await fetch(url, {
@@ -48,7 +48,7 @@ export default class FetchService {
     ): Promise<eventReturn<contentType>> {
         const eventReturn: eventReturn<contentType> = {
             ok: false,
-            status: authService.hasSession() ? 401 : 500,
+            status: 500,
         };
         try {
             const response = await fetch(url, {
@@ -85,5 +85,5 @@ export default class FetchService {
     }
 
     static isOk = (resp: eventReturn<unknown>) =>
-        resp.ok && resp.status <= 200 && resp.status <= 299;
+        resp.ok && resp.status >= 200 && resp.status <= 299;
 }
