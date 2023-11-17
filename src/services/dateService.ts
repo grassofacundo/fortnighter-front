@@ -10,6 +10,12 @@ class DateService {
             day > 9 ? day : `0${day}`
         }`;
     }
+
+    setHour(date: Date, startTimeHour: number): Date {
+        const startTime = new Date(date);
+        startTime.setHours(startTimeHour);
+        return startTime;
+    }
 }
 
 const dateService = new DateService();

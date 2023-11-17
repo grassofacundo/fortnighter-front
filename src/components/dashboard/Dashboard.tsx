@@ -42,7 +42,7 @@ const Dashboard: FunctionComponent<thisProps> = () => {
             ></JobPanel>
             {selectedPosition && (
                 <div className={styles.calendarContainer}>
-                    <Calendar jobPosition={selectedPosition.id}></Calendar>
+                    <Calendar jobPositionId={selectedPosition.id}></Calendar>
                     <Summary></Summary>
                 </div>
             )}

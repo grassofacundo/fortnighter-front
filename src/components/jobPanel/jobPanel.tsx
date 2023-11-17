@@ -119,13 +119,9 @@ const JobPanel: FunctionComponent<thisProps> = ({
     return (
         <div className={styles.jobSection}>
             {jobPositionList.length > 0 && (
-                <select id="cars">
+                <select id="cars" defaultValue={selectedPosition?.id}>
                     {jobPositionList.map((position) => (
-                        <option
-                            key={position.id}
-                            value={position.id}
-                            selected={selectedPosition?.id === position.id}
-                        >
+                        <option key={position.id} value={position.id}>
                             {position.name}
                         </option>
                     ))}

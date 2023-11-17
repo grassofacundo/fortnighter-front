@@ -1,6 +1,6 @@
 //#region Dependency list
 import { eventReturn } from "../types/database/databaseTypes";
-import { jobPosition, newJobPosition } from "../types/job/Position";
+import { jobPosition, newJobPosition, shiftBase } from "../types/job/Position";
 import FetchService from "./fetchService";
 //#endregion
 
@@ -48,42 +48,17 @@ class JobService {
         }
     }
 
-    // async updateShift(
-    //     shift: shift,
-    //     jobPosition: string
-    // ): Promise<> {
-    //     const response:  = {
-    //         ok: true,
-    //         errorMessage: "",
-    //         content: null,
-    //     };
-
-    //     this.checkCollectionName(response);
-
-    //     if (!response.errorMessage) {
-    //         await setDoc(
-    //             doc(this.getDb(), collectionName as string, jobPosition),
-    //             {
-    //                 date: shift.date,
-    //                 timeWorked: shift.timeWorked,
-    //                 isSaturday: shift.isSaturday,
-    //                 isSunday: shift.isSunday,
-    //                 isHoliday: shift.isHoliday,
-    //                 hoursWorked: {
-    //                     from: shift.hoursWorked.from,
-    //                     to: shift.hoursWorked.to,
-    //                 },
-    //             }
-    //         )
-    //             .then((resp) => (response.content = resp))
-    //             .catch((error) => {
-    //                 response.ok = false;
-    //                 response.errorMessage = error.message;
-    //             });
-    //     }
-
-    //     return response;
-    // }
+    async setShift(shift: shiftBase): Promise<eventReturn<shiftBase>> {
+        const url = `${this.url}/job/set-shift`;
+        const method = "PUT";
+        const body = { ...shift };
+        const response = await FetchService.fetchPost<shiftBase>({
+            url,
+            method,
+            body,
+        });
+        return response;
+    }
 }
 
 const jobService = new JobService();

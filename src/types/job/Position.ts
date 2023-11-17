@@ -19,11 +19,16 @@ export interface newJobPosition {
     address?: string;
 }
 
-export interface shift {
+export interface shiftBase {
+    jobPositionId: string;
+    isHoliday: boolean;
+    startTime: Date;
+    endTime: Date;
+}
+
+export interface shiftState extends shiftBase {
     date: Date;
-    timeWorked: number;
+    hoursWorked: number;
     isSaturday: boolean;
     isSunday: boolean;
-    isHoliday: boolean;
-    hoursWorked: { from: number; to: number };
 }

@@ -1,83 +1,67 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, MouseEvent, useState } from "react";
 import styles from "./Day.module.scss";
 import FormManager from "../utils/form/FormManager";
-import dbService from "../../services/JobService";
+import jobService from "../../services/JobService";
 import dateService from "../../services/dateService";
+import { shiftBase } from "../../types/job/Position";
 
 type thisProps = {
     day: Date;
-    jobPosition: string;
+    jobPositionId: string;
 };
 
-const Day: FunctionComponent<thisProps> = ({ day, jobPosition }) => {
+const Day: FunctionComponent<thisProps> = ({ day, jobPositionId }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [Loading, setLoading] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState("");
-    const [shift, setShift] = useState<shift>({
-        date: day,
-        timeWorked: 0,
-        isSaturday: day.getDay() === 6,
-        isSunday: day.getDay() === 0,
+    const [shift, setShift] = useState<shiftBase>({
+        jobPositionId,
         isHoliday: false,
-        hoursWorked: { from: 0, to: 0 },
+        startTime: new Date(),
+        endTime: new Date(),
     });
 
-    function handleClick() {
+    function handleClick(e: MouseEvent<HTMLDivElement>) {
+        console.log(e);
         setIsExpanded((v) => !v);
     }
 
     async function handleSubmit(answers: formAnswersType[]): Promise<void> {
         setLoading(true);
-        const shiftDateAnswer = answers
-            .filter((answer) => answer.id === "shift-date")
-            .at(0);
-        const timeWorkedAnswer = answers
-            .filter((answer) => answer.id === "time-worked")
-            .at(0);
         const isHolidayAnswer = answers
             .filter((answer) => answer.id === "is-holiday")
             .at(0);
-        const startWorkAnswer = answers
+        const startTimeAnswer = answers
             .filter((answer) => answer.id === "start-work")
             .at(0);
-        const endWorkAnswer = answers
+        const endTimeAnswer = answers
             .filter((answer) => answer.id === "end-work")
             .at(0);
-        const shiftDate = shiftDateAnswer?.value as Date;
-        const timeWorked = timeWorkedAnswer?.value as number;
         const isHoliday = isHolidayAnswer?.value as boolean;
-        const hoursWorkedFrom = startWorkAnswer?.value as number;
-        const hoursWorkedTo = endWorkAnswer?.value as number;
+        const startTime = startTimeAnswer?.value as number;
+        const endTime = endTimeAnswer?.value as number;
 
-        if (
-            !shiftDate ||
-            !timeWorked ||
-            isHoliday == null ||
-            !hoursWorkedFrom ||
-            !hoursWorkedTo
-        ) {
+        if (isHoliday == null || !startTime || !endTime) {
             setErrorMsg("Error on form answers");
             setLoading(false);
             return;
         }
 
-        const localShift = {
-            date: shiftDate,
-            timeWorked: timeWorked,
-            isSaturday: shiftDate.getDay() === 6,
-            isSunday: shiftDate.getDay() === 0,
+        const shiftObj: shiftBase = {
+            jobPositionId,
             isHoliday: isHoliday,
-            hoursWorked: { from: hoursWorkedFrom, to: hoursWorkedTo },
+            startTime: dateService.setHour(day, startTime),
+            endTime: dateService.setHour(day, endTime),
         };
 
-        const response = await dbService.updateShift(localShift, jobPosition);
+        const response = await jobService.setShift(shiftObj);
         if (response.ok) {
             setErrorMsg("");
-            setShift(localShift);
+            setShift(shiftObj);
         }
         setLoading(false);
-        if (!response.ok) {
-            setErrorMsg(response.errorMessage);
+        if (!response.ok && response.error) {
+            setErrorMsg(response.error.message);
             return;
         }
     }
@@ -91,18 +75,6 @@ const Day: FunctionComponent<thisProps> = ({ day, jobPosition }) => {
             {isExpanded && (
                 <FormManager
                     inputs={[
-                        {
-                            type: "customDate",
-                            id: "shift-date",
-                            label: "Selected date",
-                            defaultValue: dateService.getDateAsInputValue(day),
-                        },
-                        {
-                            type: "number",
-                            id: "time-worked",
-                            label: "Time worked",
-                            placeholder: shift.timeWorked.toString(),
-                        },
                         {
                             type: "checkbox",
                             id: "is-holiday",

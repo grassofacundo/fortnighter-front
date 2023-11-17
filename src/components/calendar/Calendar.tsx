@@ -4,10 +4,10 @@ import styles from "./Calendar.module.scss";
 
 type thisProps = {
     endDate?: Date;
-    jobPosition: string;
+    jobPositionId: string;
 };
 
-const Calendar: FunctionComponent<thisProps> = ({ endDate, jobPosition }) => {
+const Calendar: FunctionComponent<thisProps> = ({ endDate, jobPositionId }) => {
     const [isFortnight, setIsFortnight] = useState<boolean>(true);
 
     function setDays(): Date[] {
@@ -32,7 +32,7 @@ const Calendar: FunctionComponent<thisProps> = ({ endDate, jobPosition }) => {
             </button>
             <div className={styles.daysWrapper}>
                 {days.map((day, i) => (
-                    <Day key={i} day={day} jobPosition={jobPosition} />
+                    <Day key={i} day={day} jobPositionId={jobPositionId} />
                 ))}
             </div>
         </div>
