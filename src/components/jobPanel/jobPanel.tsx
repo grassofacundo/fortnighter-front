@@ -24,6 +24,7 @@ const JobPanel: FunctionComponent<thisProps> = ({
     const [jobPositionList, setJobPositionList] = useState<jobPosition[]>([]);
     const [errorMsg, setErrorMsg] = useState("");
     const [Loading, setLoading] = useState<boolean>(false);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     async function handleSubmit(answers: formAnswersType[]): Promise<void> {
         const positionNameAnswer = answers
@@ -118,49 +119,56 @@ const JobPanel: FunctionComponent<thisProps> = ({
 
     return (
         <div className={styles.jobSection}>
-            {jobPositionList.length > 0 && (
-                <select id="cars" defaultValue={selectedPosition?.id}>
-                    {jobPositionList.map((position) => (
-                        <option key={position.id} value={position.id}>
-                            {position.name}
-                        </option>
-                    ))}
-                </select>
-            )}
-            <div className={styles.formSection}>
-                <FormManager
-                    inputs={[
-                        {
-                            type: "text",
-                            id: "positionName",
-                            placeholder: "Position name",
-                            isOptional: false,
-                        },
-                        {
-                            type: "number",
-                            id: "hourPrice",
-                            placeholder: "Price per hour",
-                            isOptional: false,
-                        },
-                        {
-                            type: "customDate",
-                            id: "cycleEnd",
-                            placeholder: "Date of you next payslip",
-                            isOptional: false,
-                        },
-                        {
-                            type: "checkbox",
-                            id: "isFortnightly",
-                            label: "Fortnightly payment?",
-                            isOptional: false,
-                        },
-                    ]}
-                    submitCallback={handleSubmit}
-                    submitText={"Create job"}
-                    Loading={Loading}
-                    serverErrorMsg={errorMsg}
-                />
+            <div className={styles.headerContainer}>
+                {jobPositionList.length > 0 && (
+                    <select id="cars" defaultValue={selectedPosition?.id}>
+                        {jobPositionList.map((position) => (
+                            <option key={position.id} value={position.id}>
+                                {position.name}
+                            </option>
+                        ))}
+                    </select>
+                )}
+                <button onClick={() => setIsExpanded((v) => !v)}>
+                    {isExpanded ? "Hide" : "Show"}
+                </button>
             </div>
+            {isExpanded && (
+                <div className={styles.formSection}>
+                    <FormManager
+                        inputs={[
+                            {
+                                type: "text",
+                                id: "positionName",
+                                placeholder: "Position name",
+                                isOptional: false,
+                            },
+                            {
+                                type: "number",
+                                id: "hourPrice",
+                                placeholder: "Price per hour",
+                                isOptional: false,
+                            },
+                            {
+                                type: "customDate",
+                                id: "cycleEnd",
+                                placeholder: "Date of you next payslip",
+                                isOptional: false,
+                            },
+                            {
+                                type: "checkbox",
+                                id: "isFortnightly",
+                                label: "Fortnightly payment?",
+                                isOptional: false,
+                            },
+                        ]}
+                        submitCallback={handleSubmit}
+                        submitText={"Create job"}
+                        Loading={Loading}
+                        serverErrorMsg={errorMsg}
+                    />
+                </div>
+            )}
         </div>
     );
 };

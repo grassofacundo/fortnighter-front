@@ -21,8 +21,11 @@ const Day: FunctionComponent<thisProps> = ({ day, jobPositionId }) => {
         endTime: new Date(),
     });
 
-    function handleClick(e: MouseEvent<HTMLDivElement>) {
-        console.log(e);
+    function handleClick(e: MouseEvent) {
+        const target = e.target as Element;
+        if (target?.tagName.toLowerCase() === "input") {
+            return;
+        }
         setIsExpanded((v) => !v);
     }
 
@@ -69,9 +72,13 @@ const Day: FunctionComponent<thisProps> = ({ day, jobPositionId }) => {
     return (
         <div
             className={`${styles.dayBody} ${isExpanded ? styles.expanded : ""}`}
-            onClick={handleClick}
         >
-            <p>{dateService.getStr(day)}</p>
+            <div className={styles.headerContainer}>
+                <p>{dateService.getStr(day)}</p>
+                <button onClick={handleClick}>
+                    {isExpanded ? "Hide" : "Show"}
+                </button>
+            </div>
             {isExpanded && (
                 <FormManager
                     inputs={[
@@ -79,7 +86,7 @@ const Day: FunctionComponent<thisProps> = ({ day, jobPositionId }) => {
                             type: "checkbox",
                             id: "is-holiday",
                             label: "Is holiday?",
-                            checked: true,
+                            //checked: false,
                         },
                         {
                             type: "number",

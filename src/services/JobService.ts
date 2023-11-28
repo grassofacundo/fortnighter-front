@@ -49,7 +49,7 @@ class JobService {
     }
 
     async setShift(shift: shiftBase): Promise<eventReturn<shiftBase>> {
-        const url = `${this.url}/job/set-shift`;
+        const url = `${this.url}/shift/create`;
         const method = "PUT";
         const body = { ...shift };
         const response = await FetchService.fetchPost<shiftBase>({
