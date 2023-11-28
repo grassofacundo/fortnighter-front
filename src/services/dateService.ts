@@ -1,4 +1,15 @@
 class DateService {
+    getToday(): Date {
+        const date = new Date();
+        return date;
+    }
+
+    getPastDate(daysInThePast: number): Date {
+        const today = this.getToday();
+        const pastDate = new Date(today.getDate() - daysInThePast);
+        return pastDate;
+    }
+
     getStr(date: Date): string {
         return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
     }

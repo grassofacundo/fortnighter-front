@@ -1,10 +1,12 @@
 //#region Dependency list
 import { FunctionComponent, useState } from "react";
 import Calendar from "../calendar/Calendar";
-import styles from "./Dashboard.module.scss";
 import Summary from "../summary/Summary";
 import JobPanel from "../jobPanel/jobPanel";
 import { jobPosition } from "../../types/job/Position";
+import styles from "./Dashboard.module.scss";
+import dateS from "../../services/dateService";
+import DatePicker from "../datePicker/DatePicker";
 //#endregion
 
 type thisProps = unknown;
@@ -22,17 +24,8 @@ Set all logic related to shifts
 const Dashboard: FunctionComponent<thisProps> = () => {
     const [selectedPosition, setSelectedPosition] =
         useState<jobPosition | null>(null);
-
-    // function getSelectedPosition(): jobPosition | void {
-    //     return jobPositionList.find((job) => job.id === selectedPosition);
-    // }
-
-    // useEffect(() => {
-    //     const selected = jobPositionList.find(
-    //         (position) => position.isSelected
-    //     );
-    //     if (selected?.id) setSelectedPosition(selected);
-    // }, [jobPositionList]);
+    const [start, setStart] = useState<Date>(dateS.getPastDate(15));
+    const [end, setEnd] = useState<Date>(dateS.getToday());
 
     return (
         <div className={styles.mainBody}>
@@ -40,6 +33,8 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                 selectedPosition={selectedPosition}
                 onSetSelectedPosition={setSelectedPosition}
             ></JobPanel>
+
+            <DatePicker onSetStart={setStart} onSetEnd={setEnd}></DatePicker>
             {selectedPosition && (
                 <div className={styles.calendarContainer}>
                     <Calendar jobPositionId={selectedPosition.id}></Calendar>

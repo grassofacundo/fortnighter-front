@@ -25,11 +25,11 @@ const Calendar: FunctionComponent<thisProps> = ({ endDate, jobPositionId }) => {
 
     return (
         <div className={styles.calendar}>
-            <button
+            {/* <button
                 onClick={() => setIsFortnight((isFortnight) => !isFortnight)}
             >
                 {isFortnight ? "Show week" : "Show fortnight"}
-            </button>
+            </button> */}
             <div className={styles.daysWrapper}>
                 {days.map((day, i) => (
                     <Day key={i} day={day} jobPositionId={jobPositionId} />
