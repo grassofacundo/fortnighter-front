@@ -2,8 +2,8 @@ import { FunctionComponent, MouseEvent, useState } from "react";
 import styles from "./Day.module.scss";
 import FormManager from "../utils/form/FormManager";
 import jobService from "../../services/JobService";
-import dateService from "../../services/dateService";
 import { shiftBase } from "../../types/job/Position";
+import { getStringDMY, setHour } from "../../services/dateService";
 
 type thisProps = {
     day: Date;
@@ -53,8 +53,8 @@ const Day: FunctionComponent<thisProps> = ({ day, jobPositionId }) => {
         const shiftObj: shiftBase = {
             jobPositionId,
             isHoliday: isHoliday,
-            startTime: dateService.setHour(day, startTime),
-            endTime: dateService.setHour(day, endTime),
+            startTime: setHour(day, startTime),
+            endTime: setHour(day, endTime),
         };
 
         const response = await jobService.setShift(shiftObj);
@@ -74,7 +74,7 @@ const Day: FunctionComponent<thisProps> = ({ day, jobPositionId }) => {
             className={`${styles.dayBody} ${isExpanded ? styles.expanded : ""}`}
         >
             <div className={styles.headerContainer}>
-                <p>{dateService.getStr(day)}</p>
+                <p>{getStringDMY(day)}</p>
                 <button onClick={handleClick}>
                     {isExpanded ? "Hide" : "Show"}
                 </button>

@@ -1,22 +1,35 @@
 import { useState, FunctionComponent } from "react";
 import Day from "./Day";
 import styles from "./Calendar.module.scss";
+import { getDaysBetweenDates } from "../../services/dateService";
+import { shiftState } from "../../types/job/Position";
 
 type thisProps = {
     endDate?: Date;
     jobPositionId: string;
+    searchDates: {
+        start: Date | null;
+        end: Date | null;
+    };
 };
 
-const Calendar: FunctionComponent<thisProps> = ({ endDate, jobPositionId }) => {
-    const [isFortnight, setIsFortnight] = useState<boolean>(true);
+const Calendar: FunctionComponent<thisProps> = ({
+    searchDates,
+    jobPositionId,
+}) => {
+    const [shifts, setShifts] = useState<shiftState[]>([]);
 
     function setDays(): Date[] {
-        const lastDate: Date = endDate ?? new Date();
-        const daysNum = isFortnight ? 14 : 7;
+        if (!searchDates.end || !searchDates.start) return [];
+
+        const endDate: Date = structuredClone(searchDates.end);
+        const startDate: Date = structuredClone(searchDates.start);
+
+        const daysNum = getDaysBetweenDates(startDate, endDate);
         const days = Array(daysNum);
         for (let i = daysNum; i > 0; i--) {
-            days[i - 1] = new Date(lastDate);
-            lastDate.setDate(lastDate.getDate() - 1);
+            days[i - 1] = new Date(endDate);
+            endDate.setDate(endDate.getDate() - 1);
         }
         return days.reverse();
     }

@@ -5,7 +5,7 @@ import Summary from "../summary/Summary";
 import JobPanel from "../jobPanel/jobPanel";
 import { jobPosition } from "../../types/job/Position";
 import styles from "./Dashboard.module.scss";
-import dateS from "../../services/dateService";
+import { getPastDate, getToday } from "../../services/dateService";
 import DatePicker from "../datePicker/DatePicker";
 //#endregion
 
@@ -24,8 +24,10 @@ Set all logic related to shifts
 const Dashboard: FunctionComponent<thisProps> = () => {
     const [selectedPosition, setSelectedPosition] =
         useState<jobPosition | null>(null);
-    const [start, setStart] = useState<Date>(dateS.getPastDate(15));
-    const [end, setEnd] = useState<Date>(dateS.getToday());
+    const [searchDates, setSearchDates] = useState<{
+        start: Date | null;
+        end: Date | null;
+    }>({ start: null, end: null });
 
     return (
         <div className={styles.mainBody}>
@@ -34,10 +36,15 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                 onSetSelectedPosition={setSelectedPosition}
             ></JobPanel>
 
-            <DatePicker onSetStart={setStart} onSetEnd={setEnd}></DatePicker>
+            <DatePicker onSetSearchDates={setSearchDates}></DatePicker>
             {selectedPosition && (
                 <div className={styles.calendarContainer}>
-                    <Calendar jobPositionId={selectedPosition.id}></Calendar>
+                    {searchDates.start && searchDates.end && (
+                        <Calendar
+                            searchDates={searchDates}
+                            jobPositionId={selectedPosition.id}
+                        ></Calendar>
+                    )}
                     <Summary></Summary>
                 </div>
             )}
