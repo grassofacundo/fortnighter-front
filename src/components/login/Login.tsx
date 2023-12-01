@@ -3,9 +3,7 @@ import FormManager from "../utils/form/FormManager";
 import AuthContext from "../contexts/AuthContext";
 import styles from "./Login.module.scss";
 
-type LoginProps = null;
-
-const Login: FunctionComponent<LoginProps> = () => {
+const Login: FunctionComponent = () => {
     const authContext = useContext(AuthContext);
     const [hasAccount, setHasAccount] = useState<boolean>(true);
     const [Loading, setLoading] = useState<boolean>(false);

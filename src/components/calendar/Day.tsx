@@ -1,12 +1,13 @@
 import { FunctionComponent, MouseEvent, useState } from "react";
 import styles from "./Day.module.scss";
 import FormManager from "../utils/form/FormManager";
-import jobService from "../../services/JobService";
-import { shiftBase } from "../../types/job/Position";
 import { getStringDMY, setHour } from "../../services/dateService";
+import { shiftBase, shiftState } from "../../types/job/Shift";
+import shiftService from "../../services/shiftService";
 
 type thisProps = {
     day: Date;
+    shift?: shiftState;
     jobPositionId: string;
 };
 
@@ -14,7 +15,7 @@ const Day: FunctionComponent<thisProps> = ({ day, jobPositionId }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [Loading, setLoading] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState("");
-    const [shift, setShift] = useState<shiftBase>({
+    const [shiftLocal, setShiftLocal] = useState<shiftBase>({
         jobPositionId,
         isHoliday: false,
         startTime: new Date(),
@@ -57,10 +58,10 @@ const Day: FunctionComponent<thisProps> = ({ day, jobPositionId }) => {
             endTime: setHour(day, endTime),
         };
 
-        const response = await jobService.setShift(shiftObj);
+        const response = await shiftService.setShift(shiftObj);
         if (response.ok) {
             setErrorMsg("");
-            setShift(shiftObj);
+            setShiftLocal(shiftObj);
         }
         setLoading(false);
         if (!response.ok && response.error) {
@@ -68,6 +69,8 @@ const Day: FunctionComponent<thisProps> = ({ day, jobPositionId }) => {
             return;
         }
     }
+
+    if (shiftLocal) console.log(shiftLocal);
 
     return (
         <div

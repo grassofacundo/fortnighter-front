@@ -47,18 +47,6 @@ class JobService {
             return [];
         }
     }
-
-    async setShift(shift: shiftBase): Promise<eventReturn<shiftBase>> {
-        const url = `${this.url}/shift/create`;
-        const method = "PUT";
-        const body = { ...shift };
-        const response = await FetchService.fetchPost<shiftBase>({
-            url,
-            method,
-            body,
-        });
-        return response;
-    }
 }
 
 const jobService = new JobService();

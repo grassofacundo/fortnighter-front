@@ -32,11 +32,7 @@ const Landing: FunctionComponent = () => {
                         unmountOnExit={false}
                         customClass={styles.loginWrapper}
                     >
-                        <Login
-                            onLogIn={() => {
-                                console.log("log in");
-                            }}
-                        />
+                        <Login></Login>
                     </InOutAnim>
                 </div>
             )}

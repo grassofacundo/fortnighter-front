@@ -6,10 +6,24 @@ export function getToday(): Date {
     return date;
 }
 
+export function getPlainDate(date: Date): Date {
+    const copyDate = structuredClone(date);
+    copyDate.setHours(0);
+    copyDate.setMinutes(0);
+    copyDate.setSeconds(0);
+    return copyDate;
+}
+
 export function getPastDate(daysInThePast: number, referenceDate?: Date): Date {
     const pastDate = structuredClone(referenceDate) ?? getToday();
     pastDate.setDate(pastDate.getDate() - daysInThePast);
     return pastDate;
+}
+
+export function datesAreEqual(date1: Date, date2: Date): boolean {
+    const date1Text = getDateAsInputValue(date1);
+    const date2Text = getDateAsInputValue(date2);
+    return date1Text === date2Text;
 }
 
 export function getFutureDate(

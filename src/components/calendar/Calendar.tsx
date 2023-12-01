@@ -1,8 +1,13 @@
-import { useState, FunctionComponent } from "react";
+import { useState, FunctionComponent, useEffect, useCallback } from "react";
 import Day from "./Day";
 import styles from "./Calendar.module.scss";
-import { getDaysBetweenDates } from "../../services/dateService";
-import { shiftState } from "../../types/job/Position";
+import {
+    datesAreEqual,
+    getDaysBetweenDates,
+    getPlainDate,
+} from "../../services/dateService";
+import { shiftGrid, shiftState } from "../../types/job/Shift";
+import shiftService from "../../services/shiftService";
 
 type thisProps = {
     endDate?: Date;
@@ -17,35 +22,58 @@ const Calendar: FunctionComponent<thisProps> = ({
     searchDates,
     jobPositionId,
 }) => {
-    const [shifts, setShifts] = useState<shiftState[]>([]);
+    const [shiftGrid, setShiftGrid] = useState<shiftGrid[]>([]);
 
-    function setDays(): Date[] {
-        if (!searchDates.end || !searchDates.start) return [];
+    const setDays = useCallback(
+        (shifts: shiftState[]): shiftGrid[] => {
+            if (!searchDates.end || !searchDates.start) return [];
 
-        const endDate: Date = structuredClone(searchDates.end);
-        const startDate: Date = structuredClone(searchDates.start);
+            const endDate: Date = structuredClone(searchDates.end);
+            const startDate: Date = structuredClone(searchDates.start);
 
-        const daysNum = getDaysBetweenDates(startDate, endDate);
-        const days = Array(daysNum);
-        for (let i = daysNum; i > 0; i--) {
-            days[i - 1] = new Date(endDate);
-            endDate.setDate(endDate.getDate() - 1);
-        }
-        return days.reverse();
-    }
+            const daysNum = getDaysBetweenDates(startDate, endDate);
+            const days: shiftGrid[] = Array(daysNum);
+            for (let i = daysNum; i > 0; i--) {
+                const date = new Date(endDate);
+                const index = shifts.findIndex((shift) =>
+                    datesAreEqual(shift.date, getPlainDate(date))
+                );
+                const shift = index > -1 ? shifts[index] : undefined;
+                days[i - 1] = { date, shift };
+                endDate.setDate(endDate.getDate() - 1);
+            }
+            return days.reverse();
+        },
+        [searchDates]
+    );
 
-    const days = setDays();
+    useEffect(() => {
+        if (searchDates.start === null || searchDates.end === null) return;
+
+        const startDate: Date = searchDates.start;
+        const endDate: Date = searchDates.end;
+        const positionId: string = jobPositionId;
+        shiftService
+            .getShifts(startDate, endDate, positionId)
+            .then((shiftList) => {
+                const shiftsStates = shiftList.map((shiftBase) =>
+                    shiftService.getShiftAsState(shiftBase)
+                );
+                const grid = setDays(shiftsStates);
+                setShiftGrid(grid);
+            });
+    }, [searchDates, jobPositionId, setDays]);
 
     return (
         <div className={styles.calendar}>
-            {/* <button
-                onClick={() => setIsFortnight((isFortnight) => !isFortnight)}
-            >
-                {isFortnight ? "Show week" : "Show fortnight"}
-            </button> */}
             <div className={styles.daysWrapper}>
-                {days.map((day, i) => (
-                    <Day key={i} day={day} jobPositionId={jobPositionId} />
+                {shiftGrid.map((shiftGrid, i) => (
+                    <Day
+                        key={i}
+                        day={shiftGrid.date}
+                        shift={shiftGrid.shift}
+                        jobPositionId={jobPositionId}
+                    />
                 ))}
             </div>
         </div>
