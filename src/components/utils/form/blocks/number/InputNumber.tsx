@@ -1,4 +1,5 @@
 import { ChangeEvent, FunctionComponent } from "react";
+import { inputNumber } from "../../../../../types/form/InputNumberTypes";
 
 interface thisProps extends inputProp {
     fields: inputNumber;
@@ -8,7 +9,7 @@ const InputNumber: FunctionComponent<thisProps> = ({
     fields,
     onUpdateAnswer,
 }) => {
-    const { isOptional, id, placeholder, /*maxLength,*/ label } = fields;
+    const { isOptional, id, placeholder, label, defaultValue, step } = fields;
 
     const validInput = ({ target }: ChangeEvent<HTMLInputElement>) => {
         onUpdateAnswer({ id: target.id, value: target.value, error: "" });
@@ -23,6 +24,8 @@ const InputNumber: FunctionComponent<thisProps> = ({
                 placeholder={placeholder}
                 required={!isOptional}
                 onChange={(target) => validInput(target)}
+                defaultValue={defaultValue}
+                step={step}
             ></input>
         </div>
     );

@@ -1,3 +1,3 @@
-interface checkbox extends input {
+export interface checkbox extends input {
     checked?: boolean;
 }

@@ -1,3 +1,4 @@
+//#region Dependency list
 import {
     useState,
     FunctionComponent,
@@ -18,6 +19,9 @@ import styles from "./Form.module.scss";
 import Spinner from "../../blocks/spinner/Spinner";
 import Checkbox from "./blocks/checkbox/Checkbox";
 import DateInput from "./blocks/date/DateInput";
+import { inputNumber } from "../../../types/form/InputNumberTypes";
+import { checkbox } from "../../../types/form/CheckboxTypes";
+//#endregion
 
 type thisProps = {
     inputs: inputField[];
@@ -189,7 +193,7 @@ const Form: FunctionComponent<thisProps> = ({
                             );
                         }
                         case "number": {
-                            const inputNumber = inputFields as text;
+                            const inputNumber = inputFields as inputNumber;
                             return (
                                 <InputNumber
                                     key={inputNumber.id}

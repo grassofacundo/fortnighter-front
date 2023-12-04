@@ -1,5 +1,6 @@
 import { ChangeEvent, FunctionComponent, useEffect } from "react";
 import styles from "./Checkbox.module.scss";
+import { checkbox } from "../../../../../types/form/CheckboxTypes";
 
 interface thisProps extends inputProp {
     fields: checkbox;

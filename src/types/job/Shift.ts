@@ -1,8 +1,8 @@
 export interface shiftBase {
     jobPositionId: string;
     isHoliday: boolean;
-    startTime: Date;
-    endTime: Date;
+    startTime?: Date;
+    endTime?: Date;
 }
 
 export interface shiftState extends shiftBase {
