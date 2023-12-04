@@ -4,22 +4,31 @@ import FormManager from "../utils/form/FormManager";
 import { getStringDMY, setHour } from "../../services/dateService";
 import { shiftBase, shiftState } from "../../types/job/Shift";
 import shiftService from "../../services/shiftService";
+import { inputNumber } from "../../types/form/InputNumberTypes";
+import { checkbox } from "../../types/form/CheckboxTypes";
 
 type thisProps = {
     day: Date;
     shift?: shiftState;
     jobPositionId: string;
+    onUpdateShift(updatedShift: shiftState): void;
 };
 
-const Day: FunctionComponent<thisProps> = ({ day, jobPositionId }) => {
+const Day: FunctionComponent<thisProps> = ({
+    day,
+    shift,
+    jobPositionId,
+    onUpdateShift,
+}) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [Loading, setLoading] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState("");
+    const shiftCopy = structuredClone(shift);
     const [shiftLocal, setShiftLocal] = useState<shiftBase>({
         jobPositionId,
-        isHoliday: false,
-        startTime: new Date(),
-        endTime: new Date(),
+        isHoliday: !!shiftCopy?.isHoliday,
+        startTime: shiftCopy?.startTime,
+        endTime: shiftCopy?.endTime,
     });
 
     function handleClick(e: MouseEvent) {
@@ -61,16 +70,15 @@ const Day: FunctionComponent<thisProps> = ({ day, jobPositionId }) => {
         const response = await shiftService.setShift(shiftObj);
         if (response.ok) {
             setErrorMsg("");
-            setShiftLocal(shiftObj);
+            onUpdateShift(shiftService.getShiftAsState(shiftObj));
         }
         setLoading(false);
         if (!response.ok && response.error) {
+            setShiftLocal(shiftObj);
             setErrorMsg(response.error.message);
             return;
         }
     }
-
-    if (shiftLocal) console.log(shiftLocal);
 
     return (
         <div
@@ -89,20 +97,28 @@ const Day: FunctionComponent<thisProps> = ({ day, jobPositionId }) => {
                             type: "checkbox",
                             id: "is-holiday",
                             label: "Is holiday?",
-                            //checked: false,
-                        },
+                            checked: shiftLocal.isHoliday,
+                        } as checkbox,
                         {
                             type: "number",
                             id: "start-work",
                             label: "Time work started",
                             placeholder: "8",
-                        },
+                            defaultValue: shiftLocal?.startTime
+                                ? shiftLocal.startTime?.getHours()
+                                : "",
+                            step: "0.1",
+                        } as inputNumber,
                         {
                             type: "number",
                             id: "end-work",
                             label: "Time work ended",
                             placeholder: "16",
-                        },
+                            defaultValue: shiftLocal?.endTime
+                                ? shiftLocal.endTime?.getHours()
+                                : "",
+                            step: "0.1",
+                        } as inputNumber,
                     ]}
                     submitCallback={handleSubmit}
                     submitText={"Update shift"}

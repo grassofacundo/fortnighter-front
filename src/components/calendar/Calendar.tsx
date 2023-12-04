@@ -47,6 +47,19 @@ const Calendar: FunctionComponent<thisProps> = ({
         [searchDates]
     );
 
+    function updateShift(updatedShift: shiftState): void {
+        const shiftIndex = shiftGrid.findIndex(
+            (shift) =>
+                getPlainDate(shift.date) === getPlainDate(updatedShift.date)
+        );
+        if (shiftIndex < 0)
+            throw new Error("Shift date is not included on loaded shifts");
+
+        const shiftGridCopy = structuredClone(shiftGrid);
+        shiftGridCopy[shiftIndex].shift = updatedShift;
+        setShiftGrid(shiftGridCopy);
+    }
+
     useEffect(() => {
         if (searchDates.start === null || searchDates.end === null) return;
 
@@ -67,14 +80,19 @@ const Calendar: FunctionComponent<thisProps> = ({
     return (
         <div className={styles.calendar}>
             <div className={styles.daysWrapper}>
-                {shiftGrid.map((shiftGrid, i) => (
-                    <Day
-                        key={i}
-                        day={shiftGrid.date}
-                        shift={shiftGrid.shift}
-                        jobPositionId={jobPositionId}
-                    />
-                ))}
+                {shiftGrid.map((shift, i) => {
+                    const day = shift.date;
+                    const thisShift = shift.shift;
+                    return (
+                        <Day
+                            key={i}
+                            day={day}
+                            shift={thisShift}
+                            jobPositionId={jobPositionId}
+                            onUpdateShift={updateShift}
+                        />
+                    );
+                })}
             </div>
         </div>
     );
