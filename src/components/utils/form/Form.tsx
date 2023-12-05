@@ -21,6 +21,20 @@ import Checkbox from "./blocks/checkbox/Checkbox";
 import DateInput from "./blocks/date/DateInput";
 import { inputNumber } from "../../../types/form/InputNumberTypes";
 import { checkbox } from "../../../types/form/CheckboxTypes";
+import {
+    error,
+    formAnswersType,
+    formCallback,
+    inputField,
+} from "../../../types/form/FormTypes";
+import { text } from "../../../types/form/TextTypes";
+import { dateInput } from "../../../types/form/DateInputTypes";
+import { tel } from "../../../types/form/TelTypes";
+import { password } from "../../../types/form/PasswordTypes";
+import { mail } from "../../../types/form/MailTypes";
+import { radio } from "../../../types/form/RadioTypes";
+import { inputTimeType } from "../../../types/form/TimeType";
+import InputTime from "./blocks/time/time";
 //#endregion
 
 type thisProps = {
@@ -264,6 +278,18 @@ const Form: FunctionComponent<thisProps> = ({
                                 <Checkbox
                                     key={inputCheckbox.id}
                                     fields={inputCheckbox}
+                                    formAnswers={formAnswers}
+                                    onUpdateAnswer={updateAnswerAndHideError}
+                                />
+                            );
+                        }
+                        case "time": {
+                            const inputTimeFields =
+                                inputFields as inputTimeType;
+                            return (
+                                <InputTime
+                                    key={inputTimeFields.id}
+                                    fields={inputTimeFields}
                                     formAnswers={formAnswers}
                                     onUpdateAnswer={updateAnswerAndHideError}
                                 />

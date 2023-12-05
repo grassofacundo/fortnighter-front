@@ -6,6 +6,11 @@
 
 import { FunctionComponent, useEffect, useReducer, useState } from "react";
 import Form from "./Form";
+import {
+    formAnswersType,
+    formCallback,
+    inputField,
+} from "../../../types/form/FormTypes";
 
 type thisProps = {
     inputs: inputField[];

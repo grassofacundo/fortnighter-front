@@ -1,6 +1,9 @@
-import { ChangeEvent, FunctionComponent, useEffect } from "react";
+//#region Dependency list
+import { ChangeEvent, FunctionComponent, useEffect, useState } from "react";
 import styles from "./Checkbox.module.scss";
 import { checkbox } from "../../../../../types/form/CheckboxTypes";
+import { inputProp } from "../../../../../types/form/FormTypes";
+//#endregion
 
 interface thisProps extends inputProp {
     fields: checkbox;
@@ -8,8 +11,11 @@ interface thisProps extends inputProp {
 
 const Checkbox: FunctionComponent<thisProps> = ({ fields, onUpdateAnswer }) => {
     const { id, label, checked } = fields;
+    const [isChecked, setIsChecked] = useState(checked);
 
     function handleChange({ target }: ChangeEvent<HTMLInputElement>) {
+        setIsChecked(target.checked);
+        console.log(target.checked);
         onUpdateAnswer({ id: target.id, value: target.checked });
     }
 
@@ -26,7 +32,7 @@ const Checkbox: FunctionComponent<thisProps> = ({ fields, onUpdateAnswer }) => {
                     id={id}
                     name={label}
                     onChange={handleChange}
-                    checked={checked}
+                    checked={isChecked}
                 />
                 {label}
             </label>
