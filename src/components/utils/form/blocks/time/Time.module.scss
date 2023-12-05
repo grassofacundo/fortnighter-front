@@ -1,0 +1,20 @@
+.timeInputBody {
+    .inputContainer {
+        display: flex;
+        flex-direction: row;
+
+        div {
+            width: 3em;
+            height: 3em;
+        }
+
+        input {
+            width: 3em;
+            height: 3em;
+            color: var(--contrastColor);
+            border: 1px solid var(--contrastColor);
+            background-color: var(--mainColor);
+            text-align: center;
+        }
+    }
+}
