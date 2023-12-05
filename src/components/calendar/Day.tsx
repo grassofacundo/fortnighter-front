@@ -1,11 +1,14 @@
-import { FunctionComponent, MouseEvent, useState } from "react";
+//#region Dependency list
+import { FunctionComponent, useState } from "react";
 import styles from "./Day.module.scss";
 import FormManager from "../utils/form/FormManager";
-import { getStringDMY, setHour } from "../../services/dateService";
+import { getDateAsInputValue, getStringDMY } from "../../services/dateService";
 import { shiftBase, shiftState } from "../../types/job/Shift";
 import shiftService from "../../services/shiftService";
-import { inputNumber } from "../../types/form/InputNumberTypes";
 import { checkbox } from "../../types/form/CheckboxTypes";
+import { inputTimeType } from "../../types/form/TimeType";
+import { formAnswersType } from "../../types/form/FormTypes";
+//#endregion
 
 type thisProps = {
     day: Date;
@@ -27,17 +30,9 @@ const Day: FunctionComponent<thisProps> = ({
     const [shiftLocal, setShiftLocal] = useState<shiftBase>({
         jobPositionId,
         isHoliday: !!shiftCopy?.isHoliday,
-        startTime: shiftCopy?.startTime,
-        endTime: shiftCopy?.endTime,
+        startTime: shiftCopy?.startTime ? shiftCopy.startTime : undefined,
+        endTime: shiftCopy?.endTime ? shiftCopy.endTime : undefined,
     });
-
-    function handleClick(e: MouseEvent) {
-        const target = e.target as Element;
-        if (target?.tagName.toLowerCase() === "input") {
-            return;
-        }
-        setIsExpanded((v) => !v);
-    }
 
     async function handleSubmit(answers: formAnswersType[]): Promise<void> {
         setLoading(true);
@@ -51,8 +46,8 @@ const Day: FunctionComponent<thisProps> = ({
             .filter((answer) => answer.id === "end-work")
             .at(0);
         const isHoliday = isHolidayAnswer?.value as boolean;
-        const startTime = startTimeAnswer?.value as number;
-        const endTime = endTimeAnswer?.value as number;
+        const startTime = startTimeAnswer?.value as string;
+        const endTime = endTimeAnswer?.value as string;
 
         if (isHoliday == null || !startTime || !endTime) {
             setErrorMsg("Error on form answers");
@@ -60,11 +55,13 @@ const Day: FunctionComponent<thisProps> = ({
             return;
         }
 
+        const start = new Date(`${getDateAsInputValue(day)}T${startTime}`);
+        const end = new Date(`${getDateAsInputValue(day)}T${endTime}`);
         const shiftObj: shiftBase = {
             jobPositionId,
-            isHoliday: isHoliday,
-            startTime: setHour(day, startTime),
-            endTime: setHour(day, endTime),
+            isHoliday,
+            startTime: start,
+            endTime: end,
         };
 
         const response = await shiftService.setShift(shiftObj);
@@ -86,11 +83,16 @@ const Day: FunctionComponent<thisProps> = ({
         >
             <div className={styles.headerContainer}>
                 <p>{getStringDMY(day)}</p>
-                <button onClick={handleClick}>
+                {shift && (
+                    <p>{`${shift.startTime?.getHours()}:${shift.startTime?.getMinutes()} to ${shift.endTime?.getHours()}:${shift.endTime?.getMinutes()} ${
+                        shift.hoursWorked
+                    } hours worked`}</p>
+                )}
+                <button onClick={() => setIsExpanded((v) => !v)}>
                     {isExpanded ? "Hide" : "Show"}
                 </button>
             </div>
-            {isExpanded && (
+            {
                 <FormManager
                     inputs={[
                         {
@@ -100,32 +102,72 @@ const Day: FunctionComponent<thisProps> = ({
                             checked: shiftLocal.isHoliday,
                         } as checkbox,
                         {
-                            type: "number",
+                            type: "time",
                             id: "start-work",
-                            label: "Time work started",
-                            placeholder: "8",
-                            defaultValue: shiftLocal?.startTime
-                                ? shiftLocal.startTime?.getHours()
-                                : "",
-                            step: "0.1",
-                        } as inputNumber,
+                            label: "Start time",
+                            hour: {
+                                type: "number",
+                                id: "start-work-hour",
+                                label: "Hour work started",
+                                min: 0,
+                                max: 23,
+                                placeholder: "8",
+                                defaultValue: shiftLocal?.startTime
+                                    ? shiftLocal.startTime
+                                          ?.getHours()
+                                          .toString()
+                                    : "",
+                            },
+                            minute: {
+                                type: "number",
+                                id: "start-work-minute",
+                                label: "Minute work started",
+                                placeholder: "30",
+                                step: "30",
+                                min: 0,
+                                max: 59,
+                                defaultValue: shiftLocal?.startTime
+                                    ? shiftLocal.startTime
+                                          ?.getMinutes()
+                                          .toString()
+                                    : "",
+                            },
+                        } as inputTimeType,
                         {
-                            type: "number",
+                            type: "time",
                             id: "end-work",
-                            label: "Time work ended",
-                            placeholder: "16",
-                            defaultValue: shiftLocal?.endTime
-                                ? shiftLocal.endTime?.getHours()
-                                : "",
-                            step: "0.1",
-                        } as inputNumber,
+                            label: "End time",
+                            hour: {
+                                type: "number",
+                                id: "end-work-hour",
+                                min: 0,
+                                max: 23,
+                                placeholder: "8",
+                                defaultValue: shiftLocal?.endTime
+                                    ? shiftLocal.endTime?.getHours().toString()
+                                    : "",
+                            },
+                            minute: {
+                                type: "number",
+                                id: "end-work-minute",
+                                placeholder: "30",
+                                step: "30",
+                                min: 0,
+                                max: 59,
+                                defaultValue: shiftLocal?.endTime
+                                    ? shiftLocal.endTime
+                                          ?.getMinutes()
+                                          .toString()
+                                    : "",
+                            },
+                        } as inputTimeType,
                     ]}
                     submitCallback={handleSubmit}
                     submitText={"Update shift"}
                     Loading={Loading}
                     serverErrorMsg={errorMsg}
                 />
-            )}
+            }
         </div>
     );
 };

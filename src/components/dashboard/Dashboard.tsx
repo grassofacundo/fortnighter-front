@@ -1,12 +1,13 @@
 //#region Dependency list
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState, useEffect } from "react";
 import Calendar from "../calendar/Calendar";
 import Summary from "../summary/Summary";
 import JobPanel from "../jobPanel/jobPanel";
 import { jobPosition } from "../../types/job/Position";
 import styles from "./Dashboard.module.scss";
-import { getPastDate, getToday } from "../../services/dateService";
 import DatePicker from "../datePicker/DatePicker";
+import shiftService from "../../services/shiftService";
+import { shiftState } from "../../types/job/Shift";
 //#endregion
 
 type thisProps = unknown;
@@ -28,6 +29,28 @@ const Dashboard: FunctionComponent<thisProps> = () => {
         start: Date | null;
         end: Date | null;
     }>({ start: null, end: null });
+    const [shiftList, setShiftList] = useState<shiftState[]>([]);
+
+    useEffect(() => {
+        if (
+            searchDates.start === null ||
+            searchDates.end === null ||
+            !selectedPosition
+        )
+            return;
+
+        const startDate: Date = searchDates.start;
+        const endDate: Date = searchDates.end;
+        const positionId: string = selectedPosition.id;
+        shiftService
+            .getShifts(startDate, endDate, positionId)
+            .then((shiftList) => {
+                const shiftsStates = shiftList.map((shiftBase) =>
+                    shiftService.getShiftAsState(shiftBase)
+                );
+                setShiftList(shiftsStates);
+            });
+    }, [searchDates, selectedPosition]);
 
     return (
         <div className={styles.mainBody}>
@@ -43,9 +66,13 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                         <Calendar
                             searchDates={searchDates}
                             jobPositionId={selectedPosition.id}
+                            shiftList={shiftList}
                         ></Calendar>
                     )}
-                    <Summary></Summary>
+                    <Summary
+                        shiftList={shiftList}
+                        position={selectedPosition}
+                    />
                 </div>
             )}
         </div>

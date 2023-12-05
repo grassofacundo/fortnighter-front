@@ -1,13 +1,15 @@
+//#region Dependency list
 import { useState, FunctionComponent, useEffect, useCallback } from "react";
-import Day from "./Day";
 import styles from "./Calendar.module.scss";
 import {
     datesAreEqual,
+    getDateAsInputValue,
     getDaysBetweenDates,
     getPlainDate,
 } from "../../services/dateService";
 import { shiftGrid, shiftState } from "../../types/job/Shift";
-import shiftService from "../../services/shiftService";
+import Day from "./Day";
+//#endregion
 
 type thisProps = {
     endDate?: Date;
@@ -16,11 +18,13 @@ type thisProps = {
         start: Date | null;
         end: Date | null;
     };
+    shiftList: shiftState[];
 };
 
 const Calendar: FunctionComponent<thisProps> = ({
     searchDates,
     jobPositionId,
+    shiftList,
 }) => {
     const [shiftGrid, setShiftGrid] = useState<shiftGrid[]>([]);
 
@@ -50,7 +54,8 @@ const Calendar: FunctionComponent<thisProps> = ({
     function updateShift(updatedShift: shiftState): void {
         const shiftIndex = shiftGrid.findIndex(
             (shift) =>
-                getPlainDate(shift.date) === getPlainDate(updatedShift.date)
+                getDateAsInputValue(shift.date) ===
+                getDateAsInputValue(updatedShift.date)
         );
         if (shiftIndex < 0)
             throw new Error("Shift date is not included on loaded shifts");
@@ -61,21 +66,9 @@ const Calendar: FunctionComponent<thisProps> = ({
     }
 
     useEffect(() => {
-        if (searchDates.start === null || searchDates.end === null) return;
-
-        const startDate: Date = searchDates.start;
-        const endDate: Date = searchDates.end;
-        const positionId: string = jobPositionId;
-        shiftService
-            .getShifts(startDate, endDate, positionId)
-            .then((shiftList) => {
-                const shiftsStates = shiftList.map((shiftBase) =>
-                    shiftService.getShiftAsState(shiftBase)
-                );
-                const grid = setDays(shiftsStates);
-                setShiftGrid(grid);
-            });
-    }, [searchDates, jobPositionId, setDays]);
+        const gridToSave = setDays(shiftList);
+        setShiftGrid(gridToSave);
+    }, [setDays, shiftList]);
 
     return (
         <div className={styles.calendar}>

@@ -10,6 +10,7 @@ import FormManager from "../utils/form/FormManager";
 import jobService from "../../services/JobService";
 import styles from "./jobPanel.module.scss";
 import { jobPosition, newJobPosition } from "../../types/job/Position";
+import { formAnswersType } from "../../types/form/FormTypes";
 //#endregion
 
 type thisProps = {
