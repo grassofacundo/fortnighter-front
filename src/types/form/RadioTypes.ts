@@ -1,3 +1,5 @@
+import { input } from "./FormTypes";
+
 type radioElem = {
     id: string;
     name: string;
@@ -5,7 +7,7 @@ type radioElem = {
     label: string;
 };
 
-interface radio extends input {
+export interface radio extends input {
     title: string;
     radioElem: radioElem[];
 }

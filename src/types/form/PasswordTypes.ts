@@ -1,3 +1,5 @@
-interface password extends input {
+import { input } from "./FormTypes";
+
+export interface password extends input {
     placeholder: string;
 }

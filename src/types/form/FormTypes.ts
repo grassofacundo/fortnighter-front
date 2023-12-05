@@ -1,4 +1,14 @@
-type inputType =
+import { checkbox } from "./CheckboxTypes";
+import { dateInput } from "./DateInputTypes";
+import { inputNumber } from "./InputNumberTypes";
+import { mail } from "./MailTypes";
+import { password } from "./PasswordTypes";
+import { radio } from "./RadioTypes";
+import { tel } from "./TelTypes";
+import { text } from "./TextTypes";
+import { inputTimeType } from "./TimeType";
+
+export type inputType =
     | "radio"
     | "text"
     | "password"
@@ -6,19 +16,20 @@ type inputType =
     | "mail"
     | "tel"
     | "customDate"
-    | "checkbox";
+    | "checkbox"
+    | "time";
 
-interface inputBase {
+export interface inputBase {
     type: inputType;
     id: string;
     isOptional?: boolean;
 }
 
-interface input extends inputBase {
+export interface input extends inputBase {
     label?: string;
 }
 
-type inputField =
+export type inputField =
     | dateInput
     | radio
     | text
@@ -26,25 +37,30 @@ type inputField =
     | inputNumber
     | mail
     | tel
-    | checkbox;
+    | checkbox
+    | inputTimeType;
 
-type answerValues = string | Date | boolean | number;
-type formAnswersType = { id: string; value: answerValues; error?: string };
-type action = {
+export type answerValues = string | Date | boolean | number;
+export type formAnswersType = {
+    id: string;
+    value: answerValues;
+    error?: string;
+};
+export type action = {
     type: "added" | "changed" | "deleted";
     id: string;
     value?: answerValues;
     error?: string;
 };
 
-type error = {
+export type error = {
     message: string;
     field: HTMLElement | null;
 };
 
-interface inputProp {
+export interface inputProp {
     formAnswers: formAnswersType[];
     onUpdateAnswer: (answer: formAnswersType) => void;
 }
 
-type formCallback = (answers: formAnswersType[]) => Promise<void>;
+export type formCallback = (answers: formAnswersType[]) => Promise<void>;

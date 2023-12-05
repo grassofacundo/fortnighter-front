@@ -47,9 +47,17 @@ export function getDateAsInputValue(date: Date): string {
     }`; //T00:00
 }
 
-export function setHour(date: Date, startTimeHour: number): Date {
+type timeParams = { date: Date; hour?: number; minutes?: number };
+export function setTime({ date, hour, minutes }: timeParams): Date {
     const startTime = new Date(date);
-    startTime.setHours(startTimeHour);
+    if (hour) startTime.setHours(hour);
+    if (minutes) startTime.setMinutes(minutes);
+    return startTime;
+}
+
+export function setMinutes(date: Date, startTimeMinutes: number): Date {
+    const startTime = new Date(date);
+    startTime.setMinutes(startTimeMinutes);
     return startTime;
 }
 
