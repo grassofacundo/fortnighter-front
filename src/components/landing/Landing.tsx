@@ -41,7 +41,7 @@ const Landing: FunctionComponent = () => {
                     <Dashboard />
                 </InOutAnim>
             }
-            {animationEnded && (
+            {(animationEnded || !!isAuth) && (
                 <footer>
                     <button
                         className={styles.logOutButton}
