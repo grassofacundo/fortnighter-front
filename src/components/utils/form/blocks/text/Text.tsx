@@ -12,7 +12,8 @@ const InputText: FunctionComponent<thisProps> = ({
     fields,
     onUpdateAnswer,
 }) => {
-    const { isOptional, id, label, placeholder, min, max } = fields;
+    const { isOptional, id, label, placeholder, min, max, defaultValue } =
+        fields;
 
     function handleInput({ target }: ChangeEvent<HTMLInputElement>) {
         let error = "";
@@ -36,6 +37,7 @@ const InputText: FunctionComponent<thisProps> = ({
                 minLength={min}
                 maxLength={max}
                 onChange={(target) => handleInput(target)}
+                defaultValue={defaultValue}
             ></input>
         </div>
     );

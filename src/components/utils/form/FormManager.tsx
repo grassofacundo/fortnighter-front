@@ -27,7 +27,10 @@ const FormManager: FunctionComponent<thisProps> = ({
     submitText,
     serverErrorMsg,
 }) => {
-    const [formAnswers, dispatch] = useReducer(fieldsReducer, []);
+    const [formAnswers, dispatch] = useReducer(
+        fieldsReducer,
+        getDefaultValues(inputs)
+    );
     const [serverError, setServerError] = useState<string>("");
 
     useEffect(() => {
@@ -40,6 +43,19 @@ const FormManager: FunctionComponent<thisProps> = ({
             input.isOptional = input.type === "checkbox" || input.isOptional;
         });
     }, [inputs]);
+
+    function getDefaultValues(inputs: inputField[]): formAnswersType[] {
+        const inputValues: formAnswersType[] = [];
+        inputs.forEach((input) => {
+            if (input.defaultValue) {
+                inputValues.push({
+                    id: input.id,
+                    value: input.defaultValue,
+                });
+            }
+        });
+        return inputValues;
+    }
 
     function updateAnswer(answer: formAnswersType): void {
         if (answer.value == null || answer.value === "") {
