@@ -1,5 +1,5 @@
 //#region Dependency list
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import styles from "./Day.module.scss";
 import FormManager from "../utils/form/FormManager";
 import { getDateAsInputValue, getStringDMY } from "../../services/dateService";
@@ -8,6 +8,7 @@ import shiftService from "../../services/shiftService";
 import { checkbox } from "../../types/form/CheckboxTypes";
 import { inputTimeType } from "../../types/form/TimeType";
 import { formAnswersType } from "../../types/form/FormTypes";
+import { inputNumber } from "../../types/form/InputNumberTypes";
 //#endregion
 
 type thisProps = {
@@ -26,12 +27,9 @@ const Day: FunctionComponent<thisProps> = ({
     const [isExpanded, setIsExpanded] = useState(false);
     const [Loading, setLoading] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState("");
-    const shiftCopy = structuredClone(shift);
     const [shiftLocal, setShiftLocal] = useState<shiftBase>({
         jobPositionId,
-        isHoliday: !!shiftCopy?.isHoliday,
-        startTime: shiftCopy?.startTime ? shiftCopy.startTime : undefined,
-        endTime: shiftCopy?.endTime ? shiftCopy.endTime : undefined,
+        isHoliday: false,
     });
 
     async function handleSubmit(answers: formAnswersType[]): Promise<void> {
@@ -77,6 +75,17 @@ const Day: FunctionComponent<thisProps> = ({
         }
     }
 
+    useEffect(() => {
+        if (shift) {
+            setShiftLocal({
+                jobPositionId,
+                isHoliday: !!shift?.isHoliday,
+                startTime: shift?.startTime ? shift.startTime : undefined,
+                endTime: shift?.endTime ? shift.endTime : undefined,
+            });
+        }
+    }, [shift, jobPositionId]);
+
     return (
         <div
             className={`${styles.dayBody} ${isExpanded ? styles.expanded : ""}`}
@@ -108,7 +117,7 @@ const Day: FunctionComponent<thisProps> = ({
                             hour: {
                                 type: "number",
                                 id: "start-work-hour",
-                                label: "Hour work started",
+                                label: `Hour work started-${shiftLocal.jobPositionId}`,
                                 min: 0,
                                 max: 23,
                                 placeholder: "8",
@@ -117,10 +126,10 @@ const Day: FunctionComponent<thisProps> = ({
                                           ?.getHours()
                                           .toString()
                                     : "",
-                            },
+                            } as inputNumber,
                             minute: {
                                 type: "number",
-                                id: "start-work-minute",
+                                id: `start-work-minute-${shiftLocal.jobPositionId}`,
                                 label: "Minute work started",
                                 placeholder: "30",
                                 step: "30",
@@ -131,7 +140,7 @@ const Day: FunctionComponent<thisProps> = ({
                                           ?.getMinutes()
                                           .toString()
                                     : "",
-                            },
+                            } as inputNumber,
                         } as inputTimeType,
                         {
                             type: "time",
@@ -139,7 +148,7 @@ const Day: FunctionComponent<thisProps> = ({
                             label: "End time",
                             hour: {
                                 type: "number",
-                                id: "end-work-hour",
+                                id: `end-work-hour-${shiftLocal.jobPositionId}`,
                                 min: 0,
                                 max: 23,
                                 placeholder: "8",
@@ -149,7 +158,7 @@ const Day: FunctionComponent<thisProps> = ({
                             },
                             minute: {
                                 type: "number",
-                                id: "end-work-minute",
+                                id: `end-work-minute-${shiftLocal.jobPositionId}`,
                                 placeholder: "30",
                                 step: "30",
                                 min: 0,
