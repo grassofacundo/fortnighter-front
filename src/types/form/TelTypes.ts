@@ -5,4 +5,5 @@ export interface tel extends input {
     maxLength: number;
     min: number;
     max: number;
+    defaultValue?: string;
 }

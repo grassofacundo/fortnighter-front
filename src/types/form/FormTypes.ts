@@ -19,10 +19,12 @@ export type inputType =
     | "checkbox"
     | "time";
 
+export type inputValues = string | Date | boolean | number;
 export interface inputBase {
     type: inputType;
     id: string;
     isOptional?: boolean;
+    defaultValue?: inputValues;
 }
 
 export interface input extends inputBase {
@@ -40,16 +42,15 @@ export type inputField =
     | checkbox
     | inputTimeType;
 
-export type answerValues = string | Date | boolean | number;
 export type formAnswersType = {
     id: string;
-    value: answerValues;
+    value: inputValues;
     error?: string;
 };
 export type action = {
     type: "added" | "changed" | "deleted";
     id: string;
-    value?: answerValues;
+    value?: inputValues;
     error?: string;
 };
 

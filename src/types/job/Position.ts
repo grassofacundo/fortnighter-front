@@ -1,20 +1,17 @@
-export interface jobPosition {
-    id: string;
+export interface baseJobPosition<T> {
     name: string;
     hourPrice: number;
-    cycleEnd: Date;
     isFortnightly: boolean;
     companyName?: string;
     description?: string;
     address?: string;
+    cycleEnd: T;
 }
 
-export interface newJobPosition {
-    name: string;
-    hourPrice: number;
-    cycleEnd: Date;
-    isFortnightly: boolean;
-    companyName?: string;
-    description?: string;
-    address?: string;
+export interface jobPosition extends baseJobPosition<Date> {
+    id: string;
+}
+
+export interface dbJobPosition extends baseJobPosition<string> {
+    id: string;
 }

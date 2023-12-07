@@ -10,4 +10,5 @@ type radioElem = {
 export interface radio extends input {
     title: string;
     radioElem: radioElem[];
+    defaultValue?: string;
 }
