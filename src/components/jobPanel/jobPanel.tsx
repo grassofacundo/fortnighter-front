@@ -5,12 +5,13 @@ import {
     Dispatch,
     SetStateAction,
     useEffect,
+    ChangeEvent,
 } from "react";
-import FormManager from "../utils/form/FormManager";
 import jobService from "../../services/JobService";
 import styles from "./jobPanel.module.scss";
-import { jobPosition, newJobPosition } from "../../types/job/Position";
-import { formAnswersType } from "../../types/form/FormTypes";
+import { jobPosition } from "../../types/job/Position";
+import CreateJobForm from "./createJobForm/CreateJobForm";
+import UpdateJobForm from "./updateJobForm/UpdateJobForm";
 //#endregion
 
 type thisProps = {
@@ -23,98 +24,45 @@ const JobPanel: FunctionComponent<thisProps> = ({
     onSetSelectedPosition,
 }) => {
     const [jobPositionList, setJobPositionList] = useState<jobPosition[]>([]);
-    const [errorMsg, setErrorMsg] = useState("");
-    const [Loading, setLoading] = useState<boolean>(false);
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [isExpanded, setIsExpanded] = useState<boolean>(false);
+    const [isCreateMode, setIsCreateMode] = useState<boolean>(false);
 
-    async function handleSubmit(answers: formAnswersType[]): Promise<void> {
-        const positionNameAnswer = answers
-            .filter((answer) => answer.id === "positionName")
-            .at(0);
-        const hourPriceAnswer = answers
-            .filter((answer) => answer.id === "hourPrice")
-            .at(0);
-        const isFortnightlyAnswer = answers
-            .filter((answer) => answer.id === "isFortnightly")
-            .at(0);
-        const cycleEndAnswer = answers
-            .filter((answer) => answer.id === "cycleEnd")
-            .at(0);
-        const positionName = positionNameAnswer?.value as string;
-        let hourPrice = 0;
-        try {
-            hourPrice = Number(hourPriceAnswer?.value);
-        } catch (error) {
-            setErrorMsg(
-                error instanceof Error
-                    ? error.message
-                    : "Error parsing hour price number"
-            );
-        }
-        let isFortnightly = false;
-        try {
-            isFortnightly = Boolean(isFortnightlyAnswer?.value);
-        } catch (error) {
-            setErrorMsg(
-                error instanceof Error
-                    ? error.message
-                    : "Error if payment is weekly or fortnightly"
-            );
-        }
-        let cycleEnd = new Date();
-        try {
-            cycleEnd = new Date(cycleEndAnswer?.value as Date);
-            // const offsetMinutes = cycleEnd.getTimezoneOffset();
-            // const localTime = new Date(
-            //     cycleEnd.getTime() + offsetMinutes * 60 * 1000
-            // );
-            // cycleEnd = localTime;
-        } catch (error) {
-            setErrorMsg(
-                error instanceof Error
-                    ? error.message
-                    : "Error parsing cycle date"
-            );
-        }
+    function handleJobPositionSelectChange(e: ChangeEvent<HTMLSelectElement>) {
+        const value = e.target.value;
+        if (!value) return;
 
-        if (!positionName || !hourPrice || !cycleEnd) {
-            setErrorMsg("Error on form answers");
-            return;
+        if (value === "create") {
+            setIsCreateMode(true);
+        } else {
+            if (jobPositionList.length <= 0) return;
+            const newJob = jobPositionList.find((job) => job.id === value);
+            if (!newJob) return;
+            setIsCreateMode(false);
+            onSetSelectedPosition(newJob);
         }
+    }
 
-        setLoading(true);
-
-        const newJobPosition: newJobPosition = {
-            name: positionName,
-            hourPrice,
-            isFortnightly,
-            cycleEnd,
-        };
-        const responseDb = await jobService.createJobPosition(newJobPosition);
-        if (!responseDb.ok && responseDb.error) {
-            setErrorMsg(responseDb.error.message);
-            return;
-        }
-
-        if (responseDb.ok && responseDb.content) {
-            const jobPosition: jobPosition = {
-                id: responseDb.content.id,
-                name: positionName,
-                hourPrice,
-                cycleEnd,
-                isFortnightly,
-            };
-            const list: jobPosition[] = JSON.parse(
-                JSON.stringify(jobPositionList)
-            );
-            setJobPositionList([...list, { ...jobPosition }]);
-        }
+    function handleJobPositionListUpdate(
+        updatedJobPosition: jobPosition
+    ): void {
+        const list: jobPosition[] = structuredClone(jobPositionList);
+        setJobPositionList([...list, { ...updatedJobPosition }]);
+        setIsCreateMode(false);
+        onSetSelectedPosition(updatedJobPosition);
     }
 
     useEffect(() => {
         jobService.getJobPositions().then((jobList) => {
-            if (jobList.length > 0) onSetSelectedPosition(jobList[0]);
-            setJobPositionList(jobList);
+            if (jobList.length > 0) {
+                const parsedJobList = jobList.map((job) =>
+                    jobService.parseAsJobPosition(job)
+                );
+                setJobPositionList(parsedJobList);
+                onSetSelectedPosition(parsedJobList[0]);
+            } else {
+                setIsCreateMode(true);
+            }
         });
     }, [onSetSelectedPosition]);
 
@@ -122,53 +70,42 @@ const JobPanel: FunctionComponent<thisProps> = ({
         <div className={styles.jobSection}>
             <div className={styles.headerContainer}>
                 {jobPositionList.length > 0 && (
-                    <select id="cars" defaultValue={selectedPosition?.id}>
+                    <select
+                        id="cars"
+                        defaultValue={
+                            isCreateMode ? "create" : selectedPosition?.id
+                        }
+                        onChange={handleJobPositionSelectChange}
+                        disabled={loading}
+                    >
                         {jobPositionList.map((position) => (
                             <option key={position.id} value={position.id}>
                                 {position.name}
                             </option>
                         ))}
+                        <option value={"create"}>New job position</option>
                     </select>
                 )}
                 <button onClick={() => setIsExpanded((v) => !v)}>
                     {isExpanded ? "Hide" : "Show"}
                 </button>
             </div>
-            {isExpanded && (
-                <div className={styles.formSection}>
-                    <FormManager
-                        inputs={[
-                            {
-                                type: "text",
-                                id: "positionName",
-                                placeholder: "Position name",
-                                isOptional: false,
-                            },
-                            {
-                                type: "number",
-                                id: "hourPrice",
-                                placeholder: "Price per hour",
-                                isOptional: false,
-                            },
-                            {
-                                type: "customDate",
-                                id: "cycleEnd",
-                                placeholder: "Date of you next payslip",
-                                isOptional: false,
-                            },
-                            {
-                                type: "checkbox",
-                                id: "isFortnightly",
-                                label: "Fortnightly payment?",
-                                isOptional: false,
-                            },
-                        ]}
-                        submitCallback={handleSubmit}
-                        submitText={"Create job"}
-                        Loading={Loading}
-                        serverErrorMsg={errorMsg}
-                    />
-                </div>
+            {isExpanded && !isCreateMode && selectedPosition && (
+                <UpdateJobForm
+                    position={selectedPosition}
+                    jobPositionList={jobPositionList}
+                    onEnd={handleJobPositionListUpdate}
+                    loading={loading}
+                    onSetLoading={setLoading}
+                />
+            )}
+            {isExpanded && isCreateMode && (
+                <CreateJobForm
+                    jobPositionList={jobPositionList}
+                    onEnd={handleJobPositionListUpdate}
+                    loading={loading}
+                    onSetLoading={setLoading}
+                />
             )}
         </div>
     );
