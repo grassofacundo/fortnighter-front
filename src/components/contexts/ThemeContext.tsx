@@ -34,7 +34,13 @@ export const ThemeProvider: FunctionComponent<thisProps> = ({ children }) => {
         const root = document.querySelector("#root") as HTMLElement;
         if (!root) return;
 
-        const cssVars = ["bgColor", "mainColor", "textColor", "contrastColor"];
+        const cssVars = [
+            "bgColor",
+            "secondaryColor",
+            "mainColor",
+            "textColor",
+            "contrastColor",
+        ];
         const newTheme = getOppositeTheme();
 
         cssVars.forEach((cssVar) => {

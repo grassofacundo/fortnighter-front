@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./components/App";
-import dbService from "./services/JobService";
 import "./style/_main.scss";
 import authService from "./services/authService";
 

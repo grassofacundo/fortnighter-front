@@ -117,7 +117,7 @@ const Day: FunctionComponent<thisProps> = ({
                             hour: {
                                 type: "number",
                                 id: "start-work-hour",
-                                label: `Hour work started-${shiftLocal.jobPositionId}`,
+                                label: `Hour work started-${getStringDMY(day)}`,
                                 min: 0,
                                 max: 23,
                                 placeholder: "8",
@@ -129,7 +129,7 @@ const Day: FunctionComponent<thisProps> = ({
                             } as inputNumber,
                             minute: {
                                 type: "number",
-                                id: `start-work-minute-${shiftLocal.jobPositionId}`,
+                                id: `start-work-minute-${getStringDMY(day)}`,
                                 label: "Minute work started",
                                 placeholder: "30",
                                 step: "30",
@@ -148,7 +148,7 @@ const Day: FunctionComponent<thisProps> = ({
                             label: "End time",
                             hour: {
                                 type: "number",
-                                id: `end-work-hour-${shiftLocal.jobPositionId}`,
+                                id: `end-work-hour-${getStringDMY(day)}`,
                                 min: 0,
                                 max: 23,
                                 placeholder: "8",
@@ -158,7 +158,7 @@ const Day: FunctionComponent<thisProps> = ({
                             },
                             minute: {
                                 type: "number",
-                                id: `end-work-minute-${shiftLocal.jobPositionId}`,
+                                id: `end-work-minute-${getStringDMY(day)}`,
                                 placeholder: "30",
                                 step: "30",
                                 min: 0,

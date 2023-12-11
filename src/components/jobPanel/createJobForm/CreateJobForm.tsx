@@ -131,7 +131,7 @@ const CreateJobForm: FunctionComponent<thisProps> = ({
                 },
             ]}
             submitCallback={handleSubmit}
-            submitText={"Update job"}
+            submitText={"Create job"}
             Loading={loading}
             serverErrorMsg={errorMsg}
         />

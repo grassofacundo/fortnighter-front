@@ -1,5 +1,12 @@
 //#region Dependency list
-import { useState, FunctionComponent, useEffect, useCallback } from "react";
+import {
+    useState,
+    FunctionComponent,
+    useEffect,
+    useCallback,
+    Dispatch,
+    SetStateAction,
+} from "react";
 import styles from "./Calendar.module.scss";
 import {
     datesAreEqual,
@@ -19,12 +26,14 @@ type thisProps = {
         end: Date | null;
     };
     shiftList: shiftState[];
+    onSetShiftList: Dispatch<SetStateAction<shiftState[]>>;
 };
 
 const Calendar: FunctionComponent<thisProps> = ({
     searchDates,
     jobPositionId,
     shiftList,
+    onSetShiftList,
 }) => {
     const [shiftGrid, setShiftGrid] = useState<shiftGrid[]>([]);
 
@@ -52,7 +61,7 @@ const Calendar: FunctionComponent<thisProps> = ({
     );
 
     function updateShift(updatedShift: shiftState): void {
-        const shiftIndex = shiftGrid.findIndex(
+        const shiftIndex = shiftList.findIndex(
             (shift) =>
                 getDateAsInputValue(shift.date) ===
                 getDateAsInputValue(updatedShift.date)
@@ -60,9 +69,9 @@ const Calendar: FunctionComponent<thisProps> = ({
         if (shiftIndex < 0)
             throw new Error("Shift date is not included on loaded shifts");
 
-        const shiftGridCopy = structuredClone(shiftGrid);
-        shiftGridCopy[shiftIndex].shift = updatedShift;
-        setShiftGrid(shiftGridCopy);
+        const shiftListCopy = structuredClone(shiftList);
+        shiftListCopy[shiftIndex] = updatedShift;
+        onSetShiftList(shiftListCopy);
     }
 
     useEffect(() => {

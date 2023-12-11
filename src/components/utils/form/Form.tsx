@@ -34,7 +34,7 @@ import { password } from "../../../types/form/PasswordTypes";
 import { mail } from "../../../types/form/MailTypes";
 import { radio } from "../../../types/form/RadioTypes";
 import { inputTimeType } from "../../../types/form/TimeType";
-import InputTime from "./blocks/time/time";
+import InputTime from "./blocks/time/Time";
 //#endregion
 
 type thisProps = {

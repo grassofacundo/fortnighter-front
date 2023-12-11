@@ -29,25 +29,33 @@ body {
     //Set dark variables
     --bgColor-dark: #{colors.$bgColor-dark};
     --mainColor-dark: #{colors.$mainColor-dark};
+    --secondaryColor-dark: #{colors.$secondaryColor-dark};
     --textColor-dark: #{colors.$textColor-dark};
+    --borderColor-dark: #{colors.$borderColor-dark};
     --contrastColor-dark: #{colors.$contrastColor-dark};
 
     //Set light variables
     --bgColor-light: #{colors.$bgColor-light};
     --mainColor-light: #{colors.$mainColor-light};
+    --secondaryColor-light: #{colors.$secondaryColor-light};
     --textColor-light: #{colors.$textColor-light};
+    --borderColor-light: #{colors.$borderColor-light};
     --contrastColor-light: #{colors.$contrastColor-light};
     @media (prefers-color-scheme: dark) {
         --bgColor: var(--bgColor-dark);
+        --secondaryColor: var(--secondaryColor-dark);
         --mainColor: var(--mainColor-dark);
         --textColor: var(--textColor-dark);
+        --borderColor: var(--borderColor-dark);
         --contrastColor: var(--contrastColor-dark);
     }
 
     @media (prefers-color-scheme: light) {
         --bgColor: var(--bgColor-light);
+        --secondaryColor: var(--secondaryColor-light);
         --mainColor: var(--mainColor-light);
         --textColor: var(--textColor-light);
+        --borderColor: var(--borderColor-light);
         --contrastColor: var(--contrastColor-light);
     }
 
@@ -76,6 +84,7 @@ button {
 
 input[type="text"],
 input[type="mail"],
+input[type="number"],
 input[type="password"] {
     @extend %normal-input;
 }

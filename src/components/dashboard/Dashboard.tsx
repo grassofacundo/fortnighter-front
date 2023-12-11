@@ -8,6 +8,7 @@ import styles from "./Dashboard.module.scss";
 import DatePicker from "../datePicker/DatePicker";
 import shiftService from "../../services/shiftService";
 import { shiftState } from "../../types/job/Shift";
+import InOutAnim from "../utils/InOutAnim";
 //#endregion
 
 type thisProps = unknown;
@@ -26,18 +27,13 @@ const Dashboard: FunctionComponent<thisProps> = () => {
     const [selectedPosition, setSelectedPosition] =
         useState<jobPosition | null>(null);
     const [searchDates, setSearchDates] = useState<{
-        start: Date | null;
-        end: Date | null;
-    }>({ start: null, end: null });
+        start: Date;
+        end: Date;
+    }>();
     const [shiftList, setShiftList] = useState<shiftState[]>([]);
 
     useEffect(() => {
-        if (
-            searchDates.start === null ||
-            searchDates.end === null ||
-            !selectedPosition
-        )
-            return;
+        if (!searchDates || !selectedPosition) return;
 
         const startDate: Date = searchDates.start;
         const endDate: Date = searchDates.end;
@@ -58,23 +54,28 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                 selectedPosition={selectedPosition}
                 onSetSelectedPosition={setSelectedPosition}
             ></JobPanel>
-
-            <DatePicker onSetSearchDates={setSearchDates}></DatePicker>
-            {selectedPosition && (
-                <div className={styles.calendarContainer}>
-                    {searchDates.start && searchDates.end && (
-                        <Calendar
-                            searchDates={searchDates}
-                            jobPositionId={selectedPosition.id}
-                            shiftList={shiftList}
-                        ></Calendar>
-                    )}
-                    <Summary
-                        shiftList={shiftList}
-                        position={selectedPosition}
-                    />
-                </div>
-            )}
+            <InOutAnim inState={!!selectedPosition}>
+                <DatePicker onSetSearchDates={setSearchDates}></DatePicker>
+                {selectedPosition && (
+                    <div className={styles.calendarContainer}>
+                        {searchDates.start && searchDates.end && (
+                            <Calendar
+                                searchDates={searchDates}
+                                jobPositionId={selectedPosition.id}
+                                shiftList={shiftList}
+                                onSetShiftList={setShiftList}
+                            ></Calendar>
+                        )}
+                        {searchDates && shiftList.length > 0 && (
+                            <Summary
+                                shiftList={shiftList}
+                                position={selectedPosition}
+                                searchDates={searchDates}
+                            />
+                        )}
+                    </div>
+                )}
+            </InOutAnim>
         </div>
     );
 };

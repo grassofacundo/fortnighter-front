@@ -19,8 +19,8 @@ import {
 type thisProps = {
     onSetSearchDates: Dispatch<
         SetStateAction<{
-            start: Date | null;
-            end: Date | null;
+            start: Date;
+            end: Date;
         }>
     >;
 };

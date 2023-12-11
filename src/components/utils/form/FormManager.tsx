@@ -11,6 +11,7 @@ import {
     formCallback,
     inputField,
 } from "../../../types/form/FormTypes";
+import { checkbox } from "../../../types/form/CheckboxTypes";
 
 type thisProps = {
     inputs: inputField[];
@@ -47,7 +48,13 @@ const FormManager: FunctionComponent<thisProps> = ({
     function getDefaultValues(inputs: inputField[]): formAnswersType[] {
         const inputValues: formAnswersType[] = [];
         inputs.forEach((input) => {
-            if (input.defaultValue) {
+            if (input.type === "checkbox") {
+                const checkbox = input as checkbox;
+                inputValues.push({
+                    id: checkbox.id,
+                    value: !!checkbox.checked,
+                });
+            } else if (input.defaultValue) {
                 inputValues.push({
                     id: input.id,
                     value: input.defaultValue,

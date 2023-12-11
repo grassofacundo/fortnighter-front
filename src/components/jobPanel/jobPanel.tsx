@@ -12,6 +12,8 @@ import styles from "./jobPanel.module.scss";
 import { jobPosition } from "../../types/job/Position";
 import CreateJobForm from "./createJobForm/CreateJobForm";
 import UpdateJobForm from "./updateJobForm/UpdateJobForm";
+import InOutAnim from "../utils/InOutAnim";
+import CustomSelect from "../utils/customSelect/CustomSelect";
 //#endregion
 
 type thisProps = {
@@ -24,12 +26,12 @@ const JobPanel: FunctionComponent<thisProps> = ({
     onSetSelectedPosition,
 }) => {
     const [jobPositionList, setJobPositionList] = useState<jobPosition[]>([]);
+    const [initialLoading, setInitialLoading] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(false);
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const [isCreateMode, setIsCreateMode] = useState<boolean>(false);
 
-    function handleJobPositionSelectChange(e: ChangeEvent<HTMLSelectElement>) {
-        const value = e.target.value;
+    function handleJobPositionSelectChange(value: string) {
         if (!value) return;
 
         if (value === "create") {
@@ -47,7 +49,16 @@ const JobPanel: FunctionComponent<thisProps> = ({
         updatedJobPosition: jobPosition
     ): void {
         const list: jobPosition[] = structuredClone(jobPositionList);
-        setJobPositionList([...list, { ...updatedJobPosition }]);
+        const positionIndex = list.findIndex(
+            (l) => l.id === updatedJobPosition.id
+        );
+        if (positionIndex > -1) {
+            list[positionIndex] = updatedJobPosition;
+        } else {
+            list.push(updatedJobPosition);
+        }
+        dispatchEvent(new Event("resetCustomSelect"));
+        setJobPositionList(list);
         setIsCreateMode(false);
         onSetSelectedPosition(updatedJobPosition);
     }
@@ -63,50 +74,59 @@ const JobPanel: FunctionComponent<thisProps> = ({
             } else {
                 setIsCreateMode(true);
             }
+            setInitialLoading(false);
         });
     }, [onSetSelectedPosition]);
 
     return (
         <div className={styles.jobSection}>
-            <div className={styles.headerContainer}>
-                {jobPositionList.length > 0 && (
-                    <select
-                        id="cars"
-                        defaultValue={
-                            isCreateMode ? "create" : selectedPosition?.id
-                        }
-                        onChange={handleJobPositionSelectChange}
-                        disabled={loading}
-                    >
-                        {jobPositionList.map((position) => (
-                            <option key={position.id} value={position.id}>
-                                {position.name}
-                            </option>
-                        ))}
-                        <option value={"create"}>New job position</option>
-                    </select>
+            <InOutAnim inState={!initialLoading}>
+                <div className={styles.headerContainer}>
+                    {jobPositionList.length > 0 && (
+                        <CustomSelect
+                            key={selectedPosition?.id ?? "New job position"}
+                            placeHolder={
+                                selectedPosition?.name && !isCreateMode
+                                    ? selectedPosition.name
+                                    : "New job position"
+                            }
+                            options={[
+                                ...jobPositionList.map((position) => ({
+                                    value: position.id,
+                                    label: position.name,
+                                    selected:
+                                        selectedPosition?.id === position.id,
+                                })),
+                                { value: "create", label: "New job position" },
+                            ]}
+                            onChange={(val) =>
+                                handleJobPositionSelectChange(val)
+                            }
+                        />
+                    )}
+                    <button onClick={() => setIsExpanded((v) => !v)}>
+                        {isExpanded ? "Hide" : "Show"}
+                    </button>
+                </div>
+                {isExpanded && !isCreateMode && selectedPosition && (
+                    <UpdateJobForm
+                        key={selectedPosition.id}
+                        position={selectedPosition}
+                        jobPositionList={jobPositionList}
+                        onEnd={handleJobPositionListUpdate}
+                        loading={loading}
+                        onSetLoading={setLoading}
+                    />
                 )}
-                <button onClick={() => setIsExpanded((v) => !v)}>
-                    {isExpanded ? "Hide" : "Show"}
-                </button>
-            </div>
-            {isExpanded && !isCreateMode && selectedPosition && (
-                <UpdateJobForm
-                    position={selectedPosition}
-                    jobPositionList={jobPositionList}
-                    onEnd={handleJobPositionListUpdate}
-                    loading={loading}
-                    onSetLoading={setLoading}
-                />
-            )}
-            {isExpanded && isCreateMode && (
-                <CreateJobForm
-                    jobPositionList={jobPositionList}
-                    onEnd={handleJobPositionListUpdate}
-                    loading={loading}
-                    onSetLoading={setLoading}
-                />
-            )}
+                {isExpanded && isCreateMode && (
+                    <CreateJobForm
+                        jobPositionList={jobPositionList}
+                        onEnd={handleJobPositionListUpdate}
+                        loading={loading}
+                        onSetLoading={setLoading}
+                    />
+                )}
+            </InOutAnim>
         </div>
     );
 };
