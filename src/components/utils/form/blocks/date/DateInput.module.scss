@@ -1,0 +1,11 @@
+.dateInputBody {
+    .inputWrapper {
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+
+        input {
+            width: 6em;
+        }
+    }
+}
