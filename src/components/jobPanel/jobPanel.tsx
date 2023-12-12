@@ -5,7 +5,6 @@ import {
     Dispatch,
     SetStateAction,
     useEffect,
-    ChangeEvent,
 } from "react";
 import jobService from "../../services/JobService";
 import styles from "./jobPanel.module.scss";
@@ -71,8 +70,10 @@ const JobPanel: FunctionComponent<thisProps> = ({
                 );
                 setJobPositionList(parsedJobList);
                 onSetSelectedPosition(parsedJobList[0]);
+                setIsExpanded(false);
             } else {
                 setIsCreateMode(true);
+                setIsExpanded(true);
             }
             setInitialLoading(false);
         });
