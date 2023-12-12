@@ -21,16 +21,9 @@ const Summary: FunctionComponent<thisProps> = ({
     position,
     searchDates,
 }) => {
-    const [startDate, setStartDate] = useState<string>(getStartDate());
-    const [endDate, setEndDate] = useState<string>(getEndDate());
+    const [startDate, setStartDate] = useState<Date>(searchDates.start);
+    const [endDate, setEndDate] = useState<Date>(searchDates.end);
     const [totalIncome, setTotalIncome] = useState<number>(getTotal());
-    const [summaryDates, setSummaryDates] = useState<{
-        start: Date;
-        end: Date;
-    }>({
-        start: searchDates.start,
-        end: searchDates.end,
-    });
 
     function getStartDate(): string {
         if (!shiftList || shiftList.length <= 0) return "";
@@ -54,6 +47,11 @@ const Summary: FunctionComponent<thisProps> = ({
         return total;
     }
 
+    function handleDateChange(start: Date, end: Date): void {
+        setStartDate(start);
+        setEndDate(end);
+    }
+
     useEffect(() => {
         let total = 0;
         shiftList.forEach(
@@ -67,7 +65,12 @@ const Summary: FunctionComponent<thisProps> = ({
             {startDate && endDate && (
                 <p>{`Total made from ${startDate} to ${endDate}: ${totalIncome}`}</p>
             )}
-            <DatePicker onSetSearchDates={setSummaryDates}></DatePicker>
+            <DatePicker
+                onChange={handleDateChange}
+                initialLapseBetweenDated={15}
+                pastDaysLimit={60}
+                futureDaysLimit={30}
+            ></DatePicker>
         </div>
     );
 };

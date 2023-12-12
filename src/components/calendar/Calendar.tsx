@@ -12,25 +12,24 @@ import {
     datesAreEqual,
     getDateAsInputValue,
     getDaysBetweenDates,
+    getPastDate,
     getPlainDate,
 } from "../../services/dateService";
 import { shiftGrid, shiftState } from "../../types/job/Shift";
-import Day from "./Day";
+import Workday from "./Workday";
 //#endregion
 
 type thisProps = {
-    endDate?: Date;
+    endDate: Date;
+    distanceBetweenDates: number;
     jobPositionId: string;
-    searchDates: {
-        start: Date | null;
-        end: Date | null;
-    };
     shiftList: shiftState[];
     onSetShiftList: Dispatch<SetStateAction<shiftState[]>>;
 };
 
 const Calendar: FunctionComponent<thisProps> = ({
-    searchDates,
+    endDate,
+    distanceBetweenDates,
     jobPositionId,
     shiftList,
     onSetShiftList,
@@ -39,25 +38,28 @@ const Calendar: FunctionComponent<thisProps> = ({
 
     const setDays = useCallback(
         (shifts: shiftState[]): shiftGrid[] => {
-            if (!searchDates.end || !searchDates.start) return [];
+            let localEndDate: Date = structuredClone(endDate);
+            const localStartDate: Date = getPastDate(
+                distanceBetweenDates,
+                localEndDate
+            );
 
-            const endDate: Date = structuredClone(searchDates.end);
-            const startDate: Date = structuredClone(searchDates.start);
-
-            const daysNum = getDaysBetweenDates(startDate, endDate);
+            const daysNum =
+                getDaysBetweenDates(localStartDate, localEndDate) + 1; //Necessary offset apparently.
+            //I think when JS calculates the past date, it starts subtracting from the day before.
+            //meaning there is an implicit +1 there.
             const days: shiftGrid[] = Array(daysNum);
             for (let i = daysNum; i > 0; i--) {
-                const date = new Date(endDate);
                 const index = shifts.findIndex((shift) =>
-                    datesAreEqual(shift.date, getPlainDate(date))
+                    datesAreEqual(shift.date, getPlainDate(localEndDate))
                 );
                 const shift = index > -1 ? shifts[index] : undefined;
-                days[i - 1] = { date, shift };
-                endDate.setDate(endDate.getDate() - 1);
+                days[i - 1] = { date: localEndDate, shift };
+                localEndDate = getPastDate(1, localEndDate);
             }
             return days.reverse();
         },
-        [searchDates]
+        [endDate, distanceBetweenDates]
     );
 
     function updateShift(updatedShift: shiftState): void {
@@ -86,7 +88,7 @@ const Calendar: FunctionComponent<thisProps> = ({
                     const day = shift.date;
                     const thisShift = shift.shift;
                     return (
-                        <Day
+                        <Workday
                             key={i}
                             day={day}
                             shift={thisShift}

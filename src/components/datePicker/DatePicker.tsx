@@ -1,33 +1,34 @@
 //#region Dependency list
-import {
-    FunctionComponent,
-    useState,
-    ChangeEvent,
-    Dispatch,
-    SetStateAction,
-    useEffect,
-} from "react";
-import styles from "./DatePicker.module.scss";
+import { FunctionComponent, useState, ChangeEvent, useEffect } from "react";
 import {
     getDateAsInputValue,
     getFutureDate,
     getPastDate,
     getToday,
 } from "../../services/dateService";
+import styles from "./DatePicker.module.scss";
 //#endregion
 
 type thisProps = {
-    onSetSearchDates: Dispatch<
-        SetStateAction<{
-            start: Date;
-            end: Date;
-        }>
-    >;
+    onChange: (start: Date, end: Date) => void;
+    initialLapseBetweenDated?: number;
+    maxDistanceBetweenDates?: number;
+    pastDaysLimit?: number;
+    futureDaysLimit?: number;
+    endDate?: Date;
 };
 
-const DatePicker: FunctionComponent<thisProps> = ({ onSetSearchDates }) => {
-    const [start, setStart] = useState<Date>(getPastDate(15));
-    const [end, setEnd] = useState<Date>(getToday());
+const DatePicker: FunctionComponent<thisProps> = ({
+    onChange,
+    initialLapseBetweenDated = 0,
+    pastDaysLimit = 0,
+    futureDaysLimit = 0,
+    endDate = getToday(),
+}) => {
+    const [end, setEnd] = useState<Date>(endDate);
+    const [start, setStart] = useState<Date>(
+        getPastDate(initialLapseBetweenDated, endDate)
+    );
     const [startError, setStartError] = useState<string>("");
     const [endError, setEndError] = useState<string>("");
     const [datesAreValid, setDatesAreValid] = useState<boolean>(true);
@@ -35,7 +36,7 @@ const DatePicker: FunctionComponent<thisProps> = ({ onSetSearchDates }) => {
     function handleStartDateChange(dateEvent: ChangeEvent<HTMLInputElement>) {
         const dateValue = `${dateEvent.target.value}T00:00`;
         const date = new Date(dateValue);
-        if (date < getPastDate(60, end)) {
+        if (date < getPastDate(pastDaysLimit, end)) {
             setStartError("Max 2 months into the past");
             setDatesAreValid(false);
             return;
@@ -46,8 +47,10 @@ const DatePicker: FunctionComponent<thisProps> = ({ onSetSearchDates }) => {
     function handleEndDateChange(dateEvent: ChangeEvent<HTMLInputElement>) {
         const dateValue = `${dateEvent.target.value}T00:00`;
         const date = new Date(dateValue);
-        if (date > getFutureDate(30)) {
-            setEndError("Cannot select a date after a month in the future");
+        if (date > getFutureDate(futureDaysLimit)) {
+            setEndError(
+                `Cannot select a date after ${futureDaysLimit} days in the future`
+            );
             setDatesAreValid(false);
             return;
         }
@@ -56,18 +59,14 @@ const DatePicker: FunctionComponent<thisProps> = ({ onSetSearchDates }) => {
 
     useEffect(() => {
         let isValid = true;
-        if (start < getPastDate(60, end)) {
+        if (start < getPastDate(pastDaysLimit, end)) {
             isValid = false;
         }
-        if (end > getFutureDate(30)) {
+        if (end > getFutureDate(futureDaysLimit)) {
             isValid = false;
         }
         setDatesAreValid(isValid);
-    }, [start, end]);
-
-    useEffect(() => {
-        onSetSearchDates({ start, end });
-    }, []);
+    }, [start, end, pastDaysLimit, futureDaysLimit]);
 
     return (
         <div className={styles.dateContainer}>
@@ -91,7 +90,7 @@ const DatePicker: FunctionComponent<thisProps> = ({ onSetSearchDates }) => {
             {endError && <p className={styles.endError}>{endError}</p>}
             <button
                 disabled={!datesAreValid}
-                onClick={() => onSetSearchDates({ start, end })}
+                onClick={() => onChange(start, end)}
             >
                 Search
             </button>

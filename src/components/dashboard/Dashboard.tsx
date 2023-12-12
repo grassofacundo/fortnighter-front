@@ -9,44 +9,43 @@ import DatePicker from "../datePicker/DatePicker";
 import shiftService from "../../services/shiftService";
 import { shiftState } from "../../types/job/Shift";
 import InOutAnim from "../utils/InOutAnim";
+import { getPastDate } from "../../services/dateService";
 //#endregion
 
 type thisProps = unknown;
 
-/*
-TO DO
-Use mongo ID to set jobPosition id
-Allow editing of jobPosition (position name, company name, etc)
-Allow deleting jobPosition
-
------------
-Set all logic related to shifts
-*/
-
 const Dashboard: FunctionComponent<thisProps> = () => {
     const [selectedPosition, setSelectedPosition] =
         useState<jobPosition | null>(null);
-    const [searchDates, setSearchDates] = useState<{
-        start: Date;
-        end: Date;
-    }>();
+    const [endDate, setEndDate] = useState<Date>();
     const [shiftList, setShiftList] = useState<shiftState[]>([]);
 
-    useEffect(() => {
-        if (!searchDates || !selectedPosition) return;
+    function handleDateChange(end: Date) {
+        setEndDate(end);
+    }
 
-        const startDate: Date = searchDates.start;
-        const endDate: Date = searchDates.end;
-        const positionId: string = selectedPosition.id;
+    function getDates(selectedPosition: jobPosition) {
+        const nextPaySplit = selectedPosition.cycleEnd;
+        const end = nextPaySplit ?? new Date();
+        const daysBetweenPayment = selectedPosition.isFortnightly ? 15 : 30;
+        const start = getPastDate(daysBetweenPayment, end);
+        return { start, end };
+    }
+
+    useEffect(() => {
+        if (!selectedPosition) return;
+
+        const { start, end } = getDates(selectedPosition);
         shiftService
-            .getShifts(startDate, endDate, positionId)
+            .getShifts(start, end, selectedPosition.id)
             .then((shiftList) => {
                 const shiftsStates = shiftList.map((shiftBase) =>
                     shiftService.getShiftAsState(shiftBase)
                 );
                 setShiftList(shiftsStates);
+                setEndDate(end);
             });
-    }, [searchDates, selectedPosition]);
+    }, [selectedPosition]);
 
     return (
         <div className={styles.mainBody}>
@@ -54,28 +53,45 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                 selectedPosition={selectedPosition}
                 onSetSelectedPosition={setSelectedPosition}
             ></JobPanel>
-            <InOutAnim inState={!!selectedPosition}>
-                <DatePicker onSetSearchDates={setSearchDates}></DatePicker>
-                {selectedPosition && (
+            {selectedPosition && endDate && (
+                <InOutAnim inState={!!(selectedPosition && endDate)}>
+                    <DatePicker
+                        onChange={handleDateChange}
+                        endDate={selectedPosition.cycleEnd}
+                        initialLapseBetweenDated={
+                            selectedPosition.isFortnightly ? 15 : 30
+                        }
+                        pastDaysLimit={60}
+                        futureDaysLimit={30}
+                    ></DatePicker>
                     <div className={styles.calendarContainer}>
-                        {searchDates.start && searchDates.end && (
-                            <Calendar
-                                searchDates={searchDates}
-                                jobPositionId={selectedPosition.id}
-                                shiftList={shiftList}
-                                onSetShiftList={setShiftList}
-                            ></Calendar>
-                        )}
-                        {searchDates && shiftList.length > 0 && (
+                        <Calendar
+                            endDate={endDate}
+                            distanceBetweenDates={
+                                selectedPosition.isFortnightly ? 15 : 30
+                            }
+                            jobPositionId={selectedPosition.id}
+                            shiftList={shiftList}
+                            onSetShiftList={setShiftList}
+                        ></Calendar>
+                        {shiftList.length > 0 && (
                             <Summary
                                 shiftList={shiftList}
                                 position={selectedPosition}
-                                searchDates={searchDates}
+                                searchDates={{
+                                    start: getPastDate(
+                                        selectedPosition.isFortnightly
+                                            ? 15
+                                            : 30,
+                                        endDate
+                                    ),
+                                    end: endDate,
+                                }}
                             />
                         )}
                     </div>
-                )}
-            </InOutAnim>
+                </InOutAnim>
+            )}
         </div>
     );
 };
