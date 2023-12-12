@@ -1,3 +1,7 @@
+export function setDateFromInput(targetValue: string): Date {
+    return new Date(`${targetValue}T00:00`);
+}
+
 export function getToday(): Date {
     const date = new Date();
     date.setHours(0);
