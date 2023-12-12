@@ -15,6 +15,7 @@ import { checkbox } from "../../../types/form/CheckboxTypes";
 
 type thisProps = {
     inputs: inputField[];
+    updateAnswers?: (answers: formAnswersType[]) => void;
     submitCallback: formCallback;
     Loading?: boolean;
     submitText?: string;
@@ -23,6 +24,7 @@ type thisProps = {
 
 const FormManager: FunctionComponent<thisProps> = ({
     inputs,
+    updateAnswers,
     submitCallback,
     Loading,
     submitText,
@@ -133,7 +135,7 @@ const FormManager: FunctionComponent<thisProps> = ({
 
         switch (action.type) {
             case "added": {
-                return [
+                const addedAnswers = [
                     ...sanitizedAnswers,
                     {
                         id: action.id,
@@ -141,9 +143,11 @@ const FormManager: FunctionComponent<thisProps> = ({
                         error: action.error,
                     },
                 ];
+                if (updateAnswers) updateAnswers(addedAnswers);
+                return addedAnswers;
             }
             case "changed": {
-                return sanitizedAnswers.map((f) => {
+                const changedAnswers = sanitizedAnswers.map((f) => {
                     if (f.id === action.id) {
                         return {
                             id: action.id,
@@ -154,9 +158,15 @@ const FormManager: FunctionComponent<thisProps> = ({
                         return f;
                     }
                 });
+                if (updateAnswers) updateAnswers(changedAnswers);
+                return changedAnswers;
             }
             case "deleted": {
-                return sanitizedAnswers.filter((f) => f.id !== action.id);
+                const deletedAnswers = sanitizedAnswers.filter(
+                    (f) => f.id !== action.id
+                );
+                if (updateAnswers) updateAnswers(deletedAnswers);
+                return deletedAnswers;
             }
             default: {
                 throw Error("Unknown action: " + action.type);
