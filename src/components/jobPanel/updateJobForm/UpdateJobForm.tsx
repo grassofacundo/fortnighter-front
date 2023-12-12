@@ -1,10 +1,16 @@
 //#region Dependency list
 import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
 import FormManager from "../../utils/form/FormManager";
-import { baseJobPosition, jobPosition } from "../../../types/job/Position";
-import { getDateAsInputValue } from "../../../services/dateService";
+import { jobPosition } from "../../../types/job/Position";
+import {
+    getDateAsInputValue,
+    getDaysBetweenDates,
+    getPastDate,
+    setDateFromInput,
+} from "../../../services/dateService";
 import { formAnswersType } from "../../../types/form/FormTypes";
 import jobService from "../../../services/JobService";
+import { dateInput } from "../../../types/form/DateInputTypes";
 //#endregion
 
 type thisProps = {
@@ -22,6 +28,20 @@ const UpdateJobForm: FunctionComponent<thisProps> = ({
     onSetLoading,
 }) => {
     const [errorMsg, setErrorMsg] = useState<string>("");
+    const [cycleStart, setCycleStart] = useState<string>("");
+    const [cycleEnd, setCycleEnd] = useState<string>("");
+
+    function handleUpdateAnswers(answers: formAnswersType[]): void {
+        const cycleEndAnswer = answers
+            .filter((answer) => answer.id === "cycleEnd")
+            .at(0);
+        if (cycleEndAnswer?.value) setCycleEnd(cycleEndAnswer.value as string);
+        const cycleStartAnswer = answers
+            .filter((answer) => answer.id === "cycleStart")
+            .at(0);
+        if (cycleStartAnswer?.value)
+            setCycleStart(cycleStartAnswer.value as string);
+    }
 
     async function handleSubmit(answers: formAnswersType[]): Promise<void> {
         const positionNameAnswer = answers
@@ -103,42 +123,62 @@ const UpdateJobForm: FunctionComponent<thisProps> = ({
     }
 
     return (
-        <FormManager
-            inputs={[
-                {
-                    type: "text",
-                    id: "positionName",
-                    placeholder: "Position name",
-                    isOptional: false,
-                    defaultValue: position.name,
-                },
-                {
-                    type: "number",
-                    id: "hourPrice",
-                    placeholder: "Price per hour",
-                    isOptional: false,
-                    defaultValue: position?.hourPrice.toString(),
-                },
-                {
-                    type: "customDate",
-                    id: "cycleEnd",
-                    placeholder: "Date of you next payslip",
-                    isOptional: false,
-                    defaultValue: getDateAsInputValue(position.cycleEnd),
-                },
-                {
-                    type: "checkbox",
-                    id: "isFortnightly",
-                    label: "Fortnightly payment?",
-                    isOptional: false,
-                    checked: position?.isFortnightly,
-                },
-            ]}
-            submitCallback={handleSubmit}
-            submitText={"Update job"}
-            Loading={loading}
-            serverErrorMsg={errorMsg}
-        />
+        <div>
+            <FormManager
+                inputs={[
+                    {
+                        type: "text",
+                        id: "positionName",
+                        placeholder: "Position name",
+                        defaultValue: position.name,
+                    },
+                    {
+                        type: "number",
+                        id: "hourPrice",
+                        placeholder: "Price per hour",
+                        defaultValue: position?.hourPrice.toString(),
+                    },
+                    {
+                        type: "checkbox",
+                        id: "isFortnightly",
+                        label: "Fortnightly payment?",
+                        checked: position?.isFortnightly,
+                    },
+                    {
+                        type: "customDate",
+                        id: "cycleStart",
+                        label: "Date of your last payslip",
+                        yearMin: "2023",
+                        yearMax: "2024",
+                        defaultValue: getDateAsInputValue(
+                            getPastDate(
+                                position.isFortnightly ? 15 : 30,
+                                position.cycleEnd
+                            )
+                        ),
+                    } as dateInput,
+                    {
+                        type: "customDate",
+                        id: "cycleEnd",
+                        label: "Date of your next payslip",
+                        yearMin: "2023",
+                        yearMax: "2024",
+                        defaultValue: getDateAsInputValue(position.cycleEnd),
+                    },
+                ]}
+                submitCallback={handleSubmit}
+                updateAnswers={handleUpdateAnswers}
+                submitText={"Update job"}
+                Loading={loading}
+                serverErrorMsg={errorMsg}
+            />
+            {cycleStart && cycleEnd && (
+                <p>{`Getting paid every ${getDaysBetweenDates(
+                    setDateFromInput(cycleStart),
+                    setDateFromInput(cycleEnd)
+                )} days?`}</p>
+            )}
+        </div>
     );
 };
 

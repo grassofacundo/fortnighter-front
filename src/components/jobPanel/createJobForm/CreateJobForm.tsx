@@ -4,6 +4,7 @@ import FormManager from "../../utils/form/FormManager";
 import { baseJobPosition, jobPosition } from "../../../types/job/Position";
 import { formAnswersType } from "../../../types/form/FormTypes";
 import jobService from "../../../services/JobService";
+import { setDateFromInput } from "../../../services/dateService";
 //#endregion
 
 type thisProps = {
@@ -54,14 +55,12 @@ const CreateJobForm: FunctionComponent<thisProps> = ({
                     : "Error if payment is weekly or fortnightly"
             );
         }
-        let cycleEnd = new Date();
+        let cycleEnd;
         try {
-            cycleEnd = new Date(cycleEndAnswer?.value as Date);
-            // const offsetMinutes = cycleEnd.getTimezoneOffset();
-            // const localTime = new Date(
-            //     cycleEnd.getTime() + offsetMinutes * 60 * 1000
-            // );
-            // cycleEnd = localTime;
+            if (!cycleEndAnswer?.value)
+                throw new Error("Error parsing cycle date");
+
+            cycleEnd = setDateFromInput(cycleEndAnswer.value as string);
         } catch (error) {
             setErrorMsg(
                 error instanceof Error
@@ -120,7 +119,7 @@ const CreateJobForm: FunctionComponent<thisProps> = ({
                 {
                     type: "customDate",
                     id: "cycleEnd",
-                    placeholder: "Date of you next payslip",
+                    label: "Date of you next payslip",
                     isOptional: false,
                 },
                 {
