@@ -25,9 +25,9 @@ const Dashboard: FunctionComponent<thisProps> = () => {
     }
 
     function getDates(selectedPosition: jobPosition) {
-        const nextPaySplit = selectedPosition.cycleEnd;
+        const nextPaySplit = selectedPosition.nextPaymentDate;
         const end = nextPaySplit ?? new Date();
-        const daysBetweenPayment = selectedPosition.isFortnightly ? 15 : 30;
+        const daysBetweenPayment = selectedPosition.paymentLapse;
         const start = getPastDate(daysBetweenPayment, end);
         return { start, end };
     }
@@ -57,19 +57,15 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                 <InOutAnim inState={!!(selectedPosition && endDate)}>
                     <DatePicker
                         onChange={handleDateChange}
-                        endDate={selectedPosition.cycleEnd}
-                        initialLapseBetweenDated={
-                            selectedPosition.isFortnightly ? 15 : 30
-                        }
+                        endDate={selectedPosition.nextPaymentDate}
+                        initialLapseBetweenDated={selectedPosition.paymentLapse}
                         pastDaysLimit={60}
                         futureDaysLimit={30}
                     ></DatePicker>
                     <div className={styles.calendarContainer}>
                         <Calendar
                             endDate={endDate}
-                            distanceBetweenDates={
-                                selectedPosition.isFortnightly ? 15 : 30
-                            }
+                            distanceBetweenDates={selectedPosition.paymentLapse}
                             jobPositionId={selectedPosition.id}
                             shiftList={shiftList}
                             onSetShiftList={setShiftList}
@@ -80,9 +76,7 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                                 position={selectedPosition}
                                 searchDates={{
                                     start: getPastDate(
-                                        selectedPosition.isFortnightly
-                                            ? 15
-                                            : 30,
+                                        selectedPosition.paymentLapse,
                                         endDate
                                     ),
                                     end: endDate,

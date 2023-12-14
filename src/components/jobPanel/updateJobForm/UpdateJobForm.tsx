@@ -1,5 +1,11 @@
 //#region Dependency list
-import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
+import {
+    FunctionComponent,
+    useState,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+} from "react";
 import FormManager from "../../utils/form/FormManager";
 import { jobPosition } from "../../../types/job/Position";
 import {
@@ -28,8 +34,14 @@ const UpdateJobForm: FunctionComponent<thisProps> = ({
     onSetLoading,
 }) => {
     const [errorMsg, setErrorMsg] = useState<string>("");
-    const [cycleStart, setCycleStart] = useState<string>("");
-    const [cycleEnd, setCycleEnd] = useState<string>("");
+    const [cycleStart, setCycleStart] = useState<string>(
+        getDateAsInputValue(
+            getPastDate(position.paymentLapse, position.nextPaymentDate)
+        )
+    );
+    const [cycleEnd, setCycleEnd] = useState<string>(
+        getDateAsInputValue(position.nextPaymentDate)
+    );
 
     function handleUpdateAnswers(answers: formAnswersType[]): void {
         const cycleEndAnswer = answers
@@ -122,6 +134,28 @@ const UpdateJobForm: FunctionComponent<thisProps> = ({
         }
     }
 
+    useEffect(() => {
+        const end = position.nextPaymentDate;
+        const start = getPastDate(position.paymentLapse, end);
+        jobService
+            .getLastPayment(start, end, position.id)
+            .then((paymentRes) => {
+                console.log(paymentRes);
+                // if (jobList.length > 0) {
+                //     const parsedJobList = jobList.map((job) =>
+                //         jobService.parseAsJobPosition(job)
+                //     );
+                //     setJobPositionList(parsedJobList);
+                //     onSetSelectedPosition(parsedJobList[0]);
+                //     setIsExpanded(false);
+                // } else {
+                //     setIsCreateMode(true);
+                //     setIsExpanded(true);
+                // }
+                // setInitialLoading(false);
+            });
+    }, []);
+
     return (
         <div>
             <FormManager
@@ -134,15 +168,9 @@ const UpdateJobForm: FunctionComponent<thisProps> = ({
                     },
                     {
                         type: "number",
+                        label: "Price per hour",
                         id: "hourPrice",
-                        placeholder: "Price per hour",
                         defaultValue: position?.hourPrice.toString(),
-                    },
-                    {
-                        type: "checkbox",
-                        id: "isFortnightly",
-                        label: "Fortnightly payment?",
-                        checked: position?.isFortnightly,
                     },
                     {
                         type: "customDate",

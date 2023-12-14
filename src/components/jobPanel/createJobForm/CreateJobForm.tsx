@@ -2,11 +2,25 @@
 import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
 import FormManager from "../../utils/form/FormManager";
 import { baseJobPosition, jobPosition } from "../../../types/job/Position";
-import { formAnswersType } from "../../../types/form/FormTypes";
+import { parsedAnswers } from "../../../types/form/FormTypes";
 import jobService from "../../../services/JobService";
-import { setDateFromInput } from "../../../services/dateService";
+import {
+    getDateAsInputValue,
+    getDaysBetweenDates,
+    getPastDate,
+    getToday,
+    setDateFromInput,
+} from "../../../services/dateService";
+import { dateInput } from "../../../types/form/DateInputTypes";
+import { paymentBase } from "../../../types/job/Payment";
 //#endregion
 
+type answerData = {
+    positionName: string;
+    hourPrice: number;
+    cycleEnd: Date;
+    cycleStart: Date;
+};
 type thisProps = {
     jobPositionList: jobPosition[];
     onEnd(updatedJobPosition: jobPosition): void;
@@ -20,120 +34,127 @@ const CreateJobForm: FunctionComponent<thisProps> = ({
     onSetLoading,
 }) => {
     const [errorMsg, setErrorMsg] = useState<string>("");
+    const [cycleEnd, setCycleEnd] = useState<string>(getEndDate());
+    const [cycleStart, setCycleStart] = useState<string>(getStartDate());
 
-    async function handleSubmit(answers: formAnswersType[]): Promise<void> {
-        const positionNameAnswer = answers
-            .filter((answer) => answer.id === "positionName")
-            .at(0);
-        const hourPriceAnswer = answers
-            .filter((answer) => answer.id === "hourPrice")
-            .at(0);
-        const isFortnightlyAnswer = answers
-            .filter((answer) => answer.id === "isFortnightly")
-            .at(0);
-        const cycleEndAnswer = answers
-            .filter((answer) => answer.id === "cycleEnd")
-            .at(0);
-        const positionName = positionNameAnswer?.value as string;
-        let hourPrice = 0;
+    function getEndDate() {
+        return getDateAsInputValue(getToday());
+    }
+
+    function getStartDate() {
+        return getDateAsInputValue(getPastDate(15, getToday()));
+    }
+
+    function handleUpdateAnswers(answers: parsedAnswers): void {
+        if (answers.cycleEnd) setCycleEnd(answers.cycleEnd as string);
+        if (answers.cycleStart) setCycleStart(answers.cycleStart as string);
+    }
+
+    async function handleSubmit(answers: parsedAnswers): Promise<void> {
+        let data: answerData | undefined = undefined;
         try {
-            hourPrice = Number(hourPriceAnswer?.value);
+            const positionName = answers.positionName as string;
+            const hourPrice = Number(answers.hourPrice);
+            const cycleEndInput = setDateFromInput(answers.cycleEnd as string);
+            const cycleStartInput = setDateFromInput(
+                answers.cycleStart as string
+            );
+
+            data = {
+                positionName,
+                hourPrice,
+                cycleEnd: cycleEndInput,
+                cycleStart: cycleStartInput,
+            };
         } catch (error) {
             setErrorMsg(
                 error instanceof Error
                     ? error.message
-                    : "Error parsing hour price number"
-            );
-        }
-        let isFortnightly = false;
-        try {
-            isFortnightly = Boolean(isFortnightlyAnswer?.value);
-        } catch (error) {
-            setErrorMsg(
-                error instanceof Error
-                    ? error.message
-                    : "Error if payment is weekly or fortnightly"
-            );
-        }
-        let cycleEnd;
-        try {
-            if (!cycleEndAnswer?.value)
-                throw new Error("Error parsing cycle date");
-
-            cycleEnd = setDateFromInput(cycleEndAnswer.value as string);
-        } catch (error) {
-            setErrorMsg(
-                error instanceof Error
-                    ? error.message
-                    : "Error parsing cycle date"
+                    : "Error parsing input values"
             );
         }
 
-        if (!positionName || !hourPrice || !cycleEnd) {
+        if (!data || !data.positionName || !data.hourPrice || !data.cycleEnd) {
             setErrorMsg("Error on form answers");
             return;
         }
 
         onSetLoading(true);
 
-        const newJobPosition: baseJobPosition<Date> = {
-            name: positionName,
-            hourPrice,
-            isFortnightly,
-            cycleEnd,
+        const daysDiff = getDaysBetweenDates(data.cycleStart, data.cycleEnd);
+        const newJob: baseJobPosition<Date> = {
+            name: data.positionName,
+            hourPrice: data.hourPrice,
+            paymentLapse: daysDiff,
+            nextPaymentDate: data.cycleEnd,
         };
-        const responseDb = await jobService.createJobPosition(newJobPosition);
-        if (!responseDb.ok && responseDb.error) {
-            setErrorMsg(responseDb.error.message);
+        const jobRes = await jobService.createJobPosition(newJob);
+        if (!jobRes.ok && jobRes.error) {
+            setErrorMsg(jobRes.error.message);
             onSetLoading(false);
             return;
         }
 
-        if (responseDb.ok && responseDb.content) {
+        if (jobRes.ok && jobRes.content) {
             onEnd({
-                id: responseDb.content.id,
-                name: positionName,
-                hourPrice,
-                cycleEnd,
-                isFortnightly,
+                id: jobRes.content.id,
+                name: data.positionName,
+                hourPrice: data.hourPrice,
+                paymentLapse: daysDiff,
+                nextPaymentDate: data.cycleEnd,
             } as jobPosition);
             onSetLoading(false);
         }
     }
 
     return (
-        <FormManager
-            inputs={[
-                {
-                    type: "text",
-                    id: "positionName",
-                    placeholder: "Position name",
-                    isOptional: false,
-                },
-                {
-                    type: "number",
-                    id: "hourPrice",
-                    placeholder: "Price per hour",
-                    isOptional: false,
-                },
-                {
-                    type: "customDate",
-                    id: "cycleEnd",
-                    label: "Date of you next payslip",
-                    isOptional: false,
-                },
-                {
-                    type: "checkbox",
-                    id: "isFortnightly",
-                    label: "Fortnightly payment?",
-                    isOptional: false,
-                },
-            ]}
-            submitCallback={handleSubmit}
-            submitText={"Create job"}
-            Loading={loading}
-            serverErrorMsg={errorMsg}
-        />
+        <div>
+            <FormManager
+                inputs={[
+                    {
+                        type: "text",
+                        id: "positionName",
+                        placeholder: "Your job",
+                        label: "Position name",
+                        isOptional: false,
+                    },
+                    {
+                        type: "number",
+                        id: "hourPrice",
+                        placeholder: "00",
+                        label: "Price per hour",
+                        isOptional: false,
+                    },
+                    {
+                        type: "customDate",
+                        id: "cycleStart",
+                        label: "Payslip date start",
+                        yearMin: "2023",
+                        yearMax: "2024",
+                        defaultValue: cycleStart,
+                    } as dateInput,
+                    {
+                        type: "customDate",
+                        id: "cycleEnd",
+                        label: "Payment date",
+                        yearMin: "2023",
+                        yearMax: "2024",
+                        defaultValue: cycleEnd,
+                    },
+                ]}
+                submitCallback={handleSubmit}
+                updateAnswers={handleUpdateAnswers}
+                submitText={"Create job"}
+                Loading={loading}
+                serverErrorMsg={errorMsg}
+            />
+            {cycleStart && cycleEnd && (
+                <p>{`Do you get paid every ${getDaysBetweenDates(
+                    setDateFromInput(cycleStart),
+                    setDateFromInput(cycleEnd)
+                )} days?`}</p>
+            )}
+        </div>
     );
 };
 
