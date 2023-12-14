@@ -116,7 +116,7 @@ const Workday: FunctionComponent<thisProps> = ({
                             label: "Start time",
                             hour: {
                                 type: "number",
-                                id: "start-work-hour",
+                                id: `start-work-hour-${getStringDMY(day)}`,
                                 label: `Hour work started-${getStringDMY(day)}`,
                                 min: 0,
                                 max: 23,
