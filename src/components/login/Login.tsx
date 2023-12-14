@@ -2,6 +2,7 @@ import { FunctionComponent, useContext, useState } from "react";
 import FormManager from "../utils/form/FormManager";
 import AuthContext from "../contexts/AuthContext";
 import styles from "./Login.module.scss";
+import { parsedAnswers } from "../../types/form/FormTypes";
 
 const Login: FunctionComponent = () => {
     const authContext = useContext(AuthContext);
@@ -14,24 +15,18 @@ const Login: FunctionComponent = () => {
         setErrorMsg("");
     }
 
-    async function handleSubmit(answers: formAnswersType[]): Promise<void> {
+    async function handleSubmit(answers: parsedAnswers): Promise<void> {
         if (!authContext) {
             setErrorMsg("Can't get auth information");
             return;
         }
-        const emailAnswer = answers
-            .filter((answer) => answer.id === "email")
-            .at(0);
-        const passwordAnswer = answers
-            .filter((answer) => answer.id === "password")
-            .at(0);
-        const email = emailAnswer?.value as string;
-        const password = passwordAnswer?.value as string;
 
-        if (!email || !password) {
+        if (!answers.email || !answers.password) {
             setErrorMsg("Error on form answers");
             return;
         }
+        const email = answers.email as string;
+        const password = answers.password as string;
 
         if (!hasAccount) {
             setLoading(true);
