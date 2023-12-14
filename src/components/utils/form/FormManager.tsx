@@ -4,19 +4,25 @@
 //TO-DO make some general styles
 //TO-DO Implement mobile support
 
-import { FunctionComponent, useEffect, useReducer, useState } from "react";
+import {
+    FunctionComponent,
+    useCallback,
+    useEffect,
+    useReducer,
+    useState,
+} from "react";
 import Form from "./Form";
 import {
     formAnswersType,
-    formCallback,
     inputField,
+    parsedAnswers,
 } from "../../../types/form/FormTypes";
 import { checkbox } from "../../../types/form/CheckboxTypes";
 
 type thisProps = {
     inputs: inputField[];
-    updateAnswers?: (answers: formAnswersType[]) => void;
-    submitCallback: formCallback;
+    updateAnswers?: (answers: parsedAnswers) => void;
+    submitCallback: (answers: parsedAnswers) => Promise<void>;
     Loading?: boolean;
     submitText?: string;
     serverErrorMsg?: string;
@@ -35,17 +41,6 @@ const FormManager: FunctionComponent<thisProps> = ({
         getDefaultValues(inputs)
     );
     const [serverError, setServerError] = useState<string>("");
-
-    useEffect(() => {
-        if (!Loading && serverErrorMsg) setServerError(serverErrorMsg);
-        if (!serverErrorMsg) setServerError("");
-    }, [Loading, serverErrorMsg]);
-
-    useEffect(() => {
-        inputs.forEach((input) => {
-            input.isOptional = input.type === "checkbox" || input.isOptional;
-        });
-    }, [inputs]);
 
     function getDefaultValues(inputs: inputField[]): formAnswersType[] {
         const inputValues: formAnswersType[] = [];
@@ -66,6 +61,20 @@ const FormManager: FunctionComponent<thisProps> = ({
         return inputValues;
     }
 
+    const getParsedAnswers = useCallback((): parsedAnswers => {
+        const parsedAnswers: parsedAnswers = {};
+        formAnswers.forEach(
+            (answer) => (parsedAnswers[answer.id] = answer.value)
+        );
+        return parsedAnswers;
+    }, [formAnswers]);
+
+    function handleCallback() {
+        const parsedAnswers = getParsedAnswers();
+        submitCallback(parsedAnswers);
+    }
+
+    //#region Reducer methods
     function updateAnswer(answer: formAnswersType): void {
         if (answer.value == null || answer.value === "") {
             handleDeleteAnswer(answer.id);
@@ -143,7 +152,6 @@ const FormManager: FunctionComponent<thisProps> = ({
                         error: action.error,
                     },
                 ];
-                if (updateAnswers) updateAnswers(addedAnswers);
                 return addedAnswers;
             }
             case "changed": {
@@ -158,14 +166,12 @@ const FormManager: FunctionComponent<thisProps> = ({
                         return f;
                     }
                 });
-                if (updateAnswers) updateAnswers(changedAnswers);
                 return changedAnswers;
             }
             case "deleted": {
                 const deletedAnswers = sanitizedAnswers.filter(
                     (f) => f.id !== action.id
                 );
-                if (updateAnswers) updateAnswers(deletedAnswers);
                 return deletedAnswers;
             }
             default: {
@@ -173,11 +179,28 @@ const FormManager: FunctionComponent<thisProps> = ({
             }
         }
     }
+    //#endregion
+
+    useEffect(() => {
+        if (!Loading && serverErrorMsg) setServerError(serverErrorMsg);
+        if (!serverErrorMsg) setServerError("");
+    }, [Loading, serverErrorMsg]);
+
+    useEffect(() => {
+        inputs.forEach((input) => {
+            input.isOptional = input.type === "checkbox" || input.isOptional;
+        });
+    }, [inputs]);
+
+    useEffect(() => {
+        if (updateAnswers) updateAnswers(getParsedAnswers());
+    }, [updateAnswers, getParsedAnswers]);
+
     return (
         <div>
             <Form
                 inputs={inputs}
-                submitCallback={submitCallback}
+                submitCallback={handleCallback}
                 Loading={Loading}
                 updateAnswer={updateAnswer}
                 formAnswers={formAnswers}

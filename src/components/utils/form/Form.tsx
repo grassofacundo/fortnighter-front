@@ -24,8 +24,8 @@ import { checkbox } from "../../../types/form/CheckboxTypes";
 import {
     error,
     formAnswersType,
-    formCallback,
     inputField,
+    parsedAnswers,
 } from "../../../types/form/FormTypes";
 import { text } from "../../../types/form/TextTypes";
 import { dateInput } from "../../../types/form/DateInputTypes";
@@ -39,7 +39,7 @@ import InputTime from "./blocks/time/Time";
 
 type thisProps = {
     inputs: inputField[];
-    submitCallback: formCallback;
+    submitCallback: () => void;
     Loading?: boolean;
     updateAnswer: (answer: formAnswersType) => void;
     formAnswers: formAnswersType[];
@@ -155,7 +155,7 @@ const Form: FunctionComponent<thisProps> = ({
             return;
         }
 
-        submitCallback(formAnswers);
+        submitCallback();
     }
 
     //Adjust error pop up position
