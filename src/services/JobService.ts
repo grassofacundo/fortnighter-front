@@ -1,10 +1,12 @@
 //#region Dependency list
 import { eventReturn } from "../types/database/databaseTypes";
+import { payment, paymentBase } from "../types/job/Payment";
 import {
     baseJobPosition,
     dbJobPosition,
     jobPosition,
 } from "../types/job/Position";
+import { getDateAsInputValue } from "./dateService";
 import FetchService from "./fetchService";
 //#endregion
 
@@ -73,7 +75,51 @@ class JobService {
     }
 
     parseAsJobPosition(dbJobPosition: dbJobPosition): jobPosition {
-        return { ...dbJobPosition, cycleEnd: new Date(dbJobPosition.cycleEnd) };
+        return {
+            ...dbJobPosition,
+            nextPaymentDate: new Date(dbJobPosition.nextPaymentDate),
+        };
+    }
+
+    /**
+     * Create a new payment in the database
+     *
+     * @param newPayment - An object following the paymentBase interface structure
+     * @returns An eventReturn return object. If ok, the content will be a payment object.
+     */
+    async createNewPayment(
+        newPayment: paymentBase
+    ): Promise<eventReturn<payment>> {
+        const url = `${this.url}/payment/create`;
+        const method = "PUT";
+        const body = { ...newPayment };
+        const response = await FetchService.fetchPost<payment>({
+            url,
+            method,
+            body,
+        });
+        return response;
+    }
+
+    async getLastPayment(
+        startDate: Date,
+        endDate: Date,
+        jobId: string
+    ): Promise<payment[]> {
+        const start: string = getDateAsInputValue(startDate);
+        const end: string = getDateAsInputValue(endDate);
+        const params = `?startDate=${start}&endDate=${end}&jobId=${jobId}`;
+        const url = `${this.url}/payment/get-last/${params}`;
+        const response = await FetchService.fetchGet<payment[]>(url);
+        if (
+            FetchService.isOk(response) &&
+            response.content &&
+            response.content.length > 0
+        ) {
+            return response.content;
+        } else {
+            return [];
+        }
     }
 }
 

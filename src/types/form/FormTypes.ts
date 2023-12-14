@@ -47,6 +47,11 @@ export type formAnswersType = {
     value: inputValues;
     error?: string;
 };
+
+export type parsedAnswers = {
+    [answerId: string]: inputValues;
+};
+
 export type action = {
     type: "added" | "changed" | "deleted";
     id: string;
@@ -63,5 +68,3 @@ export interface inputProp {
     formAnswers: formAnswersType[];
     onUpdateAnswer: (answer: formAnswersType) => void;
 }
-
-export type formCallback = (answers: formAnswersType[]) => Promise<void>;
