@@ -19,10 +19,10 @@ const Checkbox: FunctionComponent<thisProps> = ({ fields, onUpdateAnswer }) => {
         onUpdateAnswer({ id: target.id, value: target.checked });
     }
 
-    //Default value to false to avoid having unanswered questions
-    useEffect(() => {
-        onUpdateAnswer({ id: id, value: false });
-    }, []);
+    // //Default value to false to avoid having unanswered questions
+    // useEffect(() => {
+    //     onUpdateAnswer({ id: id, value: false });
+    // }, []);
 
     return (
         <div className={styles.checkboxContainer}>
