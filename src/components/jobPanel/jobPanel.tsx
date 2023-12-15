@@ -7,12 +7,12 @@ import {
     useEffect,
 } from "react";
 import jobService from "../../services/JobService";
-import styles from "./jobPanel.module.scss";
 import { jobPosition } from "../../types/job/Position";
 import CreateJobForm from "./createJobForm/CreateJobForm";
 import UpdateJobForm from "./updateJobForm/UpdateJobForm";
 import InOutAnim from "../utils/InOutAnim";
 import CustomSelect from "../utils/customSelect/CustomSelect";
+import styles from "./jobPanel.module.scss";
 //#endregion
 
 type thisProps = {
@@ -80,54 +80,69 @@ const JobPanel: FunctionComponent<thisProps> = ({
     }, [onSetSelectedPosition]);
 
     return (
-        <div className={styles.jobSection}>
-            <InOutAnim inState={!initialLoading}>
-                <div className={styles.headerContainer}>
-                    {jobPositionList.length > 0 && (
-                        <CustomSelect
-                            key={selectedPosition?.id ?? "New job position"}
-                            placeHolder={
-                                selectedPosition?.name && !isCreateMode
-                                    ? selectedPosition.name
-                                    : "New job position"
-                            }
-                            options={[
-                                ...jobPositionList.map((position) => ({
-                                    value: position.id,
-                                    label: position.name,
-                                    selected:
-                                        selectedPosition?.id === position.id,
-                                })),
-                                { value: "create", label: "New job position" },
-                            ]}
-                            onChange={(val) =>
-                                handleJobPositionSelectChange(val)
-                            }
-                        />
-                    )}
-                    <button onClick={() => setIsExpanded((v) => !v)}>
-                        {isExpanded ? "Hide" : "Show"}
-                    </button>
-                </div>
-                {isExpanded && !isCreateMode && selectedPosition && (
-                    <UpdateJobForm
-                        key={selectedPosition.id}
-                        position={selectedPosition}
-                        jobPositionList={jobPositionList}
-                        onEnd={handleJobPositionListUpdate}
-                        loading={loading}
-                        onSetLoading={setLoading}
-                    />
-                )}
-                {isExpanded && isCreateMode && (
-                    <CreateJobForm
-                        jobPositionList={jobPositionList}
-                        onEnd={handleJobPositionListUpdate}
-                        loading={loading}
-                        onSetLoading={setLoading}
-                    />
-                )}
-            </InOutAnim>
+        <div
+            className={`${styles.jobSection} ${
+                isExpanded ? styles.expanded : ""
+            }`}
+        >
+            {!initialLoading && (
+                <>
+                    <div className={styles.headerContainer}>
+                        {jobPositionList.length > 0 && (
+                            <CustomSelect
+                                key={selectedPosition?.id ?? "New job position"}
+                                placeHolder={
+                                    selectedPosition?.name && !isCreateMode
+                                        ? selectedPosition.name
+                                        : "New job position"
+                                }
+                                options={[
+                                    ...jobPositionList.map((position) => ({
+                                        value: position.id,
+                                        label: position.name,
+                                        selected:
+                                            selectedPosition?.id ===
+                                            position.id,
+                                    })),
+                                    {
+                                        value: "create",
+                                        label: "New job position",
+                                    },
+                                ]}
+                                onChange={(val) =>
+                                    handleJobPositionSelectChange(val)
+                                }
+                            />
+                        )}
+                        <button onClick={() => setIsExpanded((v) => !v)}>
+                            {isExpanded ? "Hide" : "Show"}
+                        </button>
+                    </div>
+                    <InOutAnim
+                        inState={isExpanded}
+                        customClass={styles.jobFormAnimation}
+                    >
+                        {!isCreateMode && selectedPosition && (
+                            <UpdateJobForm
+                                key={selectedPosition.id}
+                                position={selectedPosition}
+                                jobPositionList={jobPositionList}
+                                onEnd={handleJobPositionListUpdate}
+                                loading={loading}
+                                onSetLoading={setLoading}
+                            />
+                        )}
+                        {isExpanded && isCreateMode && (
+                            <CreateJobForm
+                                jobPositionList={jobPositionList}
+                                onEnd={handleJobPositionListUpdate}
+                                loading={loading}
+                                onSetLoading={setLoading}
+                            />
+                        )}
+                    </InOutAnim>
+                </>
+            )}
         </div>
     );
 };

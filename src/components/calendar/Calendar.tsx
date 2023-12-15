@@ -17,6 +17,7 @@ import {
 } from "../../services/dateService";
 import { shiftGrid, shiftState } from "../../types/job/Shift";
 import Workday from "./Workday";
+import InOutAnim from "../utils/InOutAnim";
 //#endregion
 
 type thisProps = {
@@ -35,6 +36,7 @@ const Calendar: FunctionComponent<thisProps> = ({
     onSetShiftList,
 }) => {
     const [shiftGrid, setShiftGrid] = useState<shiftGrid[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
 
     const setDays = useCallback(
         (shifts: shiftState[]): shiftGrid[] => {
@@ -77,27 +79,30 @@ const Calendar: FunctionComponent<thisProps> = ({
     }
 
     useEffect(() => {
+        setLoading(true);
         const gridToSave = setDays(shiftList);
         setShiftGrid(gridToSave);
+        setLoading(false);
     }, [setDays, shiftList]);
 
     return (
         <div className={styles.calendar}>
-            <div className={styles.daysWrapper}>
-                {shiftGrid.map((shift, i) => {
-                    const day = shift.date;
-                    const thisShift = shift.shift;
-                    return (
+            <InOutAnim
+                inState={!loading}
+                customClass={styles.daysWrapperAnimation}
+            >
+                <div className={styles.daysWrapper}>
+                    {shiftGrid.map((shift, i) => (
                         <Workday
                             key={i}
-                            day={day}
-                            shift={thisShift}
+                            day={shift.date}
+                            shift={shift.shift}
                             jobPositionId={jobPositionId}
                             onUpdateShift={updateShift}
                         />
-                    );
-                })}
-            </div>
+                    ))}
+                </div>
+            </InOutAnim>
         </div>
     );
 };

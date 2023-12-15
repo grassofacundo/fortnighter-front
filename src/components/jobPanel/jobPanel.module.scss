@@ -1,6 +1,22 @@
 .jobSection {
+    --containerHeight: 50px;
+
+    max-height: var(--containerHeight);
+    height: fit-content;
+    transition: max-height 250ms linear;
+
+    &.expanded {
+        max-height: 500px;
+    }
+
     .headerContainer {
         display: flex;
         justify-content: space-between;
+        align-items: center;
+        height: var(--containerHeight);
+    }
+
+    .jobFormAnimation {
+        height: fit-content;
     }
 }

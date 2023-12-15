@@ -2,15 +2,24 @@
 import { FunctionComponent, useEffect, useState } from "react";
 import styles from "./Workday.module.scss";
 import FormManager from "../utils/form/FormManager";
-import { getDateAsInputValue, getStringDMY } from "../../services/dateService";
-import { shiftBase, shiftState } from "../../types/job/Shift";
+import {
+    getDateAsInputValue,
+    getStringDMY,
+    parseDateAsId,
+} from "../../services/dateService";
+import { shiftBase, shiftLocalState, shiftState } from "../../types/job/Shift";
 import shiftService from "../../services/shiftService";
 import { checkbox } from "../../types/form/CheckboxTypes";
 import { inputTimeType } from "../../types/form/TimeType";
-import { formAnswersType } from "../../types/form/FormTypes";
+import { parsedAnswers } from "../../types/form/FormTypes";
 import { inputNumber } from "../../types/form/InputNumberTypes";
 //#endregion
 
+type answerData = {
+    isHoliday: boolean;
+    startWork: Date;
+    endWork: Date;
+};
 type thisProps = {
     day: Date;
     shift?: shiftState;
@@ -27,45 +36,50 @@ const Workday: FunctionComponent<thisProps> = ({
     const [isExpanded, setIsExpanded] = useState(false);
     const [Loading, setLoading] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState("");
-    const [shiftLocal, setShiftLocal] = useState<shiftBase>({
+    const [shiftLocal, setShiftLocal] = useState<shiftLocalState<Date>>({
         jobPositionId,
-        isHoliday: false,
+        isHoliday: shift?.isHoliday ?? false,
+        startTime: shift?.startTime,
+        endTime: shift?.endTime,
     });
 
-    async function handleSubmit(answers: formAnswersType[]): Promise<void> {
-        setLoading(true);
-        const isHolidayAnswer = answers
-            .filter((answer) => answer.id === "is-holiday")
-            .at(0);
-        const startTimeAnswer = answers
-            .filter((answer) => answer.id === "start-work")
-            .at(0);
-        const endTimeAnswer = answers
-            .filter((answer) => answer.id === "end-work")
-            .at(0);
-        const isHoliday = isHolidayAnswer?.value as boolean;
-        const startTime = startTimeAnswer?.value as string;
-        const endTime = endTimeAnswer?.value as string;
-
-        if (isHoliday == null || !startTime || !endTime) {
+    async function handleSubmit(answers: parsedAnswers): Promise<void> {
+        let data: answerData | undefined = undefined;
+        try {
+            data = {
+                isHoliday: answers[`isHoliday${parseDateAsId(day)}`] as boolean,
+                startWork: new Date(
+                    `${getDateAsInputValue(day)}T${answers.startWork}`
+                ),
+                endWork: new Date(
+                    `${getDateAsInputValue(day)}T${answers.endWork}`
+                ),
+            };
+        } catch (error) {
+            setErrorMsg(
+                error instanceof Error
+                    ? error.message
+                    : "Error parsing input values"
+            );
+        }
+        if (!data || Object.values(data).some((v) => v == null)) {
             setErrorMsg("Error on form answers");
-            setLoading(false);
             return;
         }
+        setLoading(true);
 
-        const start = new Date(`${getDateAsInputValue(day)}T${startTime}`);
-        const end = new Date(`${getDateAsInputValue(day)}T${endTime}`);
         const shiftObj: shiftBase = {
             jobPositionId,
-            isHoliday,
-            startTime: start,
-            endTime: end,
+            isHoliday: data.isHoliday,
+            startTime: data.startWork,
+            endTime: data.endWork,
         };
 
         const response = await shiftService.setShift(shiftObj);
         if (response.ok) {
             setErrorMsg("");
-            onUpdateShift(shiftService.getShiftAsState(shiftObj));
+            const shiftToSave = shiftService.getShiftAsState(shiftObj);
+            if (shiftToSave) onUpdateShift(shiftToSave);
         }
         setLoading(false);
         if (!response.ok && response.error) {
@@ -75,16 +89,16 @@ const Workday: FunctionComponent<thisProps> = ({
         }
     }
 
-    useEffect(() => {
-        if (shift) {
-            setShiftLocal({
-                jobPositionId,
-                isHoliday: !!shift?.isHoliday,
-                startTime: shift?.startTime ? shift.startTime : undefined,
-                endTime: shift?.endTime ? shift.endTime : undefined,
-            });
-        }
-    }, [shift, jobPositionId]);
+    // useEffect(() => {
+    //     if (shift) {
+    //         setShiftLocal({
+    //             jobPositionId,
+    //             isHoliday: !!shift?.isHoliday,
+    //             startTime: shift?.startTime ? shift.startTime : undefined,
+    //             endTime: shift?.endTime ? shift.endTime : undefined,
+    //         });
+    //     }
+    // }, [shift, jobPositionId]);
 
     return (
         <div
@@ -106,17 +120,17 @@ const Workday: FunctionComponent<thisProps> = ({
                     inputs={[
                         {
                             type: "checkbox",
-                            id: `is-holiday-${getDateAsInputValue(day)}`,
+                            id: `isHoliday${parseDateAsId(day)}`,
                             label: "Is holiday?",
                             checked: shiftLocal.isHoliday,
                         } as checkbox,
                         {
                             type: "time",
-                            id: "start-work",
+                            id: "startWork",
                             label: "Start time",
                             hour: {
                                 type: "number",
-                                id: `start-work-hour-${getStringDMY(day)}`,
+                                id: `startWorkHour${parseDateAsId(day)}`,
                                 label: `Hour work started-${getStringDMY(day)}`,
                                 min: 0,
                                 max: 23,
@@ -129,7 +143,7 @@ const Workday: FunctionComponent<thisProps> = ({
                             } as inputNumber,
                             minute: {
                                 type: "number",
-                                id: `start-work-minute-${getStringDMY(day)}`,
+                                id: `startWorkMinute${parseDateAsId(day)}`,
                                 label: "Minute work started",
                                 placeholder: "30",
                                 step: "30",
@@ -144,11 +158,11 @@ const Workday: FunctionComponent<thisProps> = ({
                         } as inputTimeType,
                         {
                             type: "time",
-                            id: "end-work",
+                            id: "endWork",
                             label: "End time",
                             hour: {
                                 type: "number",
-                                id: `end-work-hour-${getStringDMY(day)}`,
+                                id: `endWorkHour${parseDateAsId(day)}`,
                                 min: 0,
                                 max: 23,
                                 placeholder: "8",
@@ -158,7 +172,7 @@ const Workday: FunctionComponent<thisProps> = ({
                             },
                             minute: {
                                 type: "number",
-                                id: `end-work-minute-${getStringDMY(day)}`,
+                                id: `endWorkMinute${parseDateAsId(day)}`,
                                 placeholder: "30",
                                 step: "30",
                                 min: 0,

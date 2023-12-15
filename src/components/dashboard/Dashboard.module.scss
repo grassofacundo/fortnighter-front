@@ -4,13 +4,22 @@
 }
 
 .mainBody {
-    width: 100%;
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    overflow: auto;
+    width: 100%;
+    overflow: hidden;
     background-color: var(--mainColor);
     padding: 15px;
 }
 
-.calendarContainer {
+.calendarAnimWrapper {
     display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .calendarContainer {
+        display: flex;
+        overflow: hidden;
+    }
 }

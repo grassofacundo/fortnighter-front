@@ -54,7 +54,10 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                 onSetSelectedPosition={setSelectedPosition}
             ></JobPanel>
             {selectedPosition && endDate && (
-                <InOutAnim inState={!!(selectedPosition && endDate)}>
+                <InOutAnim
+                    inState={!!(selectedPosition && endDate)}
+                    customClass={styles.calendarAnimWrapper}
+                >
                     <DatePicker
                         onChange={handleDateChange}
                         endDate={selectedPosition.nextPaymentDate}
