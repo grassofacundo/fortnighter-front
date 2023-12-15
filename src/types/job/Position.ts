@@ -1,5 +1,3 @@
-import { payment } from "./Payment";
-
 /**
  * Base job position type
  *
@@ -21,6 +19,18 @@ export interface baseJobPosition<T> {
     address?: string;
 }
 
+/**
+ * Job position type
+ *
+ * @property id - string
+ * @property name - string
+ * @property hourPrice - number
+ * @property paymentLapse - number
+ * @property nextPaymentDate - Date
+ * @property companyName? - string
+ * @property description? - string
+ * @property address? - string
+ */
 export interface jobPosition extends baseJobPosition<Date> {
     id: string;
 }

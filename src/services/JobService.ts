@@ -105,20 +105,16 @@ class JobService {
         startDate: Date,
         endDate: Date,
         jobId: string
-    ): Promise<payment[]> {
+    ): Promise<payment | null> {
         const start: string = getDateAsInputValue(startDate);
         const end: string = getDateAsInputValue(endDate);
         const params = `?startDate=${start}&endDate=${end}&jobId=${jobId}`;
         const url = `${this.url}/payment/get-last/${params}`;
-        const response = await FetchService.fetchGet<payment[]>(url);
-        if (
-            FetchService.isOk(response) &&
-            response.content &&
-            response.content.length > 0
-        ) {
-            return response.content;
+        const r = await FetchService.fetchGet<payment>(url);
+        if (FetchService.isOk(r) && r.content) {
+            return r.content;
         } else {
-            return [];
+            return null;
         }
     }
 }

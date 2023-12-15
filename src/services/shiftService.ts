@@ -1,5 +1,5 @@
 import { eventReturn } from "../types/database/databaseTypes";
-import { shiftBase, shiftState } from "../types/job/Shift";
+import { shiftBase, shiftDb, shiftState } from "../types/job/Shift";
 import { getDateAsInputValue, getPlainDate } from "./dateService";
 import FetchService from "./fetchService";
 
@@ -31,13 +31,19 @@ class ShiftService {
         return date.getDay() === 0;
     }
 
-    getShiftAsState(baseShifts: shiftBase): shiftState {
-        const start = new Date(baseShifts.startTime);
-        const end = new Date(baseShifts.endTime);
+    getShiftAsState(shift: shiftBase | shiftDb): shiftState {
+        const start =
+            typeof shift.startTime === "string"
+                ? new Date(shift.startTime)
+                : shift.startTime;
+        const end =
+            typeof shift.endTime === "string"
+                ? new Date(shift.endTime)
+                : shift.endTime;
         const plainDate = this.getDateAfterStartAndEnd(start, end);
         const shiftState = {
-            jobPositionId: baseShifts.jobPositionId,
-            isHoliday: baseShifts.isHoliday,
+            jobPositionId: shift.jobPositionId,
+            isHoliday: shift.isHoliday,
             startTime: start,
             endTime: end,
             date: plainDate,
@@ -64,12 +70,12 @@ class ShiftService {
         startDate: Date,
         endDate: Date,
         positionId: string
-    ): Promise<shiftBase[]> {
+    ): Promise<shiftDb[]> {
         const start: string = getDateAsInputValue(startDate);
         const end: string = getDateAsInputValue(endDate);
         const params = `?startDate=${start}&endDate=${end}&jobPositionId=${positionId}`;
         const url = `${this.url}/shift/get-shifts/${params}`;
-        const response = await FetchService.fetchGet<shiftBase[]>(url);
+        const response = await FetchService.fetchGet<shiftDb[]>(url);
         if (
             FetchService.isOk(response) &&
             response.content &&
