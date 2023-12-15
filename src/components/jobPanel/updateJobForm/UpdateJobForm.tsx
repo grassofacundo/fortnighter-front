@@ -14,11 +14,17 @@ import {
     getPastDate,
     setDateFromInput,
 } from "../../../services/dateService";
-import { formAnswersType } from "../../../types/form/FormTypes";
+import { parsedAnswers } from "../../../types/form/FormTypes";
 import jobService from "../../../services/JobService";
 import { dateInput } from "../../../types/form/DateInputTypes";
 //#endregion
 
+type answerData = {
+    positionName: string;
+    hourPrice: number;
+    cycleEnd: Date;
+    cycleStart: Date;
+};
 type thisProps = {
     position: jobPosition;
     jobPositionList: jobPosition[];
@@ -43,81 +49,50 @@ const UpdateJobForm: FunctionComponent<thisProps> = ({
         getDateAsInputValue(position.nextPaymentDate)
     );
 
-    function handleUpdateAnswers(answers: formAnswersType[]): void {
-        const cycleEndAnswer = answers
-            .filter((answer) => answer.id === "cycleEnd")
-            .at(0);
-        if (cycleEndAnswer?.value) setCycleEnd(cycleEndAnswer.value as string);
-        const cycleStartAnswer = answers
-            .filter((answer) => answer.id === "cycleStart")
-            .at(0);
-        if (cycleStartAnswer?.value)
-            setCycleStart(cycleStartAnswer.value as string);
+    function handleUpdateAnswers(answers: parsedAnswers): void {
+        if (answers.cycleEnd) setCycleEnd(answers.cycleEnd as string);
+        if (answers.cycleStart) setCycleStart(answers.cycleStart as string);
     }
 
-    async function handleSubmit(answers: formAnswersType[]): Promise<void> {
-        const positionNameAnswer = answers
-            .filter((answer) => answer.id === "positionName")
-            .at(0);
-        const hourPriceAnswer = answers
-            .filter((answer) => answer.id === "hourPrice")
-            .at(0);
-        const isFortnightlyAnswer = answers
-            .filter((answer) => answer.id === "isFortnightly")
-            .at(0);
-        const cycleEndAnswer = answers
-            .filter((answer) => answer.id === "cycleEnd")
-            .at(0);
-        const positionName = positionNameAnswer?.value as string;
-        let hourPrice = 0;
+    async function handleSubmit(answers: parsedAnswers): Promise<void> {
+        let data: answerData | undefined = undefined;
         try {
-            hourPrice = Number(hourPriceAnswer?.value);
-        } catch (error) {
-            setErrorMsg(
-                error instanceof Error
-                    ? error.message
-                    : "Error parsing hour price number"
+            const positionName = answers.positionName as string;
+            const hourPrice = Number(answers.hourPrice);
+            const cycleEndInput = setDateFromInput(answers.cycleEnd as string);
+            const cycleStartInput = setDateFromInput(
+                answers.cycleStart as string
             );
-        }
-        let isFortnightly = false;
-        try {
-            isFortnightly = Boolean(isFortnightlyAnswer?.value);
+
+            data = {
+                positionName,
+                hourPrice,
+                cycleEnd: cycleEndInput,
+                cycleStart: cycleStartInput,
+            };
         } catch (error) {
             setErrorMsg(
                 error instanceof Error
                     ? error.message
-                    : "Error if payment is weekly or fortnightly"
-            );
-        }
-        let cycleEnd = new Date();
-        try {
-            cycleEnd = new Date(cycleEndAnswer?.value as Date);
-            // const offsetMinutes = cycleEnd.getTimezoneOffset();
-            // const localTime = new Date(
-            //     cycleEnd.getTime() + offsetMinutes * 60 * 1000
-            // );
-            // cycleEnd = localTime;
-        } catch (error) {
-            setErrorMsg(
-                error instanceof Error
-                    ? error.message
-                    : "Error parsing cycle date"
+                    : "Error parsing input values"
             );
         }
 
-        if (!positionName || !hourPrice || !cycleEnd) {
+        if (!data || Object.values(data).some((v) => v == null)) {
             setErrorMsg("Error on form answers");
             return;
         }
 
         onSetLoading(true);
 
+        const { positionName, hourPrice, cycleEnd } = data;
+        const daysDiff = getDaysBetweenDates(data.cycleStart, data.cycleEnd);
         const updatedJobPosition: jobPosition = {
             id: position.id,
             name: positionName,
             hourPrice,
-            isFortnightly,
-            cycleEnd,
+            paymentLapse: daysDiff,
+            nextPaymentDate: cycleEnd,
         };
         const responseDb = await jobService.updateJobPosition(
             updatedJobPosition
@@ -180,8 +155,8 @@ const UpdateJobForm: FunctionComponent<thisProps> = ({
                         yearMax: "2024",
                         defaultValue: getDateAsInputValue(
                             getPastDate(
-                                position.isFortnightly ? 15 : 30,
-                                position.cycleEnd
+                                position.paymentLapse,
+                                position.nextPaymentDate
                             )
                         ),
                     } as dateInput,
@@ -191,7 +166,9 @@ const UpdateJobForm: FunctionComponent<thisProps> = ({
                         label: "Date of your next payslip",
                         yearMin: "2023",
                         yearMax: "2024",
-                        defaultValue: getDateAsInputValue(position.cycleEnd),
+                        defaultValue: getDateAsInputValue(
+                            position.nextPaymentDate
+                        ),
                     },
                 ]}
                 submitCallback={handleSubmit}
