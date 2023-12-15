@@ -14,7 +14,7 @@ const InputTime: FunctionComponent<thisProps> = ({
     formAnswers,
     onUpdateAnswer,
 }) => {
-    const { id, isOptional, label, hour, minute } = fields;
+    const { id, label, hour, minute } = fields;
     const h = hour;
     const m = minute;
 
