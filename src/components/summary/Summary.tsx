@@ -63,7 +63,9 @@ const Summary: FunctionComponent<thisProps> = ({
     return (
         <div className={styles.summaryBody}>
             {startDate && endDate && (
-                <p>{`Total made from ${startDate} to ${endDate}: ${totalIncome}`}</p>
+                <p>{`Total made from ${getStringDMY(
+                    startDate
+                )} to ${getStringDMY(endDate)}: $${totalIncome}`}</p>
             )}
             <DatePicker
                 onChange={handleDateChange}
