@@ -51,6 +51,13 @@ export function getDateAsInputValue(date: Date): string {
     }`; //T00:00
 }
 
+export function parseDateAsId(date: Date | string): string {
+    const dateToParse = date instanceof Date ? getDateAsInputValue(date) : date;
+    const id = dateToParse.replaceAll("-", "");
+
+    return id;
+}
+
 type timeParams = { date: Date; hour?: number; minutes?: number };
 export function setTime({ date, hour, minutes }: timeParams): Date {
     const startTime = new Date(date);
