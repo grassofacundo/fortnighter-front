@@ -138,7 +138,7 @@ const UpdateJobForm: FunctionComponent<thisProps> = ({
                     {
                         type: "text",
                         id: "positionName",
-                        placeholder: "Position name",
+                        label: "Position name",
                         defaultValue: position.name,
                     },
                     {
@@ -176,13 +176,14 @@ const UpdateJobForm: FunctionComponent<thisProps> = ({
                 submitText={"Update job"}
                 Loading={loading}
                 serverErrorMsg={errorMsg}
-            />
-            {cycleStart && cycleEnd && (
-                <p>{`Getting paid every ${getDaysBetweenDates(
-                    setDateFromInput(cycleStart),
-                    setDateFromInput(cycleEnd)
-                )} days?`}</p>
-            )}
+            >
+                {cycleStart && cycleEnd && (
+                    <p>{`Getting paid every ${getDaysBetweenDates(
+                        setDateFromInput(cycleStart),
+                        setDateFromInput(cycleEnd)
+                    )} days?`}</p>
+                )}
+            </FormManager>
         </div>
     );
 };

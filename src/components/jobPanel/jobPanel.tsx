@@ -10,9 +10,9 @@ import jobService from "../../services/JobService";
 import { jobPosition } from "../../types/job/Position";
 import CreateJobForm from "./createJobForm/CreateJobForm";
 import UpdateJobForm from "./updateJobForm/UpdateJobForm";
-import InOutAnim from "../utils/InOutAnim";
-import CustomSelect from "../utils/customSelect/CustomSelect";
+import CustomSelect from "../blocks/customSelect/CustomSelect";
 import styles from "./jobPanel.module.scss";
+import Arrow from "../blocks/icons/Arrow";
 //#endregion
 
 type thisProps = {
@@ -27,6 +27,7 @@ const JobPanel: FunctionComponent<thisProps> = ({
     const [jobPositionList, setJobPositionList] = useState<jobPosition[]>([]);
     const [initialLoading, setInitialLoading] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(false);
+    const [firstExpanded, setFirstExpanded] = useState<boolean>(false);
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const [isCreateMode, setIsCreateMode] = useState<boolean>(false);
 
@@ -60,6 +61,11 @@ const JobPanel: FunctionComponent<thisProps> = ({
         setJobPositionList(list);
         setIsCreateMode(false);
         onSetSelectedPosition(updatedJobPosition);
+    }
+
+    function handleOpen(): void {
+        setIsExpanded((v) => !v);
+        setFirstExpanded(true);
     }
 
     useEffect(() => {
@@ -114,33 +120,41 @@ const JobPanel: FunctionComponent<thisProps> = ({
                                 }
                             />
                         )}
-                        <button onClick={() => setIsExpanded((v) => !v)}>
-                            {isExpanded ? "Hide" : "Show"}
+                        <button
+                            className={styles.arrowButton}
+                            onClick={handleOpen}
+                        >
+                            {<Arrow isOpen={isExpanded} />}
                         </button>
                     </div>
-                    <InOutAnim
-                        inState={isExpanded}
-                        customClass={styles.jobFormAnimation}
-                    >
-                        {!isCreateMode && selectedPosition && (
-                            <UpdateJobForm
-                                key={selectedPosition.id}
-                                position={selectedPosition}
-                                jobPositionList={jobPositionList}
-                                onEnd={handleJobPositionListUpdate}
-                                loading={loading}
-                                onSetLoading={setLoading}
-                            />
-                        )}
-                        {isExpanded && isCreateMode && (
-                            <CreateJobForm
-                                jobPositionList={jobPositionList}
-                                onEnd={handleJobPositionListUpdate}
-                                loading={loading}
-                                onSetLoading={setLoading}
-                            />
-                        )}
-                    </InOutAnim>
+                    {firstExpanded && (
+                        <div
+                            className={`${styles.formDropdown} ${
+                                isExpanded
+                                    ? styles.animationIn
+                                    : styles.animationOut
+                            }`}
+                        >
+                            {!isCreateMode && selectedPosition && (
+                                <UpdateJobForm
+                                    key={selectedPosition.id}
+                                    position={selectedPosition}
+                                    jobPositionList={jobPositionList}
+                                    onEnd={handleJobPositionListUpdate}
+                                    loading={loading}
+                                    onSetLoading={setLoading}
+                                />
+                            )}
+                            {isExpanded && isCreateMode && (
+                                <CreateJobForm
+                                    jobPositionList={jobPositionList}
+                                    onEnd={handleJobPositionListUpdate}
+                                    loading={loading}
+                                    onSetLoading={setLoading}
+                                />
+                            )}
+                        </div>
+                    )}
                 </>
             )}
         </div>

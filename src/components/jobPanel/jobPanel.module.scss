@@ -1,22 +1,84 @@
+@import "../../style/animations";
+@import "../../style/placeholders";
+
 .jobSection {
     --containerHeight: 50px;
 
-    max-height: var(--containerHeight);
+    position: relative;
+    min-height: var(--containerHeight);
     height: fit-content;
     transition: max-height 250ms linear;
 
-    &.expanded {
-        max-height: 500px;
-    }
-
     .headerContainer {
+        position: absolute;
+        z-index: 2;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        padding: 5px;
         height: var(--containerHeight);
+        width: 100%;
+
+        @extend %normal-border;
+
+        .arrowButton {
+            padding: 0;
+            border: 0;
+            box-shadow: none;
+        }
     }
 
-    .jobFormAnimation {
-        height: fit-content;
+    .formDropdown {
+        position: absolute;
+        width: 100%;
+        margin-top: var(--containerHeight);
+        background-color: var(--bgColor);
+        z-index: -1;
+        opacity: 0;
+        @extend %normal-border;
+        border: {
+            top: 0;
+            top-right-radius: 0;
+            top-left-radius: 0;
+        }
+        padding: {
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+        }
+
+        &.animationOut {
+            animation: 150ms linear hide-dropdown forwards;
+        }
+    }
+
+    &.expanded {
+        .headerContainer {
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            border-bottom: 0;
+        }
+
+        .formDropdown {
+            &.animationIn {
+                z-index: 1;
+                animation: 150ms linear slide-from-bottom forwards;
+            }
+        }
+    }
+}
+
+@keyframes hide-dropdown {
+    0% {
+        z-index: 1;
+        opacity: 1;
+        transform: translateY(0);
+    }
+    99% {
+        opacity: 0;
+        transform: translateY(-25px);
+    }
+    100% {
+        z-index: -1;
     }
 }
