@@ -24,6 +24,7 @@ type thisProps = {
     day: Date;
     shift?: shiftState;
     jobPositionId: string;
+    order: number;
     onUpdateShift(updatedShift: shiftState): void;
 };
 
@@ -31,6 +32,7 @@ const Workday: FunctionComponent<thisProps> = ({
     day,
     shift,
     jobPositionId,
+    order,
     onUpdateShift,
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
@@ -103,6 +105,7 @@ const Workday: FunctionComponent<thisProps> = ({
     return (
         <div
             className={`${styles.dayBody} ${isExpanded ? styles.expanded : ""}`}
+            style={{ animationDelay: `${order * 100}ms` }}
         >
             <div className={styles.headerContainer}>
                 <p>{getStringDMY(day)}</p>

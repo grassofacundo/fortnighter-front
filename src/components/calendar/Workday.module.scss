@@ -1,3 +1,6 @@
+@import "../../style/animations";
+@import "../../style/placeholders";
+
 .dayBody {
     --containerHeight: 30px;
 
@@ -7,10 +10,12 @@
     max-height: var(--containerHeight);
     height: fit-content;
     background-color: transparent;
-    border: 1px solid var(--borderColor);
-    border-radius: 6px;
     transition: max-height 250ms linear;
     overflow: hidden;
+    opacity: 0;
+    animation: 250ms ease-in-out slide-from-left forwards;
+
+    @extend %normal-border;
 
     &.expanded {
         max-height: 500px;

@@ -99,6 +99,7 @@ const Calendar: FunctionComponent<thisProps> = ({
                             shift={shift.shift}
                             jobPositionId={jobPositionId}
                             onUpdateShift={updateShift}
+                            order={i}
                         />
                     ))}
                 </div>
