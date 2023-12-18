@@ -25,18 +25,14 @@ const Summary: FunctionComponent<thisProps> = ({
     const [endDate, setEndDate] = useState<Date>(searchDates.end);
     const [totalIncome, setTotalIncome] = useState<number>(getTotal());
 
-    function getStartDate(): string {
-        if (!shiftList || shiftList.length <= 0) return "";
-
-        const firstDate = shiftList[0].date;
-        return getStringDMY(firstDate);
+    function getSaturdays() {
+        const saturdays = shiftList.filter((shift) => shift.isSaturday);
+        return saturdays.length;
     }
 
-    function getEndDate(): string {
-        if (!shiftList || shiftList.length <= 0) return "";
-
-        const endDate = shiftList[shiftList.length - 1].date;
-        return getStringDMY(endDate);
+    function getSundays() {
+        const sundays = shiftList.filter((shift) => shift.isSunday);
+        return sundays.length;
     }
 
     function getTotal(): number {
@@ -52,26 +48,24 @@ const Summary: FunctionComponent<thisProps> = ({
         setEndDate(end);
     }
 
-    useEffect(() => {
-        let total = 0;
-        shiftList.forEach(
-            (shift) => (total += shift.hoursWorked * position.hourPrice)
-        );
-        setTotalIncome(total);
-    }, [shiftList, position]);
-
     return (
         <div className={styles.summaryBody}>
-            {startDate && endDate && (
-                <p>{`Total made from ${getStringDMY(
-                    startDate
-                )} to ${getStringDMY(endDate)}: $${totalIncome}`}</p>
-            )}
+            <div className={styles.infoPanel}>
+                <p>{`Next payment: ${getStringDMY(
+                    position.nextPaymentDate
+                )}`}</p>
+                <p>{`Total made: $${getTotal()}`}</p>
+                <p>{`Saturdays worked: ${getSaturdays()}`}</p>
+                <p>{`Sundays worked: ${getSundays()}`}</p>
+            </div>
             <DatePicker
                 onChange={handleDateChange}
-                initialLapseBetweenDated={15}
+                initialLapseBetweenDated={position.paymentLapse}
+                endDate={endDate}
                 pastDaysLimit={60}
                 futureDaysLimit={30}
+                customClass={styles.datePicker}
+                buttonText="Change dates"
             ></DatePicker>
         </div>
     );
