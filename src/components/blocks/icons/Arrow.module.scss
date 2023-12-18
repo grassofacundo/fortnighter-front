@@ -1,0 +1,12 @@
+svg {
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+
+    &.translate {
+        -webkit-transform: rotate(180deg);
+        -ms-transform: rotate(180deg);
+        transform: rotate(180deg);
+    }
+
+    stroke: var(--textColor);
+}
