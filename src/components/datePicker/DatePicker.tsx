@@ -1,12 +1,12 @@
 //#region Dependency list
-import { FunctionComponent, useState, ChangeEvent, useEffect } from "react";
+import { FunctionComponent, useState, useEffect } from "react";
 import {
-    getDateAsInputValue,
     getFutureDate,
     getPastDate,
     getToday,
 } from "../../services/dateService";
 import styles from "./DatePicker.module.scss";
+import DateInput from "./dateInput/DateInput";
 //#endregion
 
 type thisProps = {
@@ -16,6 +16,8 @@ type thisProps = {
     pastDaysLimit?: number;
     futureDaysLimit?: number;
     endDate?: Date;
+    customClass?: CSSModuleClasses[string];
+    buttonText?: string;
 };
 
 const DatePicker: FunctionComponent<thisProps> = ({
@@ -24,6 +26,8 @@ const DatePicker: FunctionComponent<thisProps> = ({
     pastDaysLimit = 0,
     futureDaysLimit = 0,
     endDate = getToday(),
+    customClass = "",
+    buttonText = "Search",
 }) => {
     const [end, setEnd] = useState<Date>(endDate);
     const [start, setStart] = useState<Date>(
@@ -33,28 +37,24 @@ const DatePicker: FunctionComponent<thisProps> = ({
     const [endError, setEndError] = useState<string>("");
     const [datesAreValid, setDatesAreValid] = useState<boolean>(true);
 
-    function handleStartDateChange(dateEvent: ChangeEvent<HTMLInputElement>) {
-        const dateValue = `${dateEvent.target.value}T00:00`;
-        const date = new Date(dateValue);
-        if (date < getPastDate(pastDaysLimit, end)) {
-            setStartError("Max 2 months into the past");
-            setDatesAreValid(false);
-            return;
+    function handleDateChange(moment: "start" | "end", date: Date): void {
+        if (moment === "start") {
+            if (date < getPastDate(pastDaysLimit, end)) {
+                setStartError("Max 2 months into the past");
+                setDatesAreValid(false);
+                return;
+            }
+            setStart(date);
+        } else {
+            if (date > getFutureDate(futureDaysLimit)) {
+                setEndError(
+                    `Cannot select a date after ${futureDaysLimit} days in the future`
+                );
+                setDatesAreValid(false);
+                return;
+            }
+            setEnd(date);
         }
-        setStart(date);
-    }
-
-    function handleEndDateChange(dateEvent: ChangeEvent<HTMLInputElement>) {
-        const dateValue = `${dateEvent.target.value}T00:00`;
-        const date = new Date(dateValue);
-        if (date > getFutureDate(futureDaysLimit)) {
-            setEndError(
-                `Cannot select a date after ${futureDaysLimit} days in the future`
-            );
-            setDatesAreValid(false);
-            return;
-        }
-        setEnd(date);
     }
 
     useEffect(() => {
@@ -69,30 +69,34 @@ const DatePicker: FunctionComponent<thisProps> = ({
     }, [start, end, pastDaysLimit, futureDaysLimit]);
 
     return (
-        <div className={styles.dateContainer}>
-            <input
-                type="date"
-                onClick={() => {
-                    if (startError) setStartError("");
-                }}
-                onChange={handleStartDateChange}
-                defaultValue={getDateAsInputValue(start)}
+        <div className={`${customClass} ${styles.dateContainer}`}>
+            <DateInput
+                id="start"
+                label="From"
+                defaultValue={start}
+                currentAnswer={start}
+                onHandleDateChange={(date: Date) =>
+                    handleDateChange("start", date)
+                }
+                onSetError={(error) => setEndError(error)}
             />
             {startError && <p className={styles.startError}>{startError}</p>}
-            <input
-                type="date"
-                onClick={() => {
-                    if (endError) setEndError("");
-                }}
-                onChange={handleEndDateChange}
-                defaultValue={getDateAsInputValue(end)}
+            <DateInput
+                id="end"
+                label="To"
+                defaultValue={end}
+                currentAnswer={end}
+                onHandleDateChange={(date: Date) =>
+                    handleDateChange("end", date)
+                }
+                onSetError={(error) => setEndError(error)}
             />
             {endError && <p className={styles.endError}>{endError}</p>}
             <button
                 disabled={!datesAreValid}
                 onClick={() => onChange(start, end)}
             >
-                Search
+                {buttonText}
             </button>
         </div>
     );
