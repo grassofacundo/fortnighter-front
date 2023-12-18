@@ -18,7 +18,6 @@ const DateInput: FunctionComponent<thisProps> = ({
     onUpdateAnswer,
 }) => {
     const {
-        isOptional,
         id,
         dayMin,
         dayMax,
@@ -68,7 +67,7 @@ const DateInput: FunctionComponent<thisProps> = ({
     }
 
     return (
-        <div className={styles.dateInputBody}>
+        <div className={`inputClass ${styles.dateInputBody}`}>
             {label && <p>{label}</p>}
             <div className={styles.inputWrapper}>
                 <Day

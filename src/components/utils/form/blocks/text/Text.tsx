@@ -6,10 +6,12 @@ import { text } from "../../../../../types/form/TextTypes";
 
 interface thisProps extends inputProp {
     fields: text;
+    parentClass: string;
 }
 
 const InputText: FunctionComponent<thisProps> = ({
     fields,
+    parentClass,
     onUpdateAnswer,
 }) => {
     const { isOptional, id, label, placeholder, min, max, defaultValue } =
@@ -27,7 +29,7 @@ const InputText: FunctionComponent<thisProps> = ({
     }
 
     return (
-        <div>
+        <div className={parentClass}>
             <label htmlFor={id}>{label}</label>
             <input
                 type="text"

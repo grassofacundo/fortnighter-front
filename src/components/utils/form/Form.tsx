@@ -6,6 +6,7 @@ import {
     FormEvent,
     useRef,
     useMemo,
+    ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
 import InOutAnim from "../InOutAnim";
@@ -25,7 +26,6 @@ import {
     error,
     formAnswersType,
     inputField,
-    parsedAnswers,
 } from "../../../types/form/FormTypes";
 import { text } from "../../../types/form/TextTypes";
 import { dateInput } from "../../../types/form/DateInputTypes";
@@ -46,6 +46,7 @@ type thisProps = {
     submitText: string;
     serverErrorMsg?: string;
     resetServerError: () => void;
+    children?: ReactNode;
 };
 
 const Form: FunctionComponent<thisProps> = ({
@@ -57,6 +58,7 @@ const Form: FunctionComponent<thisProps> = ({
     submitText,
     serverErrorMsg,
     resetServerError,
+    children,
 }) => {
     const [submitEnabled, setSubmitEnabled] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState("");
@@ -203,6 +205,7 @@ const Form: FunctionComponent<thisProps> = ({
                                     fields={inputText}
                                     formAnswers={formAnswers}
                                     onUpdateAnswer={updateAnswerAndHideError}
+                                    parentClass={styles.myClass}
                                 />
                             );
                         }
@@ -299,13 +302,22 @@ const Form: FunctionComponent<thisProps> = ({
                             break;
                     }
                 })}
+                <div className={styles.childrenWrapper}>{children}</div>
                 {!hasFormErrors && (
-                    <button type="submit" disabled={!submitEnabled}>
+                    <button
+                        className={styles.submitButton}
+                        type="submit"
+                        disabled={!submitEnabled}
+                    >
                         {Loading ? <Spinner /> : submitText}
                     </button>
                 )}
                 {hasFormErrors && (
-                    <button type="button" onClick={() => setShowError(true)}>
+                    <button
+                        className={styles.submitButton}
+                        type="button"
+                        onClick={() => setShowError(true)}
+                    >
                         {submitText}
                     </button>
                 )}

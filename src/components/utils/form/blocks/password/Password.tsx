@@ -25,7 +25,7 @@ const InputPassword: FunctionComponent<thisProps> = ({
     }
 
     return (
-        <div>
+        <div className="inputClass">
             {label && <label htmlFor={id}>{label}</label>}
             <input
                 type="password"

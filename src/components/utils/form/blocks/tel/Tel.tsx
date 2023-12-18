@@ -16,7 +16,7 @@ const Tel: FunctionComponent<thisProps> = ({ fields, onUpdateAnswer }) => {
     };
 
     return (
-        <div>
+        <div className="inputClass">
             <label htmlFor={id}>{label}</label>
             <input
                 type="text"

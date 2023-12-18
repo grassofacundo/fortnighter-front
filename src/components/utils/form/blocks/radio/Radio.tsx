@@ -16,7 +16,7 @@ const Radio: FunctionComponent<thisProps> = ({ fields, onUpdateAnswer }) => {
     };
 
     return (
-        <div>
+        <div className="inputClass">
             <label htmlFor={id}>{label}</label>
             <p>{title}</p>
             {radioElem.map((elem) => (

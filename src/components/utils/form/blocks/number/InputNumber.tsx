@@ -19,7 +19,7 @@ const InputNumber: FunctionComponent<thisProps> = ({
     };
 
     return (
-        <div>
+        <div className="inputClass">
             <label htmlFor={id}>{label}</label>
             <input
                 type="number"

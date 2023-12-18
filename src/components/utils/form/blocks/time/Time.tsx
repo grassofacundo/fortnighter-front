@@ -37,7 +37,7 @@ const InputTime: FunctionComponent<thisProps> = ({
     };
 
     return (
-        <div className={styles.timeInputBody}>
+        <div className={`inputClass ${styles.timeInputBody}`}>
             {label && <p>{label}</p>}
             <div className={styles.inputContainer}>
                 {/* Hour input */}

@@ -25,7 +25,7 @@ const Checkbox: FunctionComponent<thisProps> = ({ fields, onUpdateAnswer }) => {
     // }, []);
 
     return (
-        <div className={styles.checkboxContainer}>
+        <div className={`inputClass ${styles.checkboxContainer}`}>
             <label htmlFor={id} className="checkbox-label">
                 <input
                     type="checkbox"

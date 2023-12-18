@@ -10,6 +10,7 @@ import {
     useEffect,
     useReducer,
     useState,
+    ReactNode,
 } from "react";
 import Form from "./Form";
 import {
@@ -26,6 +27,7 @@ type thisProps = {
     Loading?: boolean;
     submitText?: string;
     serverErrorMsg?: string;
+    children?: ReactNode;
 };
 
 const FormManager: FunctionComponent<thisProps> = ({
@@ -35,6 +37,7 @@ const FormManager: FunctionComponent<thisProps> = ({
     Loading,
     submitText,
     serverErrorMsg,
+    children,
 }) => {
     const [formAnswers, dispatch] = useReducer(
         fieldsReducer,
@@ -207,6 +210,7 @@ const FormManager: FunctionComponent<thisProps> = ({
                 submitText={submitText ?? "Submit"}
                 serverErrorMsg={serverError}
                 resetServerError={() => setServerError("")}
+                children={children}
             />
         </div>
     );

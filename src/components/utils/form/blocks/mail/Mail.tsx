@@ -30,7 +30,7 @@ const Mail: FunctionComponent<thisProps> = ({ fields, onUpdateAnswer }) => {
     }
 
     return (
-        <div>
+        <div className="inputClass">
             {label && <label htmlFor={id}>{label}</label>}
             <input
                 type="mail"
