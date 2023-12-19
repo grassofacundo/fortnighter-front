@@ -1,16 +1,9 @@
 //#region Dependency list
-import { FunctionComponent, ChangeEvent } from "react";
+import { FunctionComponent } from "react";
+import { dateField } from "./DateInput";
 //#endregion
 
-type thisProps = {
-    defaultValue?: Date;
-    id: string;
-    min?: number;
-    max?: number;
-    update(time: "day" | "month" | "year", value: number): void;
-};
-
-const Day: FunctionComponent<thisProps> = ({
+const Day: FunctionComponent<dateField> = ({
     defaultValue,
     id,
     min,
@@ -23,24 +16,14 @@ const Day: FunctionComponent<thisProps> = ({
         return day;
     }
 
-    function handleChange({ target }: ChangeEvent<HTMLInputElement>): void {
-        const { value } = target;
-        try {
-            const numberValue = Number(value);
-            update("day", numberValue);
-        } catch (error) {
-            throw new Error("Invalid input");
-        }
-    }
-
     return (
         <input
             type="number"
             defaultValue={getDayDefaultValue(defaultValue)}
-            id={`day-${id}`}
-            min={min ?? 1}
-            max={max ?? 31}
-            onChange={handleChange}
+            id={id}
+            min={min ?? 0}
+            max={max ?? 32}
+            onChange={update}
         />
     );
 };

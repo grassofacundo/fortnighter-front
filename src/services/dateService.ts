@@ -1,5 +1,26 @@
-export function setDateFromInput(targetValue: string): Date {
-    return new Date(`${targetValue}T00:00`);
+import {
+    dateParts,
+    dayStr,
+    monthStr,
+    timeParams,
+    year,
+} from "../types/dateService";
+
+export function setDateFromInput(targetValue: string | dateParts): Date {
+    if (typeof targetValue === "string") {
+        return new Date(`${targetValue}T00:00`);
+    } else {
+        const day =
+            targetValue.day.length === 1
+                ? `0${targetValue.day}`
+                : targetValue.day;
+        const month =
+            targetValue.month.length === 1
+                ? `0${targetValue.month}`
+                : targetValue.month;
+        const year = targetValue.year;
+        return new Date(`${year}-${month}-${day}T00:00`);
+    }
 }
 
 export function getToday(): Date {
@@ -8,6 +29,61 @@ export function getToday(): Date {
     date.setMinutes(0);
     date.setSeconds(0);
     return date;
+}
+
+export function getYesterday(date: Date) {
+    const yesterday = new Date();
+    yesterday.setDate(date.getDate() - 1);
+    return yesterday;
+}
+
+export function getNextMonth(date: Date): Date {
+    const currentDay = date.getDate();
+    const currentMonth = date.getMonth(); //Months are index 0
+    const currentYear = date.getFullYear();
+    const monthPlusOne = currentMonth + 1;
+    if (monthPlusOne === 12) {
+        const nextYear = currentYear + 1;
+        const nextMonth = 0;
+        const newDate = setDateFromInput({
+            year: nextYear.toString() as year,
+            month: nextMonth.toString() as monthStr,
+            day: currentDay.toString() as dayStr,
+        });
+        return newDate;
+    } else {
+    }
+}
+
+export function getLastDayOfMonth(month: month, year: number | year): day {
+    switch (month) {
+        case 0:
+            return 31;
+        case 1:
+            return isLeapYear(year.toString() as year) ? 29 : 28;
+        case 2:
+            return 31;
+        case 3:
+            return 30;
+        case 4:
+            return 31;
+        case 5:
+            return 30;
+        case 6:
+            return 31;
+        case 7:
+            return 31;
+        case 8:
+            return 30;
+        case 9:
+            return 31;
+        case 10:
+            return 30;
+        case 11:
+            return 31;
+        default:
+            return 30;
+    }
 }
 
 export function getPlainDate(date: Date): Date {
@@ -51,6 +127,11 @@ export function getDateAsInputValue(date: Date): string {
     }`; //T00:00
 }
 
+export function isLeapYear(yearParam: year): boolean {
+    const year = Number(yearParam);
+    return (0 === year % 4 && 0 !== year % 100) || 0 === year % 400;
+}
+
 export function parseDateAsId(date: Date | string): string {
     const dateToParse = date instanceof Date ? getDateAsInputValue(date) : date;
     const id = dateToParse.replaceAll("-", "");
@@ -58,7 +139,6 @@ export function parseDateAsId(date: Date | string): string {
     return id;
 }
 
-type timeParams = { date: Date; hour?: number; minutes?: number };
 export function setTime({ date, hour, minutes }: timeParams): Date {
     const startTime = new Date(date);
     if (hour) startTime.setHours(hour);
