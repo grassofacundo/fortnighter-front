@@ -4,6 +4,9 @@
 }
 
 .mainBody {
+    --calendarWidth: 70%;
+    --summaryWidth: calc(100% - var(--calendarWidth));
+
     display: flex;
     flex-direction: column;
     height: 100%;
