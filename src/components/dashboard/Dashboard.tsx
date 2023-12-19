@@ -59,6 +59,7 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                     customClass={styles.calendarAnimWrapper}
                 >
                     <DatePicker
+                        id="dashboard-dates"
                         onChange={handleDateChange}
                         endDate={selectedPosition.nextPaymentDate}
                         initialLapseBetweenDated={selectedPosition.paymentLapse}

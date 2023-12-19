@@ -10,6 +10,7 @@ import DateInput from "./dateInput/DateInput";
 //#endregion
 
 type thisProps = {
+    id: string;
     onChange: (start: Date, end: Date) => void;
     initialLapseBetweenDated?: number;
     maxDistanceBetweenDates?: number;
@@ -21,6 +22,7 @@ type thisProps = {
 };
 
 const DatePicker: FunctionComponent<thisProps> = ({
+    id,
     onChange,
     initialLapseBetweenDated = 0,
     pastDaysLimit = 0,
@@ -59,6 +61,9 @@ const DatePicker: FunctionComponent<thisProps> = ({
 
     useEffect(() => {
         let isValid = true;
+        if (start > end) {
+            isValid = false;
+        }
         if (start < getPastDate(pastDaysLimit, end)) {
             isValid = false;
         }
@@ -71,10 +76,9 @@ const DatePicker: FunctionComponent<thisProps> = ({
     return (
         <div className={`${customClass} ${styles.dateContainer}`}>
             <DateInput
-                id="start"
+                id={`${id}-start`}
                 label="From"
                 defaultValue={start}
-                currentAnswer={start}
                 onHandleDateChange={(date: Date) =>
                     handleDateChange("start", date)
                 }
@@ -82,10 +86,9 @@ const DatePicker: FunctionComponent<thisProps> = ({
             />
             {startError && <p className={styles.startError}>{startError}</p>}
             <DateInput
-                id="end"
+                id={`${id}-end`}
                 label="To"
                 defaultValue={end}
-                currentAnswer={end}
                 onHandleDateChange={(date: Date) =>
                     handleDateChange("end", date)
                 }

@@ -1,5 +1,5 @@
 //#region Dependency list
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { shiftState } from "../../types/job/Shift";
 import styles from "./Summary.module.scss";
 import { jobPosition } from "../../types/job/Position";
@@ -23,7 +23,7 @@ const Summary: FunctionComponent<thisProps> = ({
 }) => {
     const [startDate, setStartDate] = useState<Date>(searchDates.start);
     const [endDate, setEndDate] = useState<Date>(searchDates.end);
-    const [totalIncome, setTotalIncome] = useState<number>(getTotal());
+    //const [totalIncome, setTotalIncome] = useState<number>(getTotal());
 
     function getSaturdays() {
         const saturdays = shiftList.filter((shift) => shift.isSaturday);
@@ -37,9 +37,10 @@ const Summary: FunctionComponent<thisProps> = ({
 
     function getTotal(): number {
         let total = 0;
-        shiftList.forEach(
-            (shift) => (total += shift.hoursWorked * position.hourPrice)
-        );
+        shiftList.forEach((shift) => {
+            if (shift.date >= startDate && shift.date <= endDate)
+                total += shift.hoursWorked * position.hourPrice;
+        });
         return total;
     }
 
@@ -59,6 +60,7 @@ const Summary: FunctionComponent<thisProps> = ({
                 <p>{`Sundays worked: ${getSundays()}`}</p>
             </div>
             <DatePicker
+                id="summary-dates"
                 onChange={handleDateChange}
                 initialLapseBetweenDated={position.paymentLapse}
                 endDate={endDate}
