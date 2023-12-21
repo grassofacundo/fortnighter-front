@@ -5,11 +5,11 @@ import Summary from "../summary/Summary";
 import JobPanel from "../jobPanel/jobPanel";
 import { jobPosition } from "../../types/job/Position";
 import styles from "./Dashboard.module.scss";
-import DatePicker from "../datePicker/DatePicker";
 import shiftService from "../../services/shiftService";
 import { shiftState } from "../../types/job/Shift";
 import InOutAnim from "../utils/InOutAnim";
-import { getPastDate } from "../../services/dateService";
+import { datesAreEqual, getPastDate } from "../../services/dateService";
+import DatePickerPanel from "./datePickerPanel/DatePickerPanel";
 //#endregion
 
 type thisProps = unknown;
@@ -18,10 +18,12 @@ const Dashboard: FunctionComponent<thisProps> = () => {
     const [selectedPosition, setSelectedPosition] =
         useState<jobPosition | null>(null);
     const [endDate, setEndDate] = useState<Date>();
+    const [startDate, setStartDate] = useState<Date>();
     const [shiftList, setShiftList] = useState<shiftState[]>([]);
 
-    function handleDateChange(end: Date) {
+    function handleDateChange(end: Date, start: Date) {
         setEndDate(end);
+        setStartDate(start);
     }
 
     function getDates(selectedPosition: jobPosition) {
@@ -36,16 +38,21 @@ const Dashboard: FunctionComponent<thisProps> = () => {
         if (!selectedPosition) return;
 
         const { start, end } = getDates(selectedPosition);
-        shiftService
-            .getShifts(start, end, selectedPosition.id)
-            .then((shiftList) => {
-                const shiftsStates = shiftList.map((shiftBase) =>
-                    shiftService.getShiftAsState(shiftBase)
-                );
-                setShiftList(shiftsStates);
-                setEndDate(end);
-            });
-    }, [selectedPosition]);
+        const shiftStart = startDate ?? start;
+        const shiftEnd = endDate ?? end;
+        if (!startDate || !endDate || !datesAreEqual(startDate, start)) {
+            shiftService
+                .getShifts(shiftStart, shiftEnd, selectedPosition.id)
+                .then((shiftList) => {
+                    const shiftsStates = shiftList.map((shiftBase) =>
+                        shiftService.getShiftAsState(shiftBase)
+                    );
+                    setShiftList(shiftsStates);
+                    if (!startDate) setStartDate(shiftStart);
+                    if (!endDate) setEndDate(shiftEnd);
+                });
+        }
+    }, [selectedPosition, endDate, startDate]);
 
     return (
         <div className={styles.mainBody}>
@@ -53,23 +60,21 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                 selectedPosition={selectedPosition}
                 onSetSelectedPosition={setSelectedPosition}
             ></JobPanel>
-            {selectedPosition && endDate && (
+            {selectedPosition && endDate && startDate && (
                 <InOutAnim
                     inState={!!(selectedPosition && endDate)}
                     customClass={styles.calendarAnimWrapper}
                 >
-                    <DatePicker
-                        id="dashboard-dates"
-                        onChange={handleDateChange}
-                        endDate={selectedPosition.nextPaymentDate}
-                        initialLapseBetweenDated={selectedPosition.paymentLapse}
-                        pastDaysLimit={60}
-                        futureDaysLimit={30}
-                    ></DatePicker>
+                    <DatePickerPanel
+                        position={selectedPosition}
+                        end={endDate}
+                        onDateChange={handleDateChange}
+                    />
+
                     <div className={styles.calendarContainer}>
                         <Calendar
                             endDate={endDate}
-                            distanceBetweenDates={selectedPosition.paymentLapse}
+                            startDate={startDate}
                             jobPositionId={selectedPosition.id}
                             shiftList={shiftList}
                             onSetShiftList={setShiftList}
@@ -79,10 +84,7 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                                 shiftList={shiftList}
                                 position={selectedPosition}
                                 searchDates={{
-                                    start: getPastDate(
-                                        selectedPosition.paymentLapse,
-                                        endDate
-                                    ),
+                                    start: startDate,
                                     end: endDate,
                                 }}
                             />

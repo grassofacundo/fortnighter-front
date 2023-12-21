@@ -1,10 +1,11 @@
 //#region Dependency list
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { shiftState } from "../../types/job/Shift";
 import styles from "./Summary.module.scss";
 import { jobPosition } from "../../types/job/Position";
-import { getStringDMY } from "../../services/dateService";
+import { getFutureDate, getPastDate } from "../../services/dateService";
 import DatePicker from "../datePicker/DatePicker";
+import InfoPanel from "./infoPanel/InfoPanel";
 //#endregion
 
 type thisProps = {
@@ -23,52 +24,75 @@ const Summary: FunctionComponent<thisProps> = ({
 }) => {
     const [startDate, setStartDate] = useState<Date>(searchDates.start);
     const [endDate, setEndDate] = useState<Date>(searchDates.end);
-    //const [totalIncome, setTotalIncome] = useState<number>(getTotal());
+    const [startPickerDate, setStartPickerDate] = useState<Date>(
+        searchDates.start
+    );
+    const [endPickerDate, setEndPickerDate] = useState<Date>(searchDates.end);
+    const [error, setError] = useState<string>("");
+    const [datesAreValid, setDatesAreValid] = useState<boolean>(true);
 
-    function getSaturdays() {
-        const saturdays = shiftList.filter((shift) => shift.isSaturday);
-        return saturdays.length;
+    const checkDateValidity = useCallback(
+        (moment: "start" | "end", date: Date): void => {
+            if (moment === "start") {
+                if (date < getPastDate(60, endPickerDate)) {
+                    setError("Max 2 months into the past");
+                    setDatesAreValid(false);
+                    return;
+                }
+                if (date >= endPickerDate) {
+                    setError("Start date cannot be before end date");
+                    setDatesAreValid(false);
+                    return;
+                }
+                setError("");
+                setDatesAreValid(true);
+                setStartPickerDate(date);
+            } else {
+                if (date > getFutureDate(30)) {
+                    setError(
+                        `Cannot select a date after 30 days in the future`
+                    );
+                    setDatesAreValid(false);
+                    return;
+                }
+                setError("");
+                setDatesAreValid(true);
+                setEndPickerDate(date);
+            }
+        },
+        [endPickerDate]
+    );
+
+    function handleDateChange(): void {
+        setStartDate(startPickerDate);
+        setEndDate(endPickerDate);
     }
 
-    function getSundays() {
-        const sundays = shiftList.filter((shift) => shift.isSunday);
-        return sundays.length;
-    }
-
-    function getTotal(): number {
-        let total = 0;
-        shiftList.forEach((shift) => {
-            if (shift.date >= startDate && shift.date <= endDate)
-                total += shift.hoursWorked * position.hourPrice;
-        });
-        return total;
-    }
-
-    function handleDateChange(start: Date, end: Date): void {
-        setStartDate(start);
-        setEndDate(end);
-    }
+    useEffect(() => {
+        checkDateValidity("start", startPickerDate);
+        checkDateValidity("end", endPickerDate);
+    }, [startPickerDate, endPickerDate, checkDateValidity]);
 
     return (
         <div className={styles.summaryBody}>
-            <div className={styles.infoPanel}>
-                <p>{`Next payment: ${getStringDMY(
-                    position.nextPaymentDate
-                )}`}</p>
-                <p>{`Total made: $${getTotal()}`}</p>
-                <p>{`Saturdays worked: ${getSaturdays()}`}</p>
-                <p>{`Sundays worked: ${getSundays()}`}</p>
-            </div>
+            <InfoPanel
+                shiftList={shiftList}
+                position={position}
+                start={startDate}
+                end={endDate}
+            />
             <DatePicker
                 id="summary-dates"
-                onChange={handleDateChange}
-                initialLapseBetweenDated={position.paymentLapse}
+                onChange={checkDateValidity}
+                onSubmit={handleDateChange}
                 endDate={endDate}
                 pastDaysLimit={60}
                 futureDaysLimit={30}
                 customClass={styles.datePicker}
                 buttonText="Change dates"
+                areDatesValid={datesAreValid}
             ></DatePicker>
+            {error && <p className={styles.error}>{error}</p>}
         </div>
     );
 };

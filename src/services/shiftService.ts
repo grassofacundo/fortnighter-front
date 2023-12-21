@@ -18,8 +18,12 @@ class ShiftService {
 
     getHoursWorked(startDate: Date, endDate: Date): number {
         const startHour = startDate.getHours();
+        const startMinutes = startDate.getMinutes() === 30 ? 0.5 : 0;
+        const startTime = startHour + startMinutes;
         const endHour = endDate.getHours();
-        const diff = Math.round(endHour - startHour);
+        const endMinutes = endDate.getMinutes() === 30 ? 0.5 : 0;
+        const endTime = endHour + endMinutes;
+        const diff = endTime - startTime;
         return diff;
     }
 

@@ -1,10 +1,18 @@
 //#region Dependency list
 import { FunctionComponent } from "react";
-import { getYesterday, setDateFromInput } from "../../../services/dateService";
+import {
+    getLastDayOfMonth,
+    getLastMonth,
+    getNextMonth,
+    getTomorrow,
+    getYesterday,
+    setDateFromInput,
+} from "../../../services/dateService";
 import Day from "./Day";
 import Month from "./Month";
 import Year from "./Year";
 import styles from "./DateInput.module.scss";
+import { monthNum, year } from "../../../types/dateService";
 //#endregion
 
 type thisProps = {
@@ -18,7 +26,6 @@ type thisProps = {
     yearMax?: number;
     label: string;
     onHandleDateChange(date: Date): void;
-    onSetError: (errorMessage: string) => void;
 };
 type time = "day" | "month" | "year";
 export type dateField = {
@@ -40,7 +47,6 @@ const DateInput: FunctionComponent<thisProps> = ({
     defaultValue,
     label,
     onHandleDateChange,
-    onSetError,
 }) => {
     const dayId = `day-${id}`;
     const monthId = `month-${id}`;
@@ -55,7 +61,6 @@ const DateInput: FunctionComponent<thisProps> = ({
         const inputYear = inputDate.getFullYear();
         setInputValue("year", inputYear.toString());
 
-        onSetError("");
         onHandleDateChange(inputDate);
     }
 
@@ -77,15 +82,32 @@ const DateInput: FunctionComponent<thisProps> = ({
         let currentMonth = getInputValue("month");
         if (currentMonth.length === 1) currentMonth = `0${currentMonth}`;
         const currentYear = getInputValue("year");
+        const lastDayOfMonth = getLastDayOfMonth(
+            (Number(currentMonth) - 1) as monthNum,
+            currentYear as year
+        );
         if (currentDay === "00") {
             const inputDate = setDateFromInput(
                 `${currentYear}-${currentMonth}-01`
             );
             return getYesterday(inputDate);
+        } else if (Number(currentDay) > lastDayOfMonth) {
+            const inputDate = setDateFromInput(
+                `${currentYear}-${currentMonth}-${lastDayOfMonth}`
+            );
+            return getTomorrow(inputDate);
         } else if (currentMonth === "13") {
-            const nextYear = Number(currentYear) + 1;
-            const inputDate = setDateFromInput(`${nextYear}-01-${currentDay}`);
-            return inputDate;
+            const inputDate = setDateFromInput(
+                `${currentYear}-11-${currentDay}`
+            );
+            const nextMonth = getNextMonth(inputDate);
+            return nextMonth;
+        } else if (currentMonth === "00") {
+            const inputDate = setDateFromInput(
+                `${currentYear}-01-${currentDay}`
+            );
+            const nextMonth = getLastMonth(inputDate);
+            return nextMonth;
         } else {
             const inputDate = setDateFromInput(
                 `${currentYear}-${currentMonth}-${currentDay}`

@@ -1,5 +1,5 @@
 //#region Dependency list
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import styles from "./Workday.module.scss";
 import FormManager from "../utils/form/FormManager";
 import {

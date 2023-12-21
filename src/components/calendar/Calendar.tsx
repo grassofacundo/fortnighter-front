@@ -22,7 +22,7 @@ import InOutAnim from "../utils/InOutAnim";
 
 type thisProps = {
     endDate: Date;
-    distanceBetweenDates: number;
+    startDate: Date;
     jobPositionId: string;
     shiftList: shiftState[];
     onSetShiftList: Dispatch<SetStateAction<shiftState[]>>;
@@ -30,7 +30,7 @@ type thisProps = {
 
 const Calendar: FunctionComponent<thisProps> = ({
     endDate,
-    distanceBetweenDates,
+    startDate,
     jobPositionId,
     shiftList,
     onSetShiftList,
@@ -41,10 +41,7 @@ const Calendar: FunctionComponent<thisProps> = ({
     const setDays = useCallback(
         (shifts: shiftState[]): shiftGrid[] => {
             let localEndDate: Date = structuredClone(endDate);
-            const localStartDate: Date = getPastDate(
-                distanceBetweenDates,
-                localEndDate
-            );
+            const localStartDate: Date = structuredClone(startDate);
 
             const daysNum =
                 getDaysBetweenDates(localStartDate, localEndDate) + 1; //Necessary offset apparently.
@@ -61,7 +58,7 @@ const Calendar: FunctionComponent<thisProps> = ({
             }
             return days.reverse();
         },
-        [endDate, distanceBetweenDates]
+        [endDate, startDate]
     );
 
     function updateShift(updatedShift: shiftState): void {

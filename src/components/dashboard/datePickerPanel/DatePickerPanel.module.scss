@@ -1,0 +1,11 @@
+.panelBody {
+    padding: 5px 0;
+}
+
+.error {
+    visibility: hidden;
+
+    &.isVisible {
+        visibility: visible;
+    }
+}
