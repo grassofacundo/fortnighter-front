@@ -1,13 +1,13 @@
 //#region Dependency list
-import { FunctionComponent } from "react";
+import { FunctionComponent, ChangeEvent } from "react";
 import { dateField } from "./DateInput";
 //#endregion
 
 const Month: FunctionComponent<dateField> = ({
     defaultValue,
     id,
-    min,
-    max,
+    min = 0,
+    max = 13,
     update,
 }) => {
     function getMonthDefaultValue(date?: Date): number {
@@ -16,14 +16,29 @@ const Month: FunctionComponent<dateField> = ({
         return month;
     }
 
+    function handleChange(event: ChangeEvent<HTMLInputElement>): void {
+        const input = document.getElementById(id) as HTMLInputElement;
+        if (!input) return;
+
+        let inputMonth = 0;
+        try {
+            inputMonth = Number(event.target.value);
+        } catch (error) {
+            return;
+        }
+        if (inputMonth > max) input.value = max.toString();
+        if (inputMonth < min) input.value = min.toString();
+        update();
+    }
+
     return (
         <input
             type="number"
             defaultValue={getMonthDefaultValue(defaultValue)}
             id={id}
-            min={min ?? 0}
-            max={max ?? 13}
-            onChange={update}
+            min={min}
+            max={max}
+            onChange={handleChange}
         />
     );
 };

@@ -39,10 +39,19 @@ const InfoPanel: FunctionComponent<thisProps> = ({
     }
     return (
         <div className={styles.infoPanel}>
-            <p>{`Next payment: ${getStringDMY(position.nextPaymentDate)}`}</p>
-            <p>{`Total made: $${getTotal()}`}</p>
-            <p>{`Saturdays worked: ${getSaturdays()}`}</p>
-            <p>{`Sundays worked: ${getSundays()}`}</p>
+            {shiftList.length > 0 && (
+                <div>
+                    <p>{`Next payment: ${getStringDMY(
+                        position.nextPaymentDate
+                    )}`}</p>
+                    <p>{`Total made: $${getTotal()}`}</p>
+                    <p>{`Saturdays worked: ${getSaturdays()}`}</p>
+                    <p>{`Sundays worked: ${getSundays()}`}</p>
+                </div>
+            )}
+            {shiftList.length <= 0 && (
+                <p>No shifts registered in the selected dates</p>
+            )}
         </div>
     );
 };

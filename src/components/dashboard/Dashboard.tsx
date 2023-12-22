@@ -40,7 +40,12 @@ const Dashboard: FunctionComponent<thisProps> = () => {
         const { start, end } = getDates(selectedPosition);
         const shiftStart = startDate ?? start;
         const shiftEnd = endDate ?? end;
-        if (!startDate || !endDate || !datesAreEqual(startDate, start)) {
+        if (
+            !startDate ||
+            !endDate ||
+            !datesAreEqual(startDate, start) ||
+            !datesAreEqual(endDate, end)
+        ) {
             shiftService
                 .getShifts(shiftStart, shiftEnd, selectedPosition.id)
                 .then((shiftList) => {
@@ -79,16 +84,14 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                             shiftList={shiftList}
                             onSetShiftList={setShiftList}
                         ></Calendar>
-                        {shiftList.length > 0 && (
-                            <Summary
-                                shiftList={shiftList}
-                                position={selectedPosition}
-                                searchDates={{
-                                    start: startDate,
-                                    end: endDate,
-                                }}
-                            />
-                        )}
+                        <Summary
+                            shiftList={shiftList}
+                            position={selectedPosition}
+                            searchDates={{
+                                start: startDate,
+                                end: endDate,
+                            }}
+                        />
                     </div>
                 </InOutAnim>
             )}

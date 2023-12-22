@@ -162,3 +162,22 @@ const JobPanel: FunctionComponent<thisProps> = ({
 };
 
 export default JobPanel;
+
+/*
+Questions:
+
+Company name
+Address
+Job description
+Saturday price
+Sunday price
+Holiday price
+Overwork plus
+Overtime plus
+
+Any extra plus:
+Tax
+Benefit
+By time, by condition
+
+*/

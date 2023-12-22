@@ -26,6 +26,7 @@ type thisProps = {
     jobPositionId: string;
     order: number;
     onUpdateShift(updatedShift: shiftState): void;
+    onCreateShift(updatedShift: shiftState): void;
 };
 
 const Workday: FunctionComponent<thisProps> = ({
@@ -34,6 +35,7 @@ const Workday: FunctionComponent<thisProps> = ({
     jobPositionId,
     order,
     onUpdateShift,
+    onCreateShift,
 }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [Loading, setLoading] = useState<boolean>(false);
@@ -81,7 +83,8 @@ const Workday: FunctionComponent<thisProps> = ({
         if (response.ok) {
             setErrorMsg("");
             const shiftToSave = shiftService.getShiftAsState(shiftObj);
-            if (shiftToSave) onUpdateShift(shiftToSave);
+            if (shiftToSave)
+                shift ? onUpdateShift(shiftToSave) : onCreateShift(shiftToSave);
         }
         setLoading(false);
         if (!response.ok && response.error) {
@@ -189,7 +192,7 @@ const Workday: FunctionComponent<thisProps> = ({
                         } as inputTimeType,
                     ]}
                     submitCallback={handleSubmit}
-                    submitText={"Update shift"}
+                    submitText={shift ? "Update shift" : "Create shift"}
                     Loading={Loading}
                     serverErrorMsg={errorMsg}
                 />

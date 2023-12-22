@@ -25,35 +25,43 @@ const DatePickerPanel: FunctionComponent<thisProps> = ({
     const [datesAreValid, setDatesAreValid] = useState<boolean>(true);
 
     const checkDateValidity = useCallback(
-        (moment: "start" | "end", date: Date): void => {
-            if (moment === "start") {
-                if (date < getPastDate(60, endDate)) {
-                    setError("Max 2 months into the past");
-                    setDatesAreValid(false);
-                    return;
+        ({
+            moment,
+            endParam,
+            startParam,
+        }: {
+            moment: "start" | "end" | "both";
+            endParam?: Date;
+            startParam?: Date;
+        }): void => {
+            let error = "";
+            let dateAreValid = true;
+            if ((moment === "start" || moment === "both") && startParam) {
+                if (startParam < getPastDate(60, new Date())) {
+                    error = "Max 2 months into the past";
+                    dateAreValid = false;
                 }
-                if (date >= endDate) {
-                    setError("Start date cannot be before end date");
-                    setDatesAreValid(false);
-                    return;
+                if (startParam >= endDate) {
+                    error = "Start date cannot be before end date";
+                    dateAreValid = false;
                 }
-                setError("");
-                setDatesAreValid(true);
-                setStartDate(date);
-            } else {
-                if (date > getFutureDate(30)) {
-                    setError(
-                        `Cannot select a date after 30 days in the future`
-                    );
-                    setDatesAreValid(false);
-                    return;
-                }
-                setError("");
-                setDatesAreValid(true);
-                setEndDate(date);
+                setStartDate(startParam);
             }
+            if ((moment === "end" || moment === "both") && endParam) {
+                if (endParam > getFutureDate(30)) {
+                    error = "Cannot select a date after 30 days in the future";
+                    dateAreValid = false;
+                }
+                if (endParam <= startDate) {
+                    error = "End date cannot be before start date";
+                    dateAreValid = false;
+                }
+                setEndDate(endParam);
+            }
+            setError(error);
+            setDatesAreValid(dateAreValid);
         },
-        [endDate]
+        [endDate, startDate]
     );
 
     function handleDateChange(): void {
@@ -63,8 +71,11 @@ const DatePickerPanel: FunctionComponent<thisProps> = ({
     }
 
     useEffect(() => {
-        checkDateValidity("start", startDate);
-        checkDateValidity("end", endDate);
+        checkDateValidity({
+            moment: "both",
+            endParam: endDate,
+            startParam: startDate,
+        });
     }, [startDate, endDate, checkDateValidity]);
 
     return (

@@ -1,17 +1,21 @@
 //#region Dependency list
-import { FunctionComponent, useState, useEffect, useCallback } from "react";
-import {
-    getFutureDate,
-    getPastDate,
-    getToday,
-} from "../../services/dateService";
+import { FunctionComponent } from "react";
+import { getPastDate, getToday } from "../../services/dateService";
 import styles from "./DatePicker.module.scss";
 import DateInput from "./dateInput/DateInput";
 //#endregion
 
 type thisProps = {
     id: string;
-    onChange: (moment: "start" | "end", date: Date) => void;
+    onChange: ({
+        moment,
+        endParam,
+        startParam,
+    }: {
+        moment: "start" | "end" | "both";
+        endParam?: Date | undefined;
+        startParam?: Date | undefined;
+    }) => void;
     onSubmit: () => void;
     initialLapseBetweenDates?: number;
     pastDaysLimit?: number;
@@ -39,13 +43,23 @@ const DatePicker: FunctionComponent<thisProps> = ({
                 id={`${id}-start`}
                 label="From"
                 defaultValue={startDate}
-                onHandleDateChange={(date: Date) => onChange("start", date)}
+                onHandleDateChange={(date: Date) =>
+                    onChange({
+                        moment: "start",
+                        startParam: date,
+                    })
+                }
             />
             <DateInput
                 id={`${id}-end`}
                 label="To"
                 defaultValue={endDate}
-                onHandleDateChange={(date: Date) => onChange("end", date)}
+                onHandleDateChange={(date: Date) =>
+                    onChange({
+                        moment: "end",
+                        endParam: date,
+                    })
+                }
             />
             <button disabled={!areDatesValid} onClick={() => onSubmit()}>
                 {buttonText}

@@ -1,16 +1,20 @@
 .timeInputBody {
+    margin-top: 2px !important;
+
     .inputContainer {
         display: flex;
         flex-direction: row;
+        margin-top: 0;
 
         div {
             width: 3em;
-            height: 3em;
+            height: 2em;
         }
 
         input {
             width: 3em;
-            height: 3em;
+            height: 2em;
+            font-size: 12px;
             color: var(--contrastColor);
             border: 1px solid var(--contrastColor);
             background-color: var(--mainColor);

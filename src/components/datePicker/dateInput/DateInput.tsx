@@ -52,8 +52,8 @@ const DateInput: FunctionComponent<thisProps> = ({
     const monthId = `month-${id}`;
     const yearId = `year-${id}`;
 
-    function update() {
-        const inputDate = getDateAfterInput();
+    function update(changingTime: "day" | "month" | "year"): void {
+        const inputDate = getDateAfterInput(changingTime);
         const newDay = inputDate.getDate();
         setInputValue("day", newDay.toString());
         const inputMonth = inputDate.getMonth() + 1;
@@ -76,7 +76,7 @@ const DateInput: FunctionComponent<thisProps> = ({
         input.value = value;
     }
 
-    function getDateAfterInput(): Date {
+    function getDateAfterInput(changingTime: "day" | "month" | "year"): Date {
         let currentDay = getInputValue("day");
         if (currentDay.length === 1) currentDay = `0${currentDay}`;
         let currentMonth = getInputValue("month");
@@ -95,10 +95,10 @@ const DateInput: FunctionComponent<thisProps> = ({
             const inputDate = setDateFromInput(
                 `${currentYear}-${currentMonth}-${lastDayOfMonth}`
             );
-            return getTomorrow(inputDate);
+            return changingTime === "day" ? getTomorrow(inputDate) : inputDate;
         } else if (currentMonth === "13") {
             const inputDate = setDateFromInput(
-                `${currentYear}-11-${currentDay}`
+                `${currentYear}-12-${currentDay}`
             );
             const nextMonth = getNextMonth(inputDate);
             return nextMonth;
@@ -125,7 +125,7 @@ const DateInput: FunctionComponent<thisProps> = ({
                     id={dayId}
                     min={dayMin}
                     max={dayMax}
-                    update={update}
+                    update={() => update("day")}
                 />
                 <span>/</span>
                 <Month
@@ -133,7 +133,7 @@ const DateInput: FunctionComponent<thisProps> = ({
                     id={monthId}
                     min={monthMin}
                     max={monthMax}
-                    update={update}
+                    update={() => update("month")}
                 />
                 <span>/</span>
                 <Year
@@ -141,7 +141,7 @@ const DateInput: FunctionComponent<thisProps> = ({
                     id={yearId}
                     min={yearMin}
                     max={yearMax}
-                    update={update}
+                    update={() => update("year")}
                 />
             </div>
         </div>

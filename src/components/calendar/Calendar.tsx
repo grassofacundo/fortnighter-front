@@ -10,10 +10,10 @@ import {
 import styles from "./Calendar.module.scss";
 import {
     datesAreEqual,
-    getDateAsInputValue,
     getDaysBetweenDates,
     getPastDate,
     getPlainDate,
+    parseDateAsId,
 } from "../../services/dateService";
 import { shiftGrid, shiftState } from "../../types/job/Shift";
 import Workday from "./Workday";
@@ -62,16 +62,20 @@ const Calendar: FunctionComponent<thisProps> = ({
     );
 
     function updateShift(updatedShift: shiftState): void {
-        const shiftIndex = shiftList.findIndex(
-            (shift) =>
-                getDateAsInputValue(shift.date) ===
-                getDateAsInputValue(updatedShift.date)
+        const shiftIndex = shiftList.findIndex((shift) =>
+            datesAreEqual(shift.date, updatedShift.date)
         );
         if (shiftIndex < 0)
             throw new Error("Shift date is not included on loaded shifts");
 
         const shiftListCopy = structuredClone(shiftList);
         shiftListCopy[shiftIndex] = updatedShift;
+        onSetShiftList(shiftListCopy);
+    }
+
+    function createShift(updatedShift: shiftState): void {
+        const shiftListCopy = structuredClone(shiftList);
+        shiftListCopy.push(updatedShift);
         onSetShiftList(shiftListCopy);
     }
 
@@ -91,11 +95,12 @@ const Calendar: FunctionComponent<thisProps> = ({
                 <div className={styles.daysWrapper}>
                     {shiftGrid.map((shift, i) => (
                         <Workday
-                            key={i}
+                            key={parseDateAsId(shift.date)}
                             day={shift.date}
                             shift={shift.shift}
                             jobPositionId={jobPositionId}
                             onUpdateShift={updateShift}
+                            onCreateShift={createShift}
                             order={i}
                         />
                     ))}
