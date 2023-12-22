@@ -6,6 +6,10 @@
     justify-content: space-between;
     width: var(--summaryWidth);
     @extend %normal-border;
+
+    @media (max-width: 800px) {
+        order: -1;
+    }
 }
 
 .datePicker {

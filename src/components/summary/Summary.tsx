@@ -31,24 +31,34 @@ const Summary: FunctionComponent<thisProps> = ({
     const [error, setError] = useState<string>("");
     const [datesAreValid, setDatesAreValid] = useState<boolean>(true);
 
+    console.log(startDate);
     const checkDateValidity = useCallback(
-        (moment: "start" | "end", date: Date): void => {
-            if (moment === "start") {
-                if (date < getPastDate(60, endPickerDate)) {
+        ({
+            moment,
+            endParam,
+            startParam,
+        }: {
+            moment: "start" | "end" | "both";
+            endParam?: Date;
+            startParam?: Date;
+        }): void => {
+            if ((moment === "start" || moment === "both") && startParam) {
+                if (startParam < getPastDate(60, endPickerDate)) {
                     setError("Max 2 months into the past");
                     setDatesAreValid(false);
                     return;
                 }
-                if (date >= endPickerDate) {
+                if (startParam >= endPickerDate) {
                     setError("Start date cannot be before end date");
                     setDatesAreValid(false);
                     return;
                 }
                 setError("");
                 setDatesAreValid(true);
-                setStartPickerDate(date);
-            } else {
-                if (date > getFutureDate(30)) {
+                setStartPickerDate(startParam);
+            }
+            if ((moment === "end" || moment === "both") && endParam) {
+                if (endParam > getFutureDate(30)) {
                     setError(
                         `Cannot select a date after 30 days in the future`
                     );
@@ -57,7 +67,7 @@ const Summary: FunctionComponent<thisProps> = ({
                 }
                 setError("");
                 setDatesAreValid(true);
-                setEndPickerDate(date);
+                setEndPickerDate(endParam);
             }
         },
         [endPickerDate]
@@ -69,8 +79,11 @@ const Summary: FunctionComponent<thisProps> = ({
     }
 
     useEffect(() => {
-        checkDateValidity("start", startPickerDate);
-        checkDateValidity("end", endPickerDate);
+        checkDateValidity({
+            moment: "both",
+            endParam: endPickerDate,
+            startParam: startPickerDate,
+        });
     }, [startPickerDate, endPickerDate, checkDateValidity]);
 
     return (
@@ -78,20 +91,22 @@ const Summary: FunctionComponent<thisProps> = ({
             <InfoPanel
                 shiftList={shiftList}
                 position={position}
-                start={startDate}
-                end={endDate}
+                start={searchDates.start}
+                end={searchDates.end}
             />
-            <DatePicker
-                id="summary-dates"
-                onChange={checkDateValidity}
-                onSubmit={handleDateChange}
-                endDate={endDate}
-                pastDaysLimit={60}
-                futureDaysLimit={30}
-                customClass={styles.datePicker}
-                buttonText="Change dates"
-                areDatesValid={datesAreValid}
-            ></DatePicker>
+            {shiftList.length > 0 && (
+                <DatePicker
+                    id="summary-dates"
+                    onChange={checkDateValidity}
+                    onSubmit={handleDateChange}
+                    endDate={endDate}
+                    pastDaysLimit={60}
+                    futureDaysLimit={30}
+                    customClass={styles.datePicker}
+                    buttonText="Change dates"
+                    areDatesValid={datesAreValid}
+                ></DatePicker>
+            )}
             {error && <p className={styles.error}>{error}</p>}
         </div>
     );

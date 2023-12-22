@@ -14,15 +14,32 @@
     overflow: hidden;
     background-color: var(--mainColor);
     padding: 15px;
-}
 
-.calendarAnimWrapper {
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-
-    .calendarContainer {
+    .calendarAnimWrapper {
         display: flex;
+        flex-direction: column;
         overflow: hidden;
+
+        .calendarContainer {
+            display: flex;
+            overflow: hidden;
+        }
+    }
+
+    @media (max-width: 800px) {
+        --calendarWidth: 100%;
+        --summaryWidth: 100%;
+
+        .calendarAnimWrapper {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+
+            .calendarContainer {
+                display: flex;
+                flex-direction: column;
+                overflow: auto;
+            }
+        }
     }
 }
