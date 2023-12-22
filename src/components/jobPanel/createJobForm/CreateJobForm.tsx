@@ -12,7 +12,7 @@ import {
     setDateFromInput,
 } from "../../../services/dateService";
 import { dateInput } from "../../../types/form/DateInputTypes";
-import { paymentBase } from "../../../types/job/Payment";
+//import { paymentBase } from "../../../types/job/Payment";
 //#endregion
 
 type answerData = {

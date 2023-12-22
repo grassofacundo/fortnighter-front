@@ -302,7 +302,9 @@ const Form: FunctionComponent<thisProps> = ({
                             break;
                     }
                 })}
-                <div className={styles.childrenWrapper}>{children}</div>
+                {children && (
+                    <div className={styles.childrenWrapper}>{children}</div>
+                )}
                 {!hasFormErrors && (
                     <button
                         className={styles.submitButton}

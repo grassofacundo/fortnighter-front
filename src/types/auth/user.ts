@@ -1,3 +1,5 @@
+import { input } from "../form/FormTypes";
+
 export interface user extends input {
     email: string;
     name?: string;

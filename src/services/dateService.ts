@@ -52,7 +52,7 @@ export function getNextMonth(date: Date): Date {
     const monthPlusOne = currentMonth + 1;
     if (monthPlusOne === 12) {
         const nextYear = (currentYear + 1).toString() as year;
-        const nextMonth = "00" as monthStr;
+        const nextMonth = "01" as monthStr;
         const newDate = setDateFromInput({
             year: nextYear,
             month: nextMonth,
@@ -82,7 +82,7 @@ export function getLastMonth(date: Date): Date {
     const monthMinusOne = currentMonth - 1;
     if (monthMinusOne === -1) {
         const lastYear = (currentYear - 1).toString() as year;
-        const lastMonth = "11" as monthStr;
+        const lastMonth = "12" as monthStr;
         const newDate = setDateFromInput({
             year: lastYear.toString() as year,
             month: lastMonth.toString() as monthStr,

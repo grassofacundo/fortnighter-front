@@ -1,5 +1,5 @@
 //#region Dependency list
-import { ChangeEvent, FunctionComponent, useEffect, useState } from "react";
+import { ChangeEvent, FunctionComponent, useState } from "react";
 import styles from "./Checkbox.module.scss";
 import { checkbox } from "../../../../../types/form/CheckboxTypes";
 import { inputProp } from "../../../../../types/form/FormTypes";
