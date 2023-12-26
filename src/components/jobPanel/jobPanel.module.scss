@@ -8,6 +8,9 @@
     min-height: var(--containerHeight);
     height: fit-content;
     transition: max-height 250ms linear;
+    opacity: 0;
+    animation: 150ms linear slide-from-bottom forwards;
+    animation-delay: 100ms;
 
     .headerContainer {
         position: absolute;

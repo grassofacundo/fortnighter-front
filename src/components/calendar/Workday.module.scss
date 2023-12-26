@@ -12,8 +12,6 @@
     background-color: transparent;
     transition: max-height 250ms linear;
     overflow: hidden;
-    opacity: 0;
-    animation: 250ms ease-in-out slide-from-left forwards;
 
     @extend %normal-border;
 

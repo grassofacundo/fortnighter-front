@@ -1,5 +1,9 @@
+@import "../../..//style/animations";
+
 .panelBody {
     padding: 5px 0;
+    animation: 150ms linear slide-from-bottom forwards;
+    animation-delay: 150ms;
 }
 
 .error {

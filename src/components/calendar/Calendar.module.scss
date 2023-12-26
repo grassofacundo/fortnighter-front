@@ -1,7 +1,11 @@
+@import "../../style/animations";
+
 .calendar {
     display: flex;
     flex-direction: column;
     width: var(--calendarWidth);
+    animation: 150ms linear slide-from-bottom forwards;
+    animation-delay: 200ms;
 
     .daysWrapperAnimation {
         overflow: auto;

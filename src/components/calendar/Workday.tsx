@@ -108,7 +108,6 @@ const Workday: FunctionComponent<thisProps> = ({
     return (
         <div
             className={`${styles.dayBody} ${isExpanded ? styles.expanded : ""}`}
-            style={{ animationDelay: `${order * 100}ms` }}
         >
             <div className={styles.headerContainer}>
                 <p>{getStringDMY(day)}</p>
