@@ -15,8 +15,6 @@ export interface baseJobPosition<T> {
     paymentLapse: number;
     nextPaymentDate: T;
     companyName?: string;
-    description?: string;
-    address?: string;
 }
 
 /**
@@ -28,8 +26,6 @@ export interface baseJobPosition<T> {
  * @property paymentLapse - number
  * @property nextPaymentDate - Date
  * @property companyName? - string
- * @property description? - string
- * @property address? - string
  */
 export interface jobPosition extends baseJobPosition<Date> {
     id: string;

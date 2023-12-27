@@ -88,10 +88,7 @@ const Calendar: FunctionComponent<thisProps> = ({
 
     return (
         <div className={styles.calendar}>
-            <InOutAnim
-                inState={!loading}
-                customClass={styles.daysWrapperAnimation}
-            >
+            <div className={styles.daysWrapperAnimation}>
                 <div className={styles.daysWrapper}>
                     {shiftGrid.map((shift, i) => (
                         <Workday
@@ -105,7 +102,7 @@ const Calendar: FunctionComponent<thisProps> = ({
                         />
                     ))}
                 </div>
-            </InOutAnim>
+            </div>
         </div>
     );
 };

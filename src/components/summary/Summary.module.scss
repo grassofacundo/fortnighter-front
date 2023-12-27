@@ -6,8 +6,9 @@
     flex-direction: column;
     justify-content: space-between;
     width: var(--summaryWidth);
-    animation: 150ms linear slide-from-bottom forwards;
-    animation-delay: 250ms;
+    opacity: 0;
+    animation: 250ms linear slide-from-bottom forwards;
+    animation-delay: 300ms;
     @extend %normal-border;
 
     @media (max-width: 800px) {

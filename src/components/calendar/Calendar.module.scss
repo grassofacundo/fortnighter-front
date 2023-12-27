@@ -4,7 +4,8 @@
     display: flex;
     flex-direction: column;
     width: var(--calendarWidth);
-    animation: 150ms linear slide-from-bottom forwards;
+    opacity: 0;
+    animation: 250ms linear slide-from-bottom forwards;
     animation-delay: 200ms;
 
     .daysWrapperAnimation {

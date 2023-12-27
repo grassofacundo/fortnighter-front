@@ -8,11 +8,11 @@ import {
 } from "react";
 import jobService from "../../services/JobService";
 import { jobPosition } from "../../types/job/Position";
-import CreateJobForm from "./createJobForm/CreateJobForm";
 import UpdateJobForm from "./updateJobForm/UpdateJobForm";
 import CustomSelect from "../blocks/customSelect/CustomSelect";
 import styles from "./jobPanel.module.scss";
 import Arrow from "../blocks/icons/Arrow";
+import CreateJob from "./createJob/CreateJob";
 //#endregion
 
 type thisProps = {
@@ -80,6 +80,7 @@ const JobPanel: FunctionComponent<thisProps> = ({
             } else {
                 setIsCreateMode(true);
                 setIsExpanded(true);
+                setFirstExpanded(true);
             }
             setInitialLoading(false);
         });
@@ -93,8 +94,12 @@ const JobPanel: FunctionComponent<thisProps> = ({
         >
             {!initialLoading && (
                 <>
-                    <div className={styles.headerContainer}>
-                        {jobPositionList.length > 0 && (
+                    <div
+                        className={`${styles.headerContainer} ${
+                            jobPositionList ? styles.emptySelect : ""
+                        }`}
+                    >
+                        {
                             <CustomSelect
                                 key={selectedPosition?.id ?? "New job position"}
                                 placeHolder={
@@ -119,7 +124,7 @@ const JobPanel: FunctionComponent<thisProps> = ({
                                     handleJobPositionSelectChange(val)
                                 }
                             />
-                        )}
+                        }
                         <button
                             className={styles.arrowButton}
                             onClick={handleOpen}
@@ -145,9 +150,8 @@ const JobPanel: FunctionComponent<thisProps> = ({
                                     onSetLoading={setLoading}
                                 />
                             )}
-                            {isExpanded && isCreateMode && (
-                                <CreateJobForm
-                                    jobPositionList={jobPositionList}
+                            {isCreateMode && isExpanded && (
+                                <CreateJob
                                     onEnd={handleJobPositionListUpdate}
                                     loading={loading}
                                     onSetLoading={setLoading}

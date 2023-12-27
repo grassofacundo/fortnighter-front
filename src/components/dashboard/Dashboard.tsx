@@ -7,7 +7,6 @@ import { jobPosition } from "../../types/job/Position";
 import styles from "./Dashboard.module.scss";
 import shiftService from "../../services/shiftService";
 import { shiftState } from "../../types/job/Shift";
-import InOutAnim from "../utils/InOutAnim";
 import { datesAreEqual, getPastDate } from "../../services/dateService";
 import DatePickerPanel from "./datePickerPanel/DatePickerPanel";
 //#endregion
@@ -66,10 +65,7 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                 onSetSelectedPosition={setSelectedPosition}
             ></JobPanel>
             {selectedPosition && endDate && startDate && (
-                <InOutAnim
-                    inState={!!(selectedPosition && endDate)}
-                    customClass={styles.calendarAnimWrapper}
-                >
+                <div className={styles.calendarAnimWrapper}>
                     <DatePickerPanel
                         position={selectedPosition}
                         end={endDate}
@@ -93,7 +89,7 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                             }}
                         />
                     </div>
-                </InOutAnim>
+                </div>
             )}
         </div>
     );

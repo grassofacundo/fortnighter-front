@@ -18,6 +18,7 @@ type thisProps = {
     isSearchable?: boolean;
     onChange: ([value]: string) => void;
     align?: "left" | "right";
+    customClass?: CSSModuleClasses[string];
 };
 // Icon component
 const Icon = ({ isOpen }: { isOpen: boolean }) => {
@@ -65,6 +66,7 @@ const CustomSelect: FunctionComponent<thisProps> = ({
     isSearchable,
     onChange,
     align,
+    customClass,
 }) => {
     // State variables using React hooks
     const [showMenu, setShowMenu] = useState<boolean>(false); // Controls the visibility of the dropdown menu
@@ -209,7 +211,7 @@ const CustomSelect: FunctionComponent<thisProps> = ({
     }
 
     return (
-        <div className={styles.customDropdownContainer}>
+        <div className={`${styles.customDropdownContainer} ${customClass}`}>
             <div
                 ref={inputRef}
                 onClick={() => handleShowMenu()}

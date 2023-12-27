@@ -55,6 +55,7 @@ const InputTime: FunctionComponent<thisProps> = ({
                         step={h.step}
                     ></input>
                 </div>
+                <p>:</p>
                 {/* Minutes input */}
                 <div className={styles.minuteWrapper}>
                     <input

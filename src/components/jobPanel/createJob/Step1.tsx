@@ -17,18 +17,18 @@ import { dateInput } from "../../../types/form/DateInputTypes";
 
 type answerData = {
     positionName: string;
+    companyName?: string;
     hourPrice: number;
     cycleEnd: Date;
     cycleStart: Date;
 };
 type thisProps = {
-    jobPositionList: jobPosition[];
     onEnd(updatedJobPosition: jobPosition): void;
     loading: boolean;
     onSetLoading: Dispatch<SetStateAction<boolean>>;
 };
 
-const CreateJobForm: FunctionComponent<thisProps> = ({
+const Step1: FunctionComponent<thisProps> = ({
     onEnd,
     loading,
     onSetLoading,
@@ -54,6 +54,7 @@ const CreateJobForm: FunctionComponent<thisProps> = ({
         let data: answerData | undefined = undefined;
         try {
             const positionName = answers.positionName as string;
+            const companyName = answers.companyName as string;
             const hourPrice = Number(answers.hourPrice);
             const cycleEndInput = setDateFromInput(answers.cycleEnd as string);
             const cycleStartInput = setDateFromInput(
@@ -62,6 +63,7 @@ const CreateJobForm: FunctionComponent<thisProps> = ({
 
             data = {
                 positionName,
+                companyName,
                 hourPrice,
                 cycleEnd: cycleEndInput,
                 cycleStart: cycleStartInput,
@@ -84,6 +86,7 @@ const CreateJobForm: FunctionComponent<thisProps> = ({
         const daysDiff = getDaysBetweenDates(data.cycleStart, data.cycleEnd);
         const newJob: baseJobPosition<Date> = {
             name: data.positionName,
+            companyName: data.companyName,
             hourPrice: data.hourPrice,
             paymentLapse: daysDiff,
             nextPaymentDate: data.cycleEnd,
@@ -99,6 +102,7 @@ const CreateJobForm: FunctionComponent<thisProps> = ({
             onEnd({
                 id: jobRes.content.id,
                 name: data.positionName,
+                companyName: data.companyName,
                 hourPrice: data.hourPrice,
                 paymentLapse: daysDiff,
                 nextPaymentDate: data.cycleEnd,
@@ -116,14 +120,19 @@ const CreateJobForm: FunctionComponent<thisProps> = ({
                         id: "positionName",
                         placeholder: "Your job",
                         label: "Position name",
-                        isOptional: false,
+                    },
+                    {
+                        type: "text",
+                        id: "companyName",
+                        placeholder: "Name of company",
+                        label: "Name of company",
+                        isOptional: true,
                     },
                     {
                         type: "number",
                         id: "hourPrice",
                         placeholder: "00",
                         label: "Price per hour",
-                        isOptional: false,
                     },
                     {
                         type: "customDate",
@@ -158,4 +167,4 @@ const CreateJobForm: FunctionComponent<thisProps> = ({
     );
 };
 
-export default CreateJobForm;
+export default Step1;
