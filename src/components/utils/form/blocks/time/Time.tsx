@@ -3,6 +3,7 @@ import { FunctionComponent, ChangeEvent } from "react";
 import { inputTimeType } from "../../../../../types/form/TimeType";
 import { inputProp } from "../../../../../types/form/FormTypes";
 import styles from "./Time.module.scss";
+import CustomSelect from "../../../../blocks/customSelect/CustomSelect";
 //#endregion
 
 interface thisProps extends inputProp {
@@ -71,6 +72,7 @@ const InputTime: FunctionComponent<thisProps> = ({
                         step={m.step}
                     ></input>
                 </div>
+                {/* <CustomSelect></CustomSelect> */}
             </div>
         </div>
     );
