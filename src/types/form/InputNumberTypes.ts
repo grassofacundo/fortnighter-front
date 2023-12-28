@@ -1,7 +1,7 @@
 import { input } from "./FormTypes";
 
 export interface inputNumber extends input {
-    placeholder: string;
+    placeholder?: string;
     step?: `${number}` | `${number}.${number}`;
     min?: number;
     max?: number;
