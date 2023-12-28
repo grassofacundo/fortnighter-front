@@ -4,30 +4,3 @@
     justify-content: space-between;
     gap: 10px;
 }
-
-.step2 {
-    padding: 50px;
-    text-align: center;
-    font-size: 20px;
-
-    p,
-    .inlineSelect,
-    input,
-    div[class*="inputClass"] {
-        display: inline-block;
-    }
-
-    .inlineSelect {
-        margin: 0 5px;
-    }
-
-    input {
-        width: 4rem;
-        font-size: 20px !important;
-        border: {
-            top: none !important;
-            left: none !important;
-            right: none !important;
-        }
-    }
-}

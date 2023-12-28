@@ -2,7 +2,7 @@
 import { FunctionComponent, Dispatch, SetStateAction, useState } from "react";
 import { jobPosition } from "../../../types/job/Position";
 import Step1 from "./Step1";
-import Step2 from "./Step2";
+import Step2 from "./step2/Step2";
 import styles from "./CreateJob.module.scss";
 //#endregion
 

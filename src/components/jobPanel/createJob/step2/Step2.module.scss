@@ -1,0 +1,43 @@
+@import "../../../../style/animations";
+
+.step2 {
+    padding: 0 10%;
+    font-size: 20px;
+    width: 100%;
+
+    span,
+    .inlineSelect,
+    input,
+    div[class*="inputClass"] {
+        display: inline-block;
+    }
+
+    .paragraph,
+    .submitButton {
+        opacity: 0;
+        color: var(--textColor);
+
+        &.show {
+            animation: 250ms linear slide-from-bottom forwards;
+        }
+    }
+
+    .inlineSelect {
+        margin: 0 5px;
+    }
+
+    input {
+        width: 4rem;
+        font-size: 20px !important;
+        border: {
+            top: none !important;
+            left: none !important;
+            right: none !important;
+        }
+    }
+
+    .lineBreak {
+        width: 100%;
+        height: 1px;
+    }
+}
