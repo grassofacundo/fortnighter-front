@@ -1,5 +1,5 @@
-Create a custom select element in the Form folder
-Allow selecting AM or PM when inputting time
-Thing about shared days shifts (ex, start at night and finished at the next day)
+Form:
+Allow only 12 hours format. Valid the input and change the types.
 
-Implement another text, but this time in the summary section to allow creating tax and benefits
+Think about shared days shifts (ex, start at night and finished at the next day)
+Implement another text, but this time in the summary section to allow creating tax and benefits 
