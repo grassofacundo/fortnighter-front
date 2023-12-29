@@ -1,9 +1,13 @@
 //#region Dependency list
 import { FunctionComponent, ChangeEvent } from "react";
-import { inputTimeType } from "../../../../../types/form/TimeType";
-import { inputProp } from "../../../../../types/form/FormTypes";
+import {
+    inputTimeType,
+    meridianValues,
+    timeStructure,
+} from "../../types/TimeType";
+import { inputProp } from "../../types/FormTypes";
+import TimeSelect from "./select/TimeSelect";
 import styles from "./Time.module.scss";
-import CustomSelect from "../../../../blocks/customSelect/CustomSelect";
 //#endregion
 
 interface thisProps extends inputProp {
@@ -15,13 +19,16 @@ const InputTime: FunctionComponent<thisProps> = ({
     formAnswers,
     onUpdateAnswer,
 }) => {
-    const { id, label, hour, minute } = fields;
+    const { id, label, hour, minute, isAm } = fields;
     const h = hour;
     const m = minute;
 
-    const validInput = ({ target }: ChangeEvent<HTMLInputElement>) => {
+    function validInput({ target }: ChangeEvent<HTMLInputElement>): void {
         const prevAnswer = formAnswers.find((answer) => answer.id === id);
-        const prevValue = (prevAnswer?.value as string) ?? "00:00";
+        const prevValue: timeStructure =
+            (prevAnswer?.value as timeStructure) ??
+            ("00:00-AM" as timeStructure);
+
         let newAnswer = "";
 
         if (target.name === "hour") {
@@ -34,15 +41,34 @@ const InputTime: FunctionComponent<thisProps> = ({
             const hour = prevValue.split(":")[0];
             newAnswer = `${hour}:${target.value}`;
         }
-        onUpdateAnswer({ id, value: newAnswer, error: "" });
-    };
+        const meridian = prevValue.split("-")[1] as meridianValues;
+        newAnswer = `${newAnswer}-${meridian}`;
+        onUpdateAnswer({
+            id,
+            value: newAnswer,
+            error: "",
+        });
+    }
+
+    function updateMeridian(meridian: meridianValues): void {
+        const prevAnswer = formAnswers.find((answer) => answer.id === id);
+        const prevValue = (prevAnswer?.value as string) ?? "00:00[AM]";
+
+        const time = prevValue.split("-")[0];
+        const newAnswer = `${time}-${meridian}`;
+        onUpdateAnswer({
+            id,
+            value: newAnswer,
+            error: "",
+        });
+    }
 
     return (
         <div className={`inputClass ${styles.timeInputBody}`}>
             {label && <p>{label}</p>}
             <div className={styles.inputContainer}>
                 {/* Hour input */}
-                <div className={styles.hourWrapper}>
+                <div className={styles.inputWrapper}>
                     <input
                         type="number"
                         name="hour"
@@ -58,7 +84,7 @@ const InputTime: FunctionComponent<thisProps> = ({
                 </div>
                 <p>:</p>
                 {/* Minutes input */}
-                <div className={styles.minuteWrapper}>
+                <div className={styles.inputWrapper}>
                     <input
                         type="number"
                         name="minute"
@@ -72,7 +98,10 @@ const InputTime: FunctionComponent<thisProps> = ({
                         step={m.step}
                     ></input>
                 </div>
-                {/* <CustomSelect></CustomSelect> */}
+                <TimeSelect
+                    isAm={isAm}
+                    onMeridiemChange={updateMeridian}
+                ></TimeSelect>
             </div>
         </div>
     );
