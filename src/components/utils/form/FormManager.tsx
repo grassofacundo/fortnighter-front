@@ -13,12 +13,8 @@ import {
     ReactNode,
 } from "react";
 import Form from "./Form";
-import {
-    formAnswersType,
-    inputField,
-    parsedAnswers,
-} from "../../../types/form/FormTypes";
-import { checkbox } from "../../../types/form/CheckboxTypes";
+import { formAnswersType, inputField, parsedAnswers } from "./types/FormTypes";
+import { checkbox } from "./types/CheckboxTypes";
 
 type thisProps = {
     inputs: inputField[];

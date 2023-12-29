@@ -1,7 +1,7 @@
 //#region Dependency list
 import { ChangeEvent, FunctionComponent } from "react";
-import { inputNumber } from "../../../../../types/form/InputNumberTypes";
-import { inputProp } from "../../../../../types/form/FormTypes";
+import { inputNumber } from "../../types/InputNumberTypes";
+import { inputProp } from "../../types/FormTypes";
 //#endregion
 
 interface thisProps extends inputProp {

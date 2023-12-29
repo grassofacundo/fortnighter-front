@@ -14,9 +14,9 @@ import {
     getPastDate,
     setDateFromInput,
 } from "../../../services/dateService";
-import { parsedAnswers } from "../../../types/form/FormTypes";
+import { parsedAnswers } from "../../utils/form/types/FormTypes";
 import jobService from "../../../services/JobService";
-import { dateInput } from "../../../types/form/DateInputTypes";
+import { dateInput } from "../../utils/form/types/DateInputTypes";
 //#endregion
 
 type answerData = {

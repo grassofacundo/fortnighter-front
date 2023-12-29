@@ -9,10 +9,10 @@ import {
 } from "../../services/dateService";
 import { shiftBase, shiftLocalState, shiftState } from "../../types/job/Shift";
 import shiftService from "../../services/shiftService";
-import { checkbox } from "../../types/form/CheckboxTypes";
-import { inputTimeType } from "../../types/form/TimeType";
-import { parsedAnswers } from "../../types/form/FormTypes";
-import { inputNumber } from "../../types/form/InputNumberTypes";
+import { checkbox } from "../utils/form/types/CheckboxTypes";
+import { inputTimeType } from "../utils/form/types/TimeType";
+import { parsedAnswers } from "../utils/form/types/FormTypes";
+import { inputNumber } from "../utils/form/types/InputNumberTypes";
 //#endregion
 
 type answerData = {

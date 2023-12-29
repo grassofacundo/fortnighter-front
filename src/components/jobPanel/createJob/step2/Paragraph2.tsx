@@ -1,11 +1,11 @@
 //#region Dependency list
 import { FunctionComponent, Dispatch, SetStateAction, useEffect } from "react";
 import { workdayTime, workdayTimeType } from "./Step2";
-import { formAnswersType } from "../../../../types/form/FormTypes";
+import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import InputTime from "../../../utils/form/blocks/time/Time";
 import styles from "./Step2.module.scss";
-import { inputNumber } from "../../../../types/form/InputNumberTypes";
-import { inputTimeType } from "../../../../types/form/TimeType";
+import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
+import { inputTimeType } from "../../../utils/form/types/TimeType";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 //#endregion
 

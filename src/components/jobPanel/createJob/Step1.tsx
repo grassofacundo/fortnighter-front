@@ -2,7 +2,7 @@
 import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
 import FormManager from "../../utils/form/FormManager";
 import { baseJobPosition, jobPosition } from "../../../types/job/Position";
-import { parsedAnswers } from "../../../types/form/FormTypes";
+import { parsedAnswers } from "../../utils/form/types/FormTypes";
 import jobService from "../../../services/JobService";
 import {
     getDateAsInputValue,
@@ -11,7 +11,7 @@ import {
     getToday,
     setDateFromInput,
 } from "../../../services/dateService";
-import { dateInput } from "../../../types/form/DateInputTypes";
+import { dateInput } from "../../utils/form/types/DateInputTypes";
 //import { paymentBase } from "../../../types/job/Payment";
 //#endregion
 

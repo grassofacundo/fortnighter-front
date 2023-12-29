@@ -5,7 +5,7 @@ import Paragraph2 from "./Paragraph2";
 import Paragraph3 from "./Paragraph3";
 import { hourNum, minuteNum } from "../../../../types/dateService";
 import { jobPosition } from "../../../../types/job/Position";
-import { formAnswersType } from "../../../../types/form/FormTypes";
+import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import styles from "./Step2.module.scss";
 //#endregion
 

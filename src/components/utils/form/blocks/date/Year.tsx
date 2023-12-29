@@ -1,6 +1,6 @@
 //#region Dependency list
 import { FunctionComponent, ChangeEvent } from "react";
-import { year } from "../../../../../types/form/DateInputTypes";
+import { year } from "../../types/DateInputTypes";
 //#endregion
 
 type thisProps = {

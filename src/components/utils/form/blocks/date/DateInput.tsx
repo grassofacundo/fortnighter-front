@@ -1,7 +1,7 @@
 //#region Dependency list
 import { FunctionComponent } from "react";
-import { inputProp } from "../../../../../types/form/FormTypes";
-import { dateInput } from "../../../../../types/form/DateInputTypes";
+import { inputProp } from "../../types/FormTypes";
+import { dateInput } from "../../types/DateInputTypes";
 import Day from "./Day";
 import Month from "./Month";
 import Year from "./Year";

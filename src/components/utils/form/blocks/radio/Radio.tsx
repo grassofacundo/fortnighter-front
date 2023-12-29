@@ -1,7 +1,7 @@
 //#region Dependency list
 import { ChangeEvent, Fragment, FunctionComponent } from "react";
-import { inputProp } from "../../../../../types/form/FormTypes";
-import { radio } from "../../../../../types/form/RadioTypes";
+import { inputProp } from "../../types/FormTypes";
+import { radio } from "../../types/RadioTypes";
 //#endregion
 
 interface thisProps extends inputProp {

@@ -9,8 +9,8 @@ import {
 import { workdayTime } from "./Step2";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 import { hourNum } from "../../../../types/dateService";
-import { formAnswersType } from "../../../../types/form/FormTypes";
-import { inputNumber } from "../../../../types/form/InputNumberTypes";
+import { formAnswersType } from "../../../utils/form/types/FormTypes";
+import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
 import styles from "./Step2.module.scss";
 //#endregion
 

@@ -3,10 +3,10 @@ import { FunctionComponent, Dispatch, SetStateAction } from "react";
 import { workdayTime, workdayTimeType } from "./Step2";
 import CustomSelect from "../../../blocks/customSelect/CustomSelect";
 import InputTime from "../../../utils/form/blocks/time/Time";
-import { inputNumber } from "../../../../types/form/InputNumberTypes";
+import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
-import { inputTimeType } from "../../../../types/form/TimeType";
-import { formAnswersType } from "../../../../types/form/FormTypes";
+import { inputTimeType } from "../../../utils/form/types/TimeType";
+import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import styles from "./Step2.module.scss";
 //#endregion
 

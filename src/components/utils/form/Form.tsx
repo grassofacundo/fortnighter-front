@@ -20,20 +20,16 @@ import styles from "./Form.module.scss";
 import Spinner from "../../blocks/spinner/Spinner";
 import Checkbox from "./blocks/checkbox/Checkbox";
 import DateInput from "./blocks/date/DateInput";
-import { inputNumber } from "../../../types/form/InputNumberTypes";
-import { checkbox } from "../../../types/form/CheckboxTypes";
-import {
-    error,
-    formAnswersType,
-    inputField,
-} from "../../../types/form/FormTypes";
-import { text } from "../../../types/form/TextTypes";
-import { dateInput } from "../../../types/form/DateInputTypes";
-import { tel } from "../../../types/form/TelTypes";
-import { password } from "../../../types/form/PasswordTypes";
-import { mail } from "../../../types/form/MailTypes";
-import { radio } from "../../../types/form/RadioTypes";
-import { inputTimeType } from "../../../types/form/TimeType";
+import { inputNumber } from "./types/InputNumberTypes";
+import { checkbox } from "./types/CheckboxTypes";
+import { error, formAnswersType, inputField } from "./types/FormTypes";
+import { text } from "./types/TextTypes";
+import { dateInput } from "./types/DateInputTypes";
+import { tel } from "./types/TelTypes";
+import { password } from "./types/PasswordTypes";
+import { mail } from "./types/MailTypes";
+import { radio } from "./types/RadioTypes";
+import { inputTimeType } from "./types/TimeType";
 import InputTime from "./blocks/time/Time";
 //#endregion
 
