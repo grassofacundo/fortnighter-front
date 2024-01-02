@@ -219,7 +219,7 @@ const CustomSelect: FunctionComponent<thisProps> = ({
             >
                 <div className={styles.placeholder}>{getDisplay()}</div>
                 <div>
-                    <div>
+                    <div className={styles.svgWrapper}>
                         <Icon isOpen={showMenu} />
                     </div>
                 </div>

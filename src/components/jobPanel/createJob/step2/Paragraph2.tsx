@@ -37,14 +37,6 @@ const Paragraph2: FunctionComponent<thisProps> = ({
     workDayPrice,
     handleNumberChange,
 }) => {
-    function getTimeFromWorkdayTime(
-        workdayTime: workdayTime,
-        time: "hour" | "minute"
-    ) {
-        const hour = workdayTime.split(":");
-        return time === "hour" ? hour[0] : hour[1];
-    }
-
     const hasWorkDayInfo =
         !!workdayType &&
         !!workDayTimeStart &&
@@ -79,19 +71,15 @@ const Paragraph2: FunctionComponent<thisProps> = ({
             }`}
         >
             Then, from
-            {hasWorkDayInfo && (
+            {hasWorkDayInfo && overtimeStart && (
                 <InputTime
-                    formAnswers={
-                        overtimeStart
-                            ? [
-                                  {
-                                      id: "OvertimeStart",
-                                      value: overtimeStart,
-                                      error: "",
-                                  },
-                              ]
-                            : []
-                    }
+                    formAnswers={[
+                        {
+                            id: "OvertimeStart",
+                            value: overtimeStart,
+                            error: "",
+                        },
+                    ]}
                     onUpdateAnswer={(answer: formAnswersType) =>
                         setOvertimeStart(answer.value as workdayTime)
                     }
@@ -99,45 +87,30 @@ const Paragraph2: FunctionComponent<thisProps> = ({
                         {
                             type: "time",
                             id: "OvertimeStart",
+                            defaultValue: overtimeStart,
                             hour: {
                                 type: "number",
                                 id: "OvertimeStartHour",
-                                min: 0,
-                                max: 23,
-                                defaultValue: getTimeFromWorkdayTime(
-                                    workDayTimeEnd,
-                                    "hour"
-                                ),
                             } as inputNumber,
                             minute: {
                                 type: "number",
                                 id: `OvertimeStartMinute`,
-                                defaultValue: getTimeFromWorkdayTime(
-                                    workDayTimeEnd,
-                                    "minute"
-                                ),
                                 step: "30",
-                                min: 0,
-                                max: 59,
                             } as inputNumber,
                         } as inputTimeType
                     }
                 />
             )}
             to
-            {hasWorkDayInfo && (
+            {hasWorkDayInfo && overtimeEnd && (
                 <InputTime
-                    formAnswers={
-                        overtimeEnd
-                            ? [
-                                  {
-                                      id: "OvertimeEnd",
-                                      value: overtimeEnd,
-                                      error: "",
-                                  },
-                              ]
-                            : []
-                    }
+                    formAnswers={[
+                        {
+                            id: "OvertimeEnd",
+                            value: overtimeEnd,
+                            error: "",
+                        },
+                    ]}
                     onUpdateAnswer={(answer: formAnswersType) =>
                         setOvertimeEnd(answer.value as workdayTime)
                     }
@@ -145,23 +118,16 @@ const Paragraph2: FunctionComponent<thisProps> = ({
                         {
                             type: "time",
                             id: "OvertimeEnd",
+                            defaultValue: overtimeEnd,
                             hour: {
                                 type: "number",
                                 id: "OvertimeEndHour",
                                 min: 0,
                                 max: 23,
-                                defaultValue: getTimeFromWorkdayTime(
-                                    workDayTimeStart,
-                                    "hour"
-                                ),
                             } as inputNumber,
                             minute: {
                                 type: "number",
                                 id: `OvertimeEndMinute`,
-                                defaultValue: getTimeFromWorkdayTime(
-                                    workDayTimeStart,
-                                    "minute"
-                                ),
                                 step: "30",
                                 min: 0,
                                 max: 59,

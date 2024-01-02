@@ -41,7 +41,7 @@ const TimeSelect: FunctionComponent<timeSelectProps> = ({
                 className={styles.dropdownInput}
             >
                 <div className={styles.placeholder}>{value}</div>
-                <div>
+                <div className={styles.svgWrapper}>
                     <svg
                         viewBox="0 0 24 24"
                         width="18"

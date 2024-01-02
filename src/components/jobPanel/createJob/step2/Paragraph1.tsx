@@ -1,22 +1,27 @@
 //#region Dependency list
-import { FunctionComponent, Dispatch, SetStateAction } from "react";
-import { workdayTime, workdayTimeType } from "./Step2";
+import { FunctionComponent, Dispatch, SetStateAction, useEffect } from "react";
+import { workdayTimeType } from "./Step2";
 import CustomSelect from "../../../blocks/customSelect/CustomSelect";
 import InputTime from "../../../utils/form/blocks/time/Time";
 import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
-import { inputTimeType } from "../../../utils/form/types/TimeType";
+import {
+    inputTimeType,
+    timeStructure,
+} from "../../../utils/form/types/TimeType";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import styles from "./Step2.module.scss";
+import { getHour } from "../../../utils/form/blocks/time/select/TimeMethods";
 //#endregion
 
 type thisProps = {
     setWorkdayType: Dispatch<SetStateAction<workdayTimeType>>;
-    setWorkDayTimeStart: Dispatch<SetStateAction<workdayTime | undefined>>;
-    setWorkDayTimeEnd: Dispatch<SetStateAction<workdayTime | undefined>>;
+    setWorkDayTimeStart: Dispatch<SetStateAction<timeStructure | undefined>>;
+    setWorkDayTimeEnd: Dispatch<SetStateAction<timeStructure | undefined>>;
     setWorkDayPrice: Dispatch<SetStateAction<number | undefined>>;
-    workDayTimeStart: workdayTime | undefined;
-    workDayTimeEnd: workdayTime | undefined;
+    setFinishNextDay: Dispatch<SetStateAction<boolean>>;
+    workDayTimeStart: timeStructure | undefined;
+    workDayTimeEnd: timeStructure | undefined;
     handleNumberChange(
         answer: formAnswersType,
         callback: Dispatch<SetStateAction<number | undefined>>
@@ -28,6 +33,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
     setWorkDayTimeStart,
     setWorkDayTimeEnd,
     setWorkDayPrice,
+    setFinishNextDay,
     workDayTimeStart,
     workDayTimeEnd,
     handleNumberChange,
@@ -38,6 +44,13 @@ const Paragraph1: FunctionComponent<thisProps> = ({
         { label: "sunday", value: "sunday" },
         { label: "holiday", value: "holiday" },
     ];
+
+    useEffect(() => {
+        if (workDayTimeStart && workDayTimeEnd) {
+            const hour = getHour(workDayTimeStart);
+            setFinishNextDay(true);
+        }
+    }, [workDayTimeStart, workDayTimeEnd, setFinishNextDay]);
 
     return (
         <div className={`${styles.paragraph} ${styles.show}`}>
@@ -68,7 +81,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                         : []
                 }
                 onUpdateAnswer={(answer: formAnswersType) =>
-                    setWorkDayTimeStart(answer.value as workdayTime)
+                    setWorkDayTimeStart(answer.value as timeStructure)
                 }
                 fields={
                     {
@@ -77,8 +90,6 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                         hour: {
                             type: "number",
                             id: "WorkDayStartHour",
-                            min: 0,
-                            max: 23,
                             placeholder: "8",
                         } as inputNumber,
                         minute: {
@@ -86,9 +97,10 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                             id: `WorkDayStartMinute`,
                             placeholder: "00",
                             step: "30",
-                            min: 0,
-                            max: 59,
                         } as inputNumber,
+                        meridian: {
+                            isAm: true,
+                        },
                     } as inputTimeType
                 }
             />
@@ -106,7 +118,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                         : []
                 }
                 onUpdateAnswer={(answer: formAnswersType) =>
-                    setWorkDayTimeEnd(answer.value as workdayTime)
+                    setWorkDayTimeEnd(answer.value as timeStructure)
                 }
                 fields={
                     {
@@ -115,17 +127,13 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                         hour: {
                             type: "number",
                             id: "workDayEndHour",
-                            min: 0,
-                            max: 23,
-                            placeholder: "16",
+                            placeholder: "5",
                         } as inputNumber,
                         minute: {
                             type: "number",
                             id: `workDayEndMinute`,
                             placeholder: "00",
                             step: "30",
-                            min: 0,
-                            max: 59,
                         } as inputNumber,
                     } as inputTimeType
                 }

@@ -3,14 +3,14 @@ import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
 import Paragraph1 from "./Paragraph1";
 import Paragraph2 from "./Paragraph2";
 import Paragraph3 from "./Paragraph3";
-import { hourNum, minuteNum } from "../../../../types/dateService";
+import { hourNum } from "../../../../types/dateService";
 import { jobPosition } from "../../../../types/job/Position";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import styles from "./Step2.module.scss";
+import { timeStructure } from "../../../utils/form/types/TimeType";
 //#endregion
 
 export type workdayTimeType = "regular" | "saturday" | "sunday" | "holiday";
-export type workdayTime = `${hourNum}:${minuteNum}`;
 
 type thisProps = {
     onEnd(updatedJobPosition: jobPosition): void;
@@ -26,14 +26,16 @@ const Step2: FunctionComponent<thisProps> = ({
     onSetLoading,
 }) => {
     const [workdayType, setWorkdayType] = useState<workdayTimeType>("regular");
-    const [workDayTimeStart, setWorkDayTimeStart] = useState<workdayTime>();
-    const [workDayTimeEnd, setWorkDayTimeEnd] = useState<workdayTime>();
+    const [workDayTimeStart, setWorkDayTimeStart] = useState<timeStructure>();
+    const [workDayTimeEnd, setWorkDayTimeEnd] = useState<timeStructure>();
+    const [finishNextDay, setFinishNextDay] = useState<boolean>(false);
     const [workDayPrice, setWorkDayPrice] = useState<number>();
-    const [overtimeStart, setOvertimeStart] = useState<workdayTime>();
-    const [overtimeEnd, setOvertimeEnd] = useState<workdayTime>();
+    const [overtimeStart, setOvertimeStart] = useState<timeStructure>();
+    const [overtimeEnd, setOvertimeEnd] = useState<timeStructure>();
     const [overtimePrice, setOvertimeDayPrice] = useState<number>();
     const [workDayLength, setWorkDayLength] = useState<hourNum>();
     const [overworkPrice, setOverworkDayPrice] = useState<number>();
+    const [error, setError] = useState<string>("");
 
     function handleNumberChange(
         answer: formAnswersType,
@@ -48,7 +50,14 @@ const Step2: FunctionComponent<thisProps> = ({
     }
 
     function handleSubmit() {
-        console.log(workDayLength);
+        if (
+            workdayType !== "regular" &&
+            workdayType !== "saturday" &&
+            workdayType !== "sunday" &&
+            workdayType !== "holiday"
+        ) {
+            setError("Workday type is not correct");
+        }
     }
 
     return (
@@ -61,6 +70,7 @@ const Step2: FunctionComponent<thisProps> = ({
                 setWorkDayTimeStart={setWorkDayTimeStart}
                 setWorkDayTimeEnd={setWorkDayTimeEnd}
                 setWorkDayPrice={setWorkDayPrice}
+                setFinishNextDay={setFinishNextDay}
                 workDayTimeStart={workDayTimeStart}
                 workDayTimeEnd={workDayTimeEnd}
                 handleNumberChange={handleNumberChange}

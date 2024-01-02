@@ -1,5 +1,5 @@
 //#region Dependency list
-import { FunctionComponent, ChangeEvent } from "react";
+import { FunctionComponent, ChangeEvent, useRef } from "react";
 import {
     inputTimeType,
     meridianValues,
@@ -8,6 +8,11 @@ import {
 import { inputProp } from "../../types/FormTypes";
 import TimeSelect from "./select/TimeSelect";
 import styles from "./Time.module.scss";
+import {
+    getDefaultHourValue,
+    getDefaultMinuteValue,
+    getMeridian,
+} from "./select/TimeMethods";
 //#endregion
 
 interface thisProps extends inputProp {
@@ -19,7 +24,10 @@ const InputTime: FunctionComponent<thisProps> = ({
     formAnswers,
     onUpdateAnswer,
 }) => {
-    const { id, label, hour, minute, isAm } = fields;
+    const hourRef = useRef<HTMLInputElement>(null);
+    const minuteRef = useRef<HTMLInputElement>(null);
+
+    const { id, label, hour, minute, meridian, defaultValue } = fields;
     const h = hour;
     const m = minute;
 
@@ -27,22 +35,46 @@ const InputTime: FunctionComponent<thisProps> = ({
         const prevAnswer = formAnswers.find((answer) => answer.id === id);
         const prevValue: timeStructure =
             (prevAnswer?.value as timeStructure) ??
-            ("00:00-AM" as timeStructure);
+            (`00:00-${getMeridian(defaultValue, meridian)}` as timeStructure);
 
         let newAnswer = "";
 
         if (target.name === "hour") {
-            const minute = prevValue.split(":")[1];
+            const minuteStart = prevValue.indexOf(":");
+            const minuteEnd = prevValue.indexOf("-");
+            const minute = prevValue.substring(minuteStart + 1, minuteEnd);
+            let hour = 1;
+            try {
+                hour = Number(target.value);
+                if (hour > 12) hour = 12;
+                if (hour < 1) hour = 1;
+                if (Number(target.value) !== hour) updateInput("hour", hour);
+            } catch (error) {
+                console.log(error);
+            }
             newAnswer = `${
-                target.value.length === 1 ? `0${target.value}` : target.value
+                target.value.length === 1 ? `0${hour}` : hour
             }:${minute}`;
         }
         if (target.name === "minute") {
             const hour = prevValue.split(":")[0];
-            newAnswer = `${hour}:${target.value}`;
+            let minute = 0;
+            try {
+                minute = Number(target.value);
+                if (minute > 30) minute = 30;
+                if (minute < 0) minute = 0;
+                if (minute === 3) minute = 30;
+                if (minute !== 0 && minute !== 30)
+                    minute > 15 ? (minute = 30) : (minute = 0);
+                if (Number(target.value) !== minute)
+                    updateInput("minute", minute);
+            } catch (error) {
+                console.log(error);
+            }
+            newAnswer = `${hour}:${minute}`;
         }
-        const meridian = prevValue.split("-")[1] as meridianValues;
-        newAnswer = `${newAnswer}-${meridian}`;
+        const meridianVal = prevValue.split("-")[1] as meridianValues;
+        newAnswer = `${newAnswer}-${meridianVal}`;
         onUpdateAnswer({
             id,
             value: newAnswer,
@@ -50,17 +82,35 @@ const InputTime: FunctionComponent<thisProps> = ({
         });
     }
 
-    function updateMeridian(meridian: meridianValues): void {
+    function updateMeridian(meridianParam: meridianValues): void {
         const prevAnswer = formAnswers.find((answer) => answer.id === id);
-        const prevValue = (prevAnswer?.value as string) ?? "00:00[AM]";
+        const prevValue =
+            (prevAnswer?.value as string) ??
+            `00:00-${getMeridian(defaultValue, meridian)}`;
 
         const time = prevValue.split("-")[0];
-        const newAnswer = `${time}-${meridian}`;
+        const newAnswer = `${time}-${meridianParam}`;
         onUpdateAnswer({
             id,
             value: newAnswer,
             error: "",
         });
+    }
+    ("");
+    function updateInput(
+        time: "hour" | "minute",
+        value: string | number
+    ): void {
+        let input: HTMLInputElement | undefined | null;
+        if (time === "hour") {
+            input = hourRef.current;
+        }
+        if (time === "minute") {
+            input = minuteRef.current;
+        }
+
+        if (!input || !input?.value) return;
+        input.value = value.toString();
     }
 
     return (
@@ -70,15 +120,16 @@ const InputTime: FunctionComponent<thisProps> = ({
                 {/* Hour input */}
                 <div className={styles.inputWrapper}>
                     <input
+                        ref={hourRef}
                         type="number"
                         name="hour"
                         id={h.id}
-                        max={h.max}
-                        min={h.min}
+                        max={h.max ?? 12}
+                        min={h.min ?? 1}
                         placeholder={h.placeholder}
                         required={!h.isOptional}
                         onChange={(target) => validInput(target)}
-                        defaultValue={h.defaultValue}
+                        defaultValue={getDefaultHourValue(defaultValue)}
                         step={h.step}
                     ></input>
                 </div>
@@ -86,20 +137,21 @@ const InputTime: FunctionComponent<thisProps> = ({
                 {/* Minutes input */}
                 <div className={styles.inputWrapper}>
                     <input
+                        ref={minuteRef}
                         type="number"
                         name="minute"
                         id={m.id}
-                        max={m.max}
-                        min={m.min}
+                        max={m.max ?? 30}
+                        min={m.min ?? 0}
                         placeholder={m.placeholder}
                         required={!m.isOptional}
                         onChange={(target) => validInput(target)}
-                        defaultValue={m.defaultValue}
+                        defaultValue={getDefaultMinuteValue(defaultValue)}
                         step={m.step}
                     ></input>
                 </div>
                 <TimeSelect
-                    isAm={isAm}
+                    isAm={getMeridian(defaultValue, meridian) === "AM"}
                     onMeridiemChange={updateMeridian}
                 ></TimeSelect>
             </div>

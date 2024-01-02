@@ -47,22 +47,27 @@ const Paragraph3: FunctionComponent<thisProps> = ({
         time: "hour" | "minute"
     ) {
         const hour = workdayTime.split(":");
-        return time === "hour" ? hour[0] : hour[1];
+        return time === "hour" ? hour[0] : hour[1].split("-")[0];
     }
 
     const getHourDifference = useCallback(
         (time1: workdayTime, time2: workdayTime) => {
-            const hour1 = getTimeFromWorkdayTime(time1, "hour");
-            const hour2 = getTimeFromWorkdayTime(time2, "hour");
+            const isAm1 = time1.indexOf("AM") !== -1;
+            const isAm2 = time2.indexOf("AM") !== -1;
+            const hour1Str = getTimeFromWorkdayTime(time1, "hour");
+            const hour2Str = getTimeFromWorkdayTime(time2, "hour");
             const minute1 = getTimeFromWorkdayTime(time1, "minute");
             const minute2 = getTimeFromWorkdayTime(time2, "minute");
             try {
                 const minutes = Number(minute2) - Number(minute1);
                 const minutesToAdd =
                     minutes === 30 ? 0.5 : minutes === -30 ? -0.5 : 0;
-                const hourDiff = Number(hour2) - Number(hour1) + minutesToAdd;
+                const hour1 = Number(hour1Str) + (isAm1 ? 0 : 12);
+                const hour2 = Number(hour2Str) + (isAm2 ? 0 : 12);
+                const hourDiff = hour2 - hour1 + minutesToAdd;
                 return hourDiff.toString();
             } catch (error) {
+                console.log(error);
                 return "8";
             }
         },
