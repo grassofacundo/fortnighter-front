@@ -1,5 +1,8 @@
 Form:
-Allow only 12 hours format. Valid the input and change the types.
-
 Think about shared days shifts (ex, start at night and finished at the next day)
 Implement another text, but this time in the summary section to allow creating tax and benefits 
+
+Start working on tax and benefits
+Stat working on calculating the salary
+
+Get the job position from DB and pre fill the hour price text-form
