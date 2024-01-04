@@ -1,24 +1,30 @@
 //#region Dependency list
-import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import {
+    FunctionComponent,
+    useCallback,
+    useContext,
+    useEffect,
+    useState,
+} from "react";
 import DatePicker from "../../datePicker/DatePicker";
 import { getFutureDate, getPastDate } from "../../../services/dateService";
-import { jobPosition } from "../../../types/job/Position";
 import styles from "./DatePickerPanel.module.scss";
+import { JobContext } from "../Dashboard";
 //#endregion
 
 type thisProps = {
-    position: jobPosition;
     end: Date;
     onDateChange(end: Date, start: Date): void;
 };
 
 const DatePickerPanel: FunctionComponent<thisProps> = ({
-    position,
     end,
     onDateChange,
 }) => {
+    const position = useContext(JobContext);
+
     const [startDate, setStartDate] = useState<Date>(
-        getPastDate(position.paymentLapse, end)
+        getPastDate(position ? position.paymentLapse : 0, end)
     );
     const [endDate, setEndDate] = useState<Date>(end);
     const [error, setError] = useState<string>("");

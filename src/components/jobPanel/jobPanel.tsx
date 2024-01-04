@@ -5,25 +5,24 @@ import {
     Dispatch,
     SetStateAction,
     useEffect,
+    useContext,
 } from "react";
 import jobService from "../../services/JobService";
 import { jobPosition } from "../../types/job/Position";
-import UpdateJobForm from "./updateJobForm/UpdateJobForm";
 import CustomSelect from "../blocks/customSelect/CustomSelect";
-import styles from "./jobPanel.module.scss";
 import Arrow from "../blocks/icons/Arrow";
-import CreateJob from "./createJob/CreateJob";
+import CreateJobForm from "./createJob/CreateJob";
+import UpdateJob from "./updateJob/UpdateJob";
+import styles from "./jobPanel.module.scss";
+import { JobContext } from "../dashboard/Dashboard";
 //#endregion
 
 type thisProps = {
-    selectedPosition: jobPosition | null;
     onSetSelectedPosition: Dispatch<SetStateAction<jobPosition | null>>;
 };
 
-const JobPanel: FunctionComponent<thisProps> = ({
-    selectedPosition,
-    onSetSelectedPosition,
-}) => {
+const JobPanel: FunctionComponent<thisProps> = ({ onSetSelectedPosition }) => {
+    const selectedPosition = useContext(JobContext);
     const [jobPositionList, setJobPositionList] = useState<jobPosition[]>([]);
     const [initialLoading, setInitialLoading] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(false);
@@ -57,7 +56,7 @@ const JobPanel: FunctionComponent<thisProps> = ({
         } else {
             list.push(updatedJobPosition);
         }
-        dispatchEvent(new Event("resetCustomSelect"));
+        //dispatchEvent(new Event("resetCustomSelect"));
         setJobPositionList(list);
         setIsCreateMode(false);
         onSetSelectedPosition(updatedJobPosition);
@@ -141,9 +140,8 @@ const JobPanel: FunctionComponent<thisProps> = ({
                             }`}
                         >
                             {!isCreateMode && selectedPosition && (
-                                <UpdateJobForm
+                                <UpdateJob
                                     key={selectedPosition.id}
-                                    position={selectedPosition}
                                     jobPositionList={jobPositionList}
                                     onEnd={handleJobPositionListUpdate}
                                     loading={loading}
@@ -151,7 +149,7 @@ const JobPanel: FunctionComponent<thisProps> = ({
                                 />
                             )}
                             {isCreateMode && isExpanded && (
-                                <CreateJob
+                                <CreateJobForm
                                     onEnd={handleJobPositionListUpdate}
                                     loading={loading}
                                     onSetLoading={setLoading}

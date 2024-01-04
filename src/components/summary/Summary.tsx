@@ -2,7 +2,6 @@
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
 import { shiftState } from "../../types/job/Shift";
 import styles from "./Summary.module.scss";
-import { jobPosition } from "../../types/job/Position";
 import { getFutureDate, getPastDate } from "../../services/dateService";
 import DatePicker from "../datePicker/DatePicker";
 import InfoPanel from "./infoPanel/InfoPanel";
@@ -10,18 +9,13 @@ import InfoPanel from "./infoPanel/InfoPanel";
 
 type thisProps = {
     shiftList: shiftState[];
-    position: jobPosition;
     searchDates: {
         start: Date;
         end: Date;
     };
 };
 
-const Summary: FunctionComponent<thisProps> = ({
-    shiftList,
-    position,
-    searchDates,
-}) => {
+const Summary: FunctionComponent<thisProps> = ({ shiftList, searchDates }) => {
     const [startDate, setStartDate] = useState<Date>(searchDates.start);
     const [endDate, setEndDate] = useState<Date>(searchDates.end);
     const [startPickerDate, setStartPickerDate] = useState<Date>(
@@ -90,7 +84,6 @@ const Summary: FunctionComponent<thisProps> = ({
         <div className={styles.summaryBody}>
             <InfoPanel
                 shiftList={shiftList}
-                position={position}
                 start={searchDates.start}
                 end={searchDates.end}
             />

@@ -1,24 +1,20 @@
 //#region Dependency list
-import { FunctionComponent } from "react";
+import { FunctionComponent, useContext } from "react";
 import styles from "./InfoPanel.module.scss";
 import { getStringDMY } from "../../../services/dateService";
 import { shiftState } from "../../../types/job/Shift";
-import { jobPosition } from "../../../types/job/Position";
+import { JobContext } from "../../dashboard/Dashboard";
 //#endregion
 
 type thisProps = {
     shiftList: shiftState[];
-    position: jobPosition;
     start: Date;
     end: Date;
 };
 
-const InfoPanel: FunctionComponent<thisProps> = ({
-    shiftList,
-    position,
-    start,
-    end,
-}) => {
+const InfoPanel: FunctionComponent<thisProps> = ({ shiftList, start, end }) => {
+    const position = useContext(JobContext);
+
     function getSaturdays() {
         const saturdays = shiftList.filter((shift) => shift.isSaturday);
         return saturdays.length;
@@ -30,16 +26,18 @@ const InfoPanel: FunctionComponent<thisProps> = ({
     }
 
     function getTotal(): number {
+        if (!position) return 0;
+
         let total = 0;
         shiftList.forEach((shift) => {
-            if (shift.date >= start && shift.date <= end)
-                total += shift.hoursWorked * position.hourPrice;
+            if (shift.startTime >= start && shift.endTime <= end)
+                total += shift.hoursWorked * 1; //position.hourPrice;
         });
         return total;
     }
     return (
         <div className={styles.infoPanel}>
-            {shiftList.length > 0 && (
+            {position && shiftList.length > 0 && (
                 <div>
                     <p>{`Next payment: ${getStringDMY(
                         position.nextPaymentDate

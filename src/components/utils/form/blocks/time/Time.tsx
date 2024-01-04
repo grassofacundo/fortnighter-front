@@ -11,7 +11,7 @@ import styles from "./Time.module.scss";
 import {
     getDefaultHourValue,
     getDefaultMinuteValue,
-    getMeridian,
+    getDefaultMeridian,
 } from "./select/TimeMethods";
 //#endregion
 
@@ -35,7 +35,10 @@ const InputTime: FunctionComponent<thisProps> = ({
         const prevAnswer = formAnswers.find((answer) => answer.id === id);
         const prevValue: timeStructure =
             (prevAnswer?.value as timeStructure) ??
-            (`00:00-${getMeridian(defaultValue, meridian)}` as timeStructure);
+            (`00:00-${getDefaultMeridian(
+                defaultValue,
+                meridian
+            )}` as timeStructure);
 
         let newAnswer = "";
 
@@ -86,7 +89,7 @@ const InputTime: FunctionComponent<thisProps> = ({
         const prevAnswer = formAnswers.find((answer) => answer.id === id);
         const prevValue =
             (prevAnswer?.value as string) ??
-            `00:00-${getMeridian(defaultValue, meridian)}`;
+            `00:00-${getDefaultMeridian(defaultValue, meridian)}`;
 
         const time = prevValue.split("-")[0];
         const newAnswer = `${time}-${meridianParam}`;
@@ -151,7 +154,7 @@ const InputTime: FunctionComponent<thisProps> = ({
                     ></input>
                 </div>
                 <TimeSelect
-                    isAm={getMeridian(defaultValue, meridian) === "AM"}
+                    isAm={getDefaultMeridian(defaultValue, meridian) === "AM"}
                     onMeridiemChange={updateMeridian}
                 ></TimeSelect>
             </div>

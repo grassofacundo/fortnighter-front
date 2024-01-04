@@ -1,5 +1,5 @@
 //#region Dependency list
-import { FunctionComponent, useState, useEffect } from "react";
+import { FunctionComponent, useState, useEffect, createContext } from "react";
 import Calendar from "../calendar/Calendar";
 import Summary from "../summary/Summary";
 import JobPanel from "../jobPanel/jobPanel";
@@ -12,6 +12,7 @@ import DatePickerPanel from "./datePickerPanel/DatePickerPanel";
 //#endregion
 
 type thisProps = unknown;
+export const JobContext = createContext<jobPosition | null>(null);
 
 const Dashboard: FunctionComponent<thisProps> = () => {
     const [selectedPosition, setSelectedPosition] =
@@ -59,39 +60,38 @@ const Dashboard: FunctionComponent<thisProps> = () => {
     }, [selectedPosition, endDate, startDate]);
 
     return (
-        <div className={styles.mainBody}>
-            <JobPanel
-                selectedPosition={selectedPosition}
-                onSetSelectedPosition={setSelectedPosition}
-            ></JobPanel>
-            {selectedPosition && endDate && startDate && (
-                <div className={styles.calendarAnimWrapper}>
-                    <DatePickerPanel
-                        position={selectedPosition}
-                        end={endDate}
-                        onDateChange={handleDateChange}
-                    />
-
-                    <div className={styles.calendarContainer}>
-                        <Calendar
-                            endDate={endDate}
-                            startDate={startDate}
-                            jobPositionId={selectedPosition.id}
-                            shiftList={shiftList}
-                            onSetShiftList={setShiftList}
-                        ></Calendar>
-                        <Summary
-                            shiftList={shiftList}
-                            position={selectedPosition}
-                            searchDates={{
-                                start: startDate,
-                                end: endDate,
-                            }}
+        <JobContext.Provider value={selectedPosition}>
+            <div className={styles.mainBody}>
+                <JobPanel
+                    onSetSelectedPosition={setSelectedPosition}
+                ></JobPanel>
+                {selectedPosition && endDate && startDate && (
+                    <div className={styles.calendarAnimWrapper}>
+                        <DatePickerPanel
+                            end={endDate}
+                            onDateChange={handleDateChange}
                         />
+
+                        <div className={styles.calendarContainer}>
+                            <Calendar
+                                endDate={endDate}
+                                startDate={startDate}
+                                shiftList={shiftList}
+                                overnightJob={false}
+                                onSetShiftList={setShiftList}
+                            ></Calendar>
+                            <Summary
+                                shiftList={shiftList}
+                                searchDates={{
+                                    start: startDate,
+                                    end: endDate,
+                                }}
+                            />
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+            </div>
+        </JobContext.Provider>
     );
 };
 
