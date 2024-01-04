@@ -15,24 +15,23 @@ import {
     getPlainDate,
     parseDateAsId,
 } from "../../services/dateService";
-import { shiftGrid, shiftState } from "../../types/job/Shift";
+import { dateArray, shiftGrid, shiftState } from "../../types/job/Shift";
 import Workday from "./Workday";
-import InOutAnim from "../utils/InOutAnim";
 //#endregion
 
 type thisProps = {
     endDate: Date;
     startDate: Date;
-    jobPositionId: string;
     shiftList: shiftState[];
+    overnightJob: boolean;
     onSetShiftList: Dispatch<SetStateAction<shiftState[]>>;
 };
 
 const Calendar: FunctionComponent<thisProps> = ({
     endDate,
     startDate,
-    jobPositionId,
     shiftList,
+    overnightJob,
     onSetShiftList,
 }) => {
     const [shiftGrid, setShiftGrid] = useState<shiftGrid[]>([]);
@@ -50,10 +49,16 @@ const Calendar: FunctionComponent<thisProps> = ({
             const days: shiftGrid[] = Array(daysNum);
             for (let i = daysNum; i > 0; i--) {
                 const index = shifts.findIndex((shift) =>
-                    datesAreEqual(shift.date, getPlainDate(localEndDate))
+                    datesAreEqual(shift.startTime, getPlainDate(localEndDate))
                 );
                 const shift = index > -1 ? shifts[index] : undefined;
-                days[i - 1] = { date: localEndDate, shift };
+                let dateToSave = [localEndDate] as dateArray;
+                if (shift && !datesAreEqual(shift.startTime, shift.endTime)) {
+                    const start = structuredClone(shift.startTime);
+                    const end = structuredClone(shift.endTime);
+                    dateToSave = [start, end];
+                }
+                days[i - 1] = { date: dateToSave, shift };
                 localEndDate = getPastDate(1, localEndDate);
             }
             return days.reverse();
@@ -63,7 +68,7 @@ const Calendar: FunctionComponent<thisProps> = ({
 
     function updateShift(updatedShift: shiftState): void {
         const shiftIndex = shiftList.findIndex((shift) =>
-            datesAreEqual(shift.date, updatedShift.date)
+            datesAreEqual(shift.startTime, updatedShift.startTime)
         );
         if (shiftIndex < 0)
             throw new Error("Shift date is not included on loaded shifts");
@@ -92,10 +97,9 @@ const Calendar: FunctionComponent<thisProps> = ({
                 <div className={styles.daysWrapper}>
                     {shiftGrid.map((shift, i) => (
                         <Workday
-                            key={parseDateAsId(shift.date)}
-                            day={shift.date}
+                            key={parseDateAsId(shift.date[0])}
+                            days={shift.date}
                             shift={shift.shift}
-                            jobPositionId={jobPositionId}
                             onUpdateShift={updateShift}
                             onCreateShift={createShift}
                             order={i}

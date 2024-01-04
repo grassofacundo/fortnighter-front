@@ -1,5 +1,5 @@
 //#region Dependency list
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useContext, useState } from "react";
 import styles from "./Workday.module.scss";
 import FormManager from "../utils/form/FormManager";
 import {
@@ -7,12 +7,18 @@ import {
     getStringDMY,
     parseDateAsId,
 } from "../../services/dateService";
-import { shiftBase, shiftLocalState, shiftState } from "../../types/job/Shift";
+import {
+    dateArray,
+    shiftBase,
+    shiftLocalState,
+    shiftState,
+} from "../../types/job/Shift";
 import shiftService from "../../services/shiftService";
 import { checkbox } from "../utils/form/types/CheckboxTypes";
 import { inputTimeType } from "../utils/form/types/TimeType";
 import { parsedAnswers } from "../utils/form/types/FormTypes";
 import { inputNumber } from "../utils/form/types/InputNumberTypes";
+import { JobContext } from "../dashboard/Dashboard";
 //#endregion
 
 type answerData = {
@@ -21,27 +27,27 @@ type answerData = {
     endWork: Date;
 };
 type thisProps = {
-    day: Date;
+    days: dateArray;
     shift?: shiftState;
-    jobPositionId: string;
     order: number;
     onUpdateShift(updatedShift: shiftState): void;
     onCreateShift(updatedShift: shiftState): void;
 };
 
 const Workday: FunctionComponent<thisProps> = ({
-    day,
+    days,
     shift,
-    jobPositionId,
     order,
     onUpdateShift,
     onCreateShift,
 }) => {
+    const position = useContext(JobContext);
+
     const [isExpanded, setIsExpanded] = useState(false);
     const [Loading, setLoading] = useState<boolean>(false);
     const [errorMsg, setErrorMsg] = useState("");
     const [shiftLocal, setShiftLocal] = useState<shiftLocalState<Date>>({
-        jobPositionId,
+        jobPositionId: position ? position.id : "",
         isHoliday: shift?.isHoliday ?? false,
         startTime: shift?.startTime,
         endTime: shift?.endTime,
@@ -51,12 +57,16 @@ const Workday: FunctionComponent<thisProps> = ({
         let data: answerData | undefined = undefined;
         try {
             data = {
-                isHoliday: answers[`isHoliday${parseDateAsId(day)}`] as boolean,
+                isHoliday: answers[
+                    `isHoliday${parseDateAsId(days[0])}`
+                ] as boolean,
                 startWork: new Date(
-                    `${getDateAsInputValue(day)}T${answers.startWork}`
+                    `${getDateAsInputValue(days[0])}T${answers.startWork}`
                 ),
                 endWork: new Date(
-                    `${getDateAsInputValue(day)}T${answers.endWork}`
+                    `${getDateAsInputValue(days[1] ?? days[0])}T${
+                        answers.endWork
+                    }`
                 ),
             };
         } catch (error) {
@@ -73,7 +83,7 @@ const Workday: FunctionComponent<thisProps> = ({
         setLoading(true);
 
         const shiftObj: shiftBase = {
-            jobPositionId,
+            jobPositionId: position ? position.id : "",
             isHoliday: data.isHoliday,
             startTime: data.startWork,
             endTime: data.endWork,
@@ -110,7 +120,9 @@ const Workday: FunctionComponent<thisProps> = ({
             className={`${styles.dayBody} ${isExpanded ? styles.expanded : ""}`}
         >
             <div className={styles.headerContainer}>
-                <p>{getStringDMY(day)}</p>
+                <p>{`${getStringDMY(days[0])}${
+                    days[1] ? ` - ${getStringDMY(days[0])}` : ""
+                }`}</p>
                 {shift && (
                     <p>{`${shift.startTime?.getHours()}:${shift.startTime?.getMinutes()} to ${shift.endTime?.getHours()}:${shift.endTime?.getMinutes()} ${
                         shift.hoursWorked
@@ -125,7 +137,7 @@ const Workday: FunctionComponent<thisProps> = ({
                     inputs={[
                         {
                             type: "checkbox",
-                            id: `isHoliday${parseDateAsId(day)}`,
+                            id: `isHoliday${parseDateAsId(days[0])}`,
                             label: "Is holiday?",
                             checked: shiftLocal.isHoliday,
                         } as checkbox,
@@ -135,8 +147,10 @@ const Workday: FunctionComponent<thisProps> = ({
                             label: "Start time",
                             hour: {
                                 type: "number",
-                                id: `startWorkHour${parseDateAsId(day)}`,
-                                label: `Hour work started-${getStringDMY(day)}`,
+                                id: `startWorkHour${parseDateAsId(days[0])}`,
+                                label: `Hour work started-${getStringDMY(
+                                    days[0]
+                                )}`,
                                 min: 0,
                                 max: 23,
                                 placeholder: "8",
@@ -148,7 +162,7 @@ const Workday: FunctionComponent<thisProps> = ({
                             } as inputNumber,
                             minute: {
                                 type: "number",
-                                id: `startWorkMinute${parseDateAsId(day)}`,
+                                id: `startWorkMinute${parseDateAsId(days[0])}`,
                                 label: "Minute work started",
                                 placeholder: "30",
                                 step: "30",
@@ -167,7 +181,7 @@ const Workday: FunctionComponent<thisProps> = ({
                             label: "End time",
                             hour: {
                                 type: "number",
-                                id: `endWorkHour${parseDateAsId(day)}`,
+                                id: `endWorkHour${parseDateAsId(days[0])}`,
                                 min: 0,
                                 max: 23,
                                 placeholder: "8",
@@ -177,7 +191,7 @@ const Workday: FunctionComponent<thisProps> = ({
                             },
                             minute: {
                                 type: "number",
-                                id: `endWorkMinute${parseDateAsId(day)}`,
+                                id: `endWorkMinute${parseDateAsId(days[0])}`,
                                 placeholder: "30",
                                 step: "30",
                                 min: 0,

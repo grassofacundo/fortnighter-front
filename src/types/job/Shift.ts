@@ -18,13 +18,13 @@ export interface shiftDb extends shiftLocalState<string> {
 }
 
 export interface shiftState extends shiftBase {
-    date: Date;
     hoursWorked: number;
     isSaturday: boolean;
     isSunday: boolean;
 }
 
+export type dateArray = [Date, Date?];
 export type shiftGrid = {
-    date: Date;
+    date: dateArray;
     shift?: shiftState;
 };
