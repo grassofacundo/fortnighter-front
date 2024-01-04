@@ -1,23 +1,26 @@
 //#region Dependency list
 import { FunctionComponent, Dispatch, SetStateAction, useEffect } from "react";
-import { workdayTime, workdayTimeType } from "./Step2";
+import { workdayTimeType } from "./PricesForm";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import InputTime from "../../../utils/form/blocks/time/Time";
-import styles from "./Step2.module.scss";
+import styles from "./PricesForm.module.scss";
 import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
-import { inputTimeType } from "../../../utils/form/types/TimeType";
+import {
+    inputTimeType,
+    timeStructure,
+} from "../../../utils/form/types/TimeType";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 //#endregion
 
 type thisProps = {
-    setOvertimeStart: Dispatch<SetStateAction<workdayTime | undefined>>;
-    setOvertimeEnd: Dispatch<SetStateAction<workdayTime | undefined>>;
+    setOvertimeStart: Dispatch<SetStateAction<timeStructure | undefined>>;
+    setOvertimeEnd: Dispatch<SetStateAction<timeStructure | undefined>>;
     setOvertimeDayPrice: Dispatch<SetStateAction<number | undefined>>;
-    overtimeStart: workdayTime | undefined;
-    overtimeEnd: workdayTime | undefined;
+    overtimeStart: timeStructure | undefined;
+    overtimeEnd: timeStructure | undefined;
     workdayType: workdayTimeType | undefined;
-    workDayTimeEnd: workdayTime | undefined;
-    workDayTimeStart: workdayTime | undefined;
+    workDayTimeEnd: timeStructure | undefined;
+    workDayTimeStart: timeStructure | undefined;
     workDayPrice: number | undefined;
     handleNumberChange(
         answer: formAnswersType,
@@ -81,7 +84,7 @@ const Paragraph2: FunctionComponent<thisProps> = ({
                         },
                     ]}
                     onUpdateAnswer={(answer: formAnswersType) =>
-                        setOvertimeStart(answer.value as workdayTime)
+                        setOvertimeStart(answer.value as timeStructure)
                     }
                     fields={
                         {
@@ -112,7 +115,7 @@ const Paragraph2: FunctionComponent<thisProps> = ({
                         },
                     ]}
                     onUpdateAnswer={(answer: formAnswersType) =>
-                        setOvertimeEnd(answer.value as workdayTime)
+                        setOvertimeEnd(answer.value as timeStructure)
                     }
                     fields={
                         {

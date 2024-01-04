@@ -1,6 +1,6 @@
 //#region Dependency list
 import { FunctionComponent, Dispatch, SetStateAction, useEffect } from "react";
-import { workdayTimeType } from "./Step2";
+import { workdayTimeType } from "./PricesForm";
 import CustomSelect from "../../../blocks/customSelect/CustomSelect";
 import InputTime from "../../../utils/form/blocks/time/Time";
 import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
@@ -10,8 +10,8 @@ import {
     timeStructure,
 } from "../../../utils/form/types/TimeType";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
-import styles from "./Step2.module.scss";
-import { getHour } from "../../../utils/form/blocks/time/select/TimeMethods";
+import styles from "./PricesForm.module.scss";
+import { getAs24Format } from "../../../utils/form/blocks/time/select/TimeMethods";
 //#endregion
 
 type thisProps = {
@@ -22,6 +22,7 @@ type thisProps = {
     setFinishNextDay: Dispatch<SetStateAction<boolean>>;
     workDayTimeStart: timeStructure | undefined;
     workDayTimeEnd: timeStructure | undefined;
+    finishNextDay: boolean;
     handleNumberChange(
         answer: formAnswersType,
         callback: Dispatch<SetStateAction<number | undefined>>
@@ -36,6 +37,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
     setFinishNextDay,
     workDayTimeStart,
     workDayTimeEnd,
+    finishNextDay,
     handleNumberChange,
 }) => {
     const workdayOptions = [
@@ -47,14 +49,15 @@ const Paragraph1: FunctionComponent<thisProps> = ({
 
     useEffect(() => {
         if (workDayTimeStart && workDayTimeEnd) {
-            const hour = getHour(workDayTimeStart);
-            setFinishNextDay(true);
+            const hour1 = getAs24Format(workDayTimeStart);
+            const hour2 = getAs24Format(workDayTimeEnd);
+            setFinishNextDay(hour1 > hour2);
         }
     }, [workDayTimeStart, workDayTimeEnd, setFinishNextDay]);
 
     return (
         <div className={`${styles.paragraph} ${styles.show}`}>
-            My regular workday during the
+            My regular workday during a
             <CustomSelect
                 placeHolder={"Weekday type"}
                 options={workdayOptions.map((day) => {
@@ -105,39 +108,44 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                 }
             />
             to
-            <InputTime
-                formAnswers={
-                    workDayTimeEnd
-                        ? [
-                              {
-                                  id: "WorkDayEnd",
-                                  value: workDayTimeEnd,
-                                  error: "",
-                              },
-                          ]
-                        : []
-                }
-                onUpdateAnswer={(answer: formAnswersType) =>
-                    setWorkDayTimeEnd(answer.value as timeStructure)
-                }
-                fields={
-                    {
-                        type: "time",
-                        id: "WorkDayEnd",
-                        hour: {
-                            type: "number",
-                            id: "workDayEndHour",
-                            placeholder: "5",
-                        } as inputNumber,
-                        minute: {
-                            type: "number",
-                            id: `workDayEndMinute`,
-                            placeholder: "00",
-                            step: "30",
-                        } as inputNumber,
-                    } as inputTimeType
-                }
-            />
+            <div className={styles.inputWithPopUp}>
+                <InputTime
+                    formAnswers={
+                        workDayTimeEnd
+                            ? [
+                                  {
+                                      id: "WorkDayEnd",
+                                      value: workDayTimeEnd,
+                                      error: "",
+                                  },
+                              ]
+                            : []
+                    }
+                    onUpdateAnswer={(answer: formAnswersType) =>
+                        setWorkDayTimeEnd(answer.value as timeStructure)
+                    }
+                    fields={
+                        {
+                            type: "time",
+                            id: "WorkDayEnd",
+                            hour: {
+                                type: "number",
+                                id: "workDayEndHour",
+                                placeholder: "5",
+                            } as inputNumber,
+                            minute: {
+                                type: "number",
+                                id: `workDayEndMinute`,
+                                placeholder: "00",
+                                step: "30",
+                            } as inputNumber,
+                        } as inputTimeType
+                    }
+                />
+                {finishNextDay && (
+                    <span className={styles.popUp}>The next day</span>
+                )}
+            </div>
             and the price is $
             <InputNumber
                 formAnswers={[]}

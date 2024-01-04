@@ -6,23 +6,23 @@ import {
     useEffect,
     useCallback,
 } from "react";
-import { workdayTime } from "./Step2";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 import { hourNum } from "../../../../types/dateService";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
-import styles from "./Step2.module.scss";
+import styles from "./PricesForm.module.scss";
+import { timeStructure } from "../../../utils/form/types/TimeType";
 //#endregion
 
 type thisProps = {
     setWorkDayLength: Dispatch<SetStateAction<hourNum | undefined>>;
     setOverworkDayPrice: Dispatch<SetStateAction<number | undefined>>;
-    overtimeStart: workdayTime | undefined;
-    overtimeEnd: workdayTime | undefined;
+    overtimeStart: timeStructure | undefined;
+    overtimeEnd: timeStructure | undefined;
     overtimePrice: number | undefined;
     workDayLength: hourNum | undefined;
-    workDayTimeStart: workdayTime | undefined;
-    workDayTimeEnd: workdayTime | undefined;
+    workDayTimeStart: timeStructure | undefined;
+    workDayTimeEnd: timeStructure | undefined;
     handleNumberChange(
         answer: formAnswersType,
         callback: Dispatch<SetStateAction<number | undefined>>
@@ -43,7 +43,7 @@ const Paragraph3: FunctionComponent<thisProps> = ({
     const hasOvertimeInfo = overtimeStart && overtimeEnd && overtimePrice;
 
     function getTimeFromWorkdayTime(
-        workdayTime: workdayTime,
+        workdayTime: timeStructure,
         time: "hour" | "minute"
     ) {
         const hour = workdayTime.split(":");
@@ -51,7 +51,7 @@ const Paragraph3: FunctionComponent<thisProps> = ({
     }
 
     const getHourDifference = useCallback(
-        (time1: workdayTime, time2: workdayTime) => {
+        (time1: timeStructure, time2: timeStructure) => {
             const isAm1 = time1.indexOf("AM") !== -1;
             const isAm2 = time2.indexOf("AM") !== -1;
             const hour1Str = getTimeFromWorkdayTime(time1, "hour");
@@ -64,7 +64,8 @@ const Paragraph3: FunctionComponent<thisProps> = ({
                     minutes === 30 ? 0.5 : minutes === -30 ? -0.5 : 0;
                 const hour1 = Number(hour1Str) + (isAm1 ? 0 : 12);
                 const hour2 = Number(hour2Str) + (isAm2 ? 0 : 12);
-                const hourDiff = hour2 - hour1 + minutesToAdd;
+                const hourDiff =
+                    hour2 - hour1 + minutesToAdd + (!isAm1 && isAm2 ? 24 : 0);
                 return hourDiff.toString();
             } catch (error) {
                 console.log(error);
