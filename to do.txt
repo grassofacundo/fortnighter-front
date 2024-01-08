@@ -1,8 +1,13 @@
 Form:
+
+I should stop thinking like I know the usual "start time", I just know the timeframe for a regular pay.
+I should set the double date in the shift only after the shift information, but not beforehand.
+The day in the shift is the day in which the person starts working, if the person works overnight, I should add the second date in the shift section.
+
 Think about shared days shifts (ex, start at night and finished at the next day)
 Implement another text, but this time in the summary section to allow creating tax and benefits 
 
 Start working on tax and benefits
 Stat working on calculating the salary
 
-Get the job position from DB and pre fill the hour price text-form
+Get the job position from DB and pre fill the hour price text-form in the update section
