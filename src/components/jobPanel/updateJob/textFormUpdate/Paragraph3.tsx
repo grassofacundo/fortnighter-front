@@ -10,15 +10,13 @@ import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 import { hourNum } from "../../../../types/dateService";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
-import styles from "./PricesForm.module.scss";
 import { timeStructure } from "../../../utils/form/types/TimeType";
+import styles from "./TextFormUpdate.module.scss";
 //#endregion
 
 type thisProps = {
     setWorkDayLength: Dispatch<SetStateAction<hourNum | undefined>>;
     setOverworkDayPrice: Dispatch<SetStateAction<number | undefined>>;
-    overtimeStart: timeStructure | undefined;
-    overtimeEnd: timeStructure | undefined;
     overtimePrice: number | undefined;
     workDayLength: hourNum | undefined;
     workDayTimeStart: timeStructure | undefined;
@@ -32,16 +30,12 @@ type thisProps = {
 const Paragraph3: FunctionComponent<thisProps> = ({
     setWorkDayLength,
     setOverworkDayPrice,
-    overtimeStart,
-    overtimeEnd,
     overtimePrice,
     workDayLength,
     workDayTimeStart,
     workDayTimeEnd,
     handleNumberChange,
 }) => {
-    const hasOvertimeInfo = overtimeStart && overtimeEnd && overtimePrice;
-
     function getTimeFromWorkdayTime(
         workdayTime: timeStructure,
         time: "hour" | "minute"
@@ -88,8 +82,6 @@ const Paragraph3: FunctionComponent<thisProps> = ({
     }, [
         workDayTimeStart,
         workDayTimeEnd,
-        overtimeStart,
-        overtimeEnd,
         workDayLength,
         setWorkDayLength,
         getHourDifference,
@@ -98,11 +90,11 @@ const Paragraph3: FunctionComponent<thisProps> = ({
     return (
         <div
             className={`${styles.paragraph} ${
-                hasOvertimeInfo ? styles.show : ""
+                overtimePrice ? styles.show : ""
             }`}
         >
             My regular workday is
-            {hasOvertimeInfo && (
+            {overtimePrice && (
                 <InputNumber
                     formAnswers={[]}
                     onUpdateAnswer={(answer: formAnswersType) =>

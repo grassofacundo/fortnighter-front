@@ -1,170 +1,101 @@
 //#region Dependency list
 import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
-import FormManager from "../../utils/form/FormManager";
-import { baseJobPosition, jobPosition } from "../../../types/job/Position";
-import { parsedAnswers } from "../../utils/form/types/FormTypes";
-import jobService from "../../../services/JobService";
-import {
-    getDateAsInputValue,
-    getDaysBetweenDates,
-    getPastDate,
-    getToday,
-    setDateFromInput,
-} from "../../../services/dateService";
-import { dateInput } from "../../utils/form/types/DateInputTypes";
-//import { paymentBase } from "../../../types/job/Payment";
+import { BaseJob } from "../../../classes/BaseJobPosition";
+import { Job } from "../../../classes/JobPosition";
+import FormCreate from "./FormCreate";
+import styles from "./CreateJob.module.scss";
+import { priceStructure, workDayStructure } from "../../../types/job/Position";
+import TextFormCreate from "./textFormCreate/TextFormCreate";
 //#endregion
 
-type answerData = {
-    positionName: string;
+export type formData = {
+    name: string;
     companyName?: string;
-    hourPrice: number;
-    cycleEnd: Date;
-    cycleStart: Date;
+    paymentLapse: number;
+    nextPaymentDate: Date;
+};
+export type textFormData = {
+    prices: priceStructure;
+    workdayTimes: workDayStructure;
 };
 type thisProps = {
-    onEnd(updatedJobPosition: jobPosition): void;
+    onEnd(updatedJobPosition: Job): void;
     loading: boolean;
     onSetLoading: Dispatch<SetStateAction<boolean>>;
 };
 
-const CreateJobForm: FunctionComponent<thisProps> = ({
+const CreateJob: FunctionComponent<thisProps> = ({
     onEnd,
     loading,
     onSetLoading,
 }) => {
-    const [errorMsg, setErrorMsg] = useState<string>("");
-    const [cycleEnd, setCycleEnd] = useState<string>(getEndDate());
-    const [cycleStart, setCycleStart] = useState<string>(getStartDate());
+    const [formData, setFormData] = useState<formData | null>(null);
+    const [textFormData, setTextFormData] = useState<textFormData | null>(null);
+    const [error, setError] = useState<string>("");
 
-    function getEndDate() {
-        return getDateAsInputValue(getToday());
-    }
+    async function setData(
+        formDataParam?: formData,
+        textFormDataParam?: textFormData
+    ) {
+        if (formDataParam) setFormData(formDataParam);
+        if (textFormDataParam) setTextFormData(textFormDataParam);
 
-    function getStartDate() {
-        return getDateAsInputValue(getPastDate(15, getToday()));
-    }
-
-    function handleUpdateAnswers(answers: parsedAnswers): void {
-        if (answers.cycleEnd) setCycleEnd(answers.cycleEnd as string);
-        if (answers.cycleStart) setCycleStart(answers.cycleStart as string);
-    }
-
-    async function handleSubmit(answers: parsedAnswers): Promise<void> {
-        let data: answerData | undefined = undefined;
-        try {
-            const positionName = answers.positionName as string;
-            const companyName = answers.companyName as string;
-            const hourPrice = Number(answers.hourPrice);
-            const cycleEndInput = setDateFromInput(answers.cycleEnd as string);
-            const cycleStartInput = setDateFromInput(
-                answers.cycleStart as string
-            );
-
-            data = {
-                positionName,
-                companyName,
-                hourPrice,
-                cycleEnd: cycleEndInput,
-                cycleStart: cycleStartInput,
-            };
-        } catch (error) {
-            setErrorMsg(
-                error instanceof Error
-                    ? error.message
-                    : "Error parsing input values"
-            );
-        }
-
-        if (!data || !data.positionName || !data.hourPrice || !data.cycleEnd) {
-            setErrorMsg("Error on form answers");
-            return;
-        }
+        const fData = formDataParam ?? formData;
+        if (fData == null) return;
+        const tfData = textFormDataParam ?? textFormData;
+        if (tfData == null) return;
 
         onSetLoading(true);
+        await createJob(fData, tfData);
+        onSetLoading(false);
+    }
 
-        const daysDiff = getDaysBetweenDates(data.cycleStart, data.cycleEnd);
-        const newJob: baseJobPosition<Date> = {
-            name: data.positionName,
-            companyName: data.companyName,
-            hourPrice: { regular: { normal: data.hourPrice } },
-            paymentLapse: daysDiff,
-            nextPaymentDate: data.cycleEnd,
-        };
-        const jobRes = await jobService.createJobPosition(newJob);
+    async function createJob(
+        formData: formData,
+        textFormData: textFormData
+    ): Promise<void> {
+        const newBaseJob = new BaseJob({
+            name: formData.name,
+            hourPrice: textFormData.prices,
+            workdayTimes: textFormData.workdayTimes,
+            paymentLapse: formData.paymentLapse,
+            nextPaymentDate: formData.nextPaymentDate,
+            companyName: formData.companyName,
+        });
+
+        const jobRes = await newBaseJob.create();
         if (!jobRes.ok && jobRes.error) {
-            setErrorMsg(jobRes.error.message);
-            onSetLoading(false);
+            setError(jobRes.error.message);
             return;
         }
 
         if (jobRes.ok && jobRes.content) {
-            onEnd({
-                id: jobRes.content.id,
-                name: data.positionName,
-                companyName: data.companyName,
-                hourPrice: { regular: { normal: data.hourPrice } },
-                paymentLapse: daysDiff,
-                nextPaymentDate: data.cycleEnd,
-            } as jobPosition);
-            onSetLoading(false);
+            const newJob = new Job({ ...newBaseJob, id: jobRes.content });
+            onEnd(newJob);
+            return;
         }
     }
 
     return (
-        <div>
-            <FormManager
-                inputs={[
-                    {
-                        type: "text",
-                        id: "positionName",
-                        placeholder: "Your job",
-                        label: "Position name",
-                    },
-                    {
-                        type: "text",
-                        id: "companyName",
-                        placeholder: "Name of company",
-                        label: "Name of company",
-                        isOptional: true,
-                    },
-                    {
-                        type: "number",
-                        id: "hourPrice",
-                        placeholder: "00",
-                        label: "Price per hour",
-                    },
-                    {
-                        type: "customDate",
-                        id: "cycleStart",
-                        label: "Payslip date start",
-                        yearMin: "2023",
-                        yearMax: "2024",
-                        defaultValue: cycleStart,
-                    } as dateInput,
-                    {
-                        type: "customDate",
-                        id: "cycleEnd",
-                        label: "Payment date",
-                        yearMin: "2023",
-                        yearMax: "2024",
-                        defaultValue: cycleEnd,
-                    },
-                ]}
-                submitCallback={handleSubmit}
-                updateAnswers={handleUpdateAnswers}
-                submitText={"Create job"}
-                Loading={loading}
-                serverErrorMsg={errorMsg}
+        <div className={styles.formContainer}>
+            <FormCreate
+                onEnd={(formDataParam) => setData(formDataParam, undefined)}
+                onSetError={setError}
+                error={formData ? "" : error}
+                loading={loading}
+                submitted={!!formData}
             />
-            {cycleStart && cycleEnd && (
-                <p>{`Do you get paid every ${getDaysBetweenDates(
-                    setDateFromInput(cycleStart),
-                    setDateFromInput(cycleEnd)
-                )} days?`}</p>
+            {formData && (
+                <TextFormCreate
+                    onSetLoading={onSetLoading}
+                    onSetError={setError}
+                    error={error}
+                    onEnd={(textFormData) => setData(undefined, textFormData)}
+                    loading={loading}
+                />
             )}
         </div>
     );
 };
 
-export default CreateJobForm;
+export default CreateJob;

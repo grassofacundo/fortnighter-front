@@ -29,7 +29,6 @@ type answerData = {
 type thisProps = {
     days: dateArray;
     shift?: shiftState;
-    order: number;
     onUpdateShift(updatedShift: shiftState): void;
     onCreateShift(updatedShift: shiftState): void;
 };
@@ -37,7 +36,6 @@ type thisProps = {
 const Workday: FunctionComponent<thisProps> = ({
     days,
     shift,
-    order,
     onUpdateShift,
     onCreateShift,
 }) => {

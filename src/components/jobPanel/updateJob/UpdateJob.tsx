@@ -1,39 +1,37 @@
 //#region Dependency list
 import { Dispatch, FunctionComponent, SetStateAction } from "react";
-import FormUpdate from "./BaseInfoForm";
-import { jobPosition } from "../../../types/job/Position";
-import PricesForm from "./PricesForm/PricesForm";
+import FormUpdate from "./FormUpdate";
 import styles from "./UpdateJob.module.scss";
+import { Job } from "../../../classes/JobPosition";
+import TextFormUpdate from "./textFormUpdate/TextFormUpdate";
 //#endregion
 
 type thisProps = {
-    jobPositionList: jobPosition[];
-    onEnd(updatedJobPosition: jobPosition): void;
+    jobList: Job[];
+    onEnd(job: Job): void;
     loading: boolean;
     onSetLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 const UpdateJob: FunctionComponent<thisProps> = ({
-    jobPositionList,
+    jobList,
     onEnd,
     loading,
     onSetLoading,
 }) => {
-    function handleFormUpdateSubmit(updatedJobPosition: jobPosition) {
-        onEnd(updatedJobPosition);
-    }
+    const submitForm = (job: Job) => onEnd(job);
 
     return (
         <div className={styles.formContainer}>
             <FormUpdate
-                jobPositionList={jobPositionList}
-                onEnd={handleFormUpdateSubmit}
+                jobList={jobList}
+                onEnd={submitForm}
                 loading={loading}
                 onSetLoading={onSetLoading}
             />
-            <PricesForm
+            <TextFormUpdate
                 onSetLoading={onSetLoading}
-                onEnd={handleFormUpdateSubmit}
+                onEnd={submitForm}
                 loading={loading}
             />
         </div>

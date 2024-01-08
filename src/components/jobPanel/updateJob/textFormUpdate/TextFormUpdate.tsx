@@ -11,12 +11,18 @@ import Paragraph2 from "./Paragraph2";
 import Paragraph3 from "./Paragraph3";
 import { hourNum } from "../../../../types/dateService";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
-import styles from "./PricesForm.module.scss";
 import { timeStructure } from "../../../utils/form/types/TimeType";
-import { getAs24Format } from "../../../utils/form/blocks/time/select/TimeMethods";
-import { jobPosition, priceStructure } from "../../../../types/job/Position";
-import jobService from "../../../../services/JobService";
+import {
+    priceStructure,
+    workDayStructure,
+} from "../../../../types/job/Position";
 import { JobContext } from "../../../dashboard/Dashboard";
+import {
+    getMeridian,
+    getTime,
+} from "../../../utils/form/blocks/time/select/TimeMethods";
+import { Job } from "../../../../classes/JobPosition";
+import styles from "./TextFormUpdate.module.scss";
 //#endregion
 
 export type workdayTimeType = "regular" | "saturday" | "sunday" | "holiday";
@@ -24,25 +30,23 @@ export type workdayTimeType = "regular" | "saturday" | "sunday" | "holiday";
 type thisProps = {
     loading: boolean;
     onSetLoading: Dispatch<SetStateAction<boolean>>;
-    onEnd(updatedJobPosition: jobPosition): void;
+    onEnd(updatedJobPosition: Job): void;
 };
 
-const PricesForm: FunctionComponent<thisProps> = ({
+const TextFormUpdate: FunctionComponent<thisProps> = ({
     loading,
     onSetLoading,
     onEnd,
 }) => {
-    const position = useContext(JobContext);
+    const selectedJob = useContext(JobContext);
 
     const [workdayType, setWorkdayType] = useState<workdayTimeType>("regular");
     const [workDayTimeStart, setWorkDayTimeStart] = useState<timeStructure>();
     const [workDayTimeEnd, setWorkDayTimeEnd] = useState<timeStructure>();
+    const [workDayLength, setWorkDayLength] = useState<hourNum>();
     const [finishNextDay, setFinishNextDay] = useState<boolean>(false);
     const [workDayPrice, setWorkDayPrice] = useState<number>();
-    const [overtimeStart, setOvertimeStart] = useState<timeStructure>();
-    const [overtimeEnd, setOvertimeEnd] = useState<timeStructure>();
     const [overtimePrice, setOvertimeDayPrice] = useState<number>();
-    const [workDayLength, setWorkDayLength] = useState<hourNum>();
     const [overworkPrice, setOverworkDayPrice] = useState<number>();
     const [error, setError] = useState<string>("");
 
@@ -59,7 +63,7 @@ const PricesForm: FunctionComponent<thisProps> = ({
     }
 
     async function handleSubmit() {
-        if (!position) {
+        if (selectedJob === null) {
             setError("Couldn't find position");
             return;
         }
@@ -69,8 +73,6 @@ const PricesForm: FunctionComponent<thisProps> = ({
             workDayTimeEnd == null ||
             finishNextDay == null ||
             workDayPrice == null ||
-            overtimeStart == null ||
-            overtimeEnd == null ||
             overtimePrice == null ||
             workDayLength == null ||
             overworkPrice == null
@@ -88,27 +90,11 @@ const PricesForm: FunctionComponent<thisProps> = ({
             return;
         }
 
-        if (
-            getAs24Format(overtimeStart) < getAs24Format(workDayTimeEnd) ||
-            getAs24Format(overtimeEnd) > getAs24Format(workDayTimeStart)
-        ) {
-            setError("Overtime time cannot overlap with regular time");
-            return;
-        }
-        if (
-            getAs24Format(overtimeStart) !== getAs24Format(workDayTimeEnd) ||
-            getAs24Format(overtimeEnd) !== getAs24Format(workDayTimeStart)
-        ) {
-            setError(
-                "There is a gap between the overtime time and the regular time"
-            );
-            return;
-        }
         setError("");
 
         const hourPrice: priceStructure = {
             regular: {
-                normal: position.hourPrice.regular.normal,
+                normal: selectedJob.hourPrice.regular.normal,
             },
         };
 
@@ -118,16 +104,27 @@ const PricesForm: FunctionComponent<thisProps> = ({
             overwork: overtimePrice,
         };
 
-        const updatedJobPosition: jobPosition = {
-            id: position.id,
-            name: position.name,
-            hourPrice: hourPrice,
-            paymentLapse: position.paymentLapse,
-            nextPaymentDate: position.nextPaymentDate,
+        const workdayTimes: workDayStructure = {
+            regular: selectedJob.workdayTimes.regular,
         };
-        const responseDb = await jobService.updateJobPosition(
-            updatedJobPosition
-        );
+
+        workdayTimes[workdayType] = {
+            startTime: getTime(workDayTimeStart),
+            startMeridian: getMeridian(workDayTimeStart),
+            endTime: getTime(workDayTimeEnd),
+            endMeridian: getMeridian(workDayTimeEnd),
+            length: workDayLength,
+        };
+
+        const job = new Job({
+            id: selectedJob.id,
+            name: selectedJob.name,
+            hourPrice: hourPrice,
+            workdayTimes,
+            paymentLapse: selectedJob.paymentLapse,
+            nextPaymentDate: selectedJob.nextPaymentDate,
+        });
+        const responseDb = await job.update();
         if (!responseDb.ok && responseDb.error) {
             setError(responseDb.error.message);
             onSetLoading(false);
@@ -135,7 +132,7 @@ const PricesForm: FunctionComponent<thisProps> = ({
         }
 
         if (responseDb.ok && responseDb.content) {
-            onEnd(updatedJobPosition);
+            onEnd(job);
             onSetLoading(false);
         }
     }
@@ -154,11 +151,7 @@ const PricesForm: FunctionComponent<thisProps> = ({
                 handleNumberChange={handleNumberChange}
             />
             <Paragraph2
-                setOvertimeStart={setOvertimeStart}
-                setOvertimeEnd={setOvertimeEnd}
                 setOvertimeDayPrice={setOvertimeDayPrice}
-                overtimeStart={overtimeStart}
-                overtimeEnd={overtimeEnd}
                 workdayType={workdayType}
                 workDayTimeEnd={workDayTimeEnd}
                 workDayTimeStart={workDayTimeStart}
@@ -168,8 +161,6 @@ const PricesForm: FunctionComponent<thisProps> = ({
             <Paragraph3
                 setWorkDayLength={setWorkDayLength}
                 setOverworkDayPrice={setOverworkDayPrice}
-                overtimeStart={overtimeStart}
-                overtimeEnd={overtimeEnd}
                 overtimePrice={overtimePrice}
                 workDayTimeStart={workDayTimeStart}
                 workDayTimeEnd={workDayTimeEnd}
@@ -177,7 +168,7 @@ const PricesForm: FunctionComponent<thisProps> = ({
                 handleNumberChange={handleNumberChange}
             />
 
-            {workDayLength && overworkPrice && (
+            {workDayLength && overworkPrice && selectedJob && (
                 <>
                     <button
                         className={`${styles.submitButton} ${styles.show}`}
@@ -192,4 +183,4 @@ const PricesForm: FunctionComponent<thisProps> = ({
     );
 };
 
-export default PricesForm;
+export default TextFormUpdate;

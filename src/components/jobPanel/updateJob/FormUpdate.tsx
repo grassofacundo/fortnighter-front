@@ -8,7 +8,6 @@ import {
     useContext,
 } from "react";
 import FormManager from "../../utils/form/FormManager";
-import { jobPosition } from "../../../types/job/Position";
 import {
     getDateAsInputValue,
     getDaysBetweenDates,
@@ -19,17 +18,18 @@ import { parsedAnswers } from "../../utils/form/types/FormTypes";
 import jobService from "../../../services/JobService";
 import { dateInput } from "../../utils/form/types/DateInputTypes";
 import { JobContext } from "../../dashboard/Dashboard";
+import { Job } from "../../../classes/JobPosition";
 //#endregion
 
 type answerData = {
-    positionName: string;
+    jobName: string;
     hourPrice: number;
     cycleEnd: Date;
     cycleStart: Date;
 };
 type thisProps = {
-    jobPositionList: jobPosition[];
-    onEnd(updatedJobPosition: jobPosition): void;
+    jobList: Job[];
+    onEnd(job: Job): void;
     loading: boolean;
     onSetLoading: Dispatch<SetStateAction<boolean>>;
 };
@@ -39,17 +39,20 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
     loading,
     onSetLoading,
 }) => {
-    const position = useContext(JobContext);
+    const selectedJob = useContext(JobContext);
     const [errorMsg, setErrorMsg] = useState<string>("");
     const [cycleStart, setCycleStart] = useState<string>(
-        position
+        selectedJob
             ? getDateAsInputValue(
-                  getPastDate(position.paymentLapse, position.nextPaymentDate)
+                  getPastDate(
+                      selectedJob.paymentLapse,
+                      selectedJob.nextPaymentDate
+                  )
               )
             : ""
     );
     const [cycleEnd, setCycleEnd] = useState<string>(
-        position ? getDateAsInputValue(position.nextPaymentDate) : ""
+        selectedJob ? getDateAsInputValue(selectedJob.nextPaymentDate) : ""
     );
 
     function handleUpdateAnswers(answers: parsedAnswers): void {
@@ -60,7 +63,7 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
     async function handleSubmit(answers: parsedAnswers): Promise<void> {
         let data: answerData | undefined = undefined;
         try {
-            const positionName = answers.positionName as string;
+            const jobName = answers.positionName as string;
             const hourPrice = Number(answers.hourPrice);
             const cycleEndInput = setDateFromInput(answers.cycleEnd as string);
             const cycleStartInput = setDateFromInput(
@@ -68,7 +71,7 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
             );
 
             data = {
-                positionName,
+                jobName,
                 hourPrice,
                 cycleEnd: cycleEndInput,
                 cycleStart: cycleStartInput,
@@ -81,25 +84,26 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
             );
         }
 
-        if (!position || !data || Object.values(data).some((v) => v == null)) {
+        if (
+            !selectedJob ||
+            !data ||
+            Object.values(data).some((v) => v == null)
+        ) {
             setErrorMsg("Error on form answers");
             return;
         }
 
         onSetLoading(true);
 
-        const { positionName, hourPrice, cycleEnd } = data;
-        const daysDiff = getDaysBetweenDates(data.cycleStart, data.cycleEnd);
-        const updatedJobPosition: jobPosition = {
-            id: position.id,
-            name: positionName,
-            hourPrice: { regular: { normal: hourPrice } },
-            paymentLapse: daysDiff,
-            nextPaymentDate: cycleEnd,
-        };
-        const responseDb = await jobService.updateJobPosition(
-            updatedJobPosition
-        );
+        const job = new Job({
+            id: selectedJob.id,
+            name: data.jobName,
+            hourPrice: selectedJob.hourPrice,
+            workdayTimes: selectedJob.workdayTimes,
+            paymentLapse: getDaysBetweenDates(data.cycleStart, data.cycleEnd),
+            nextPaymentDate: data.cycleEnd,
+        });
+        const responseDb = await job.update();
         if (!responseDb.ok && responseDb.error) {
             setErrorMsg(responseDb.error.message);
             onSetLoading(false);
@@ -107,18 +111,18 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
         }
 
         if (responseDb.ok && responseDb.content) {
-            onEnd(updatedJobPosition);
+            onEnd(job);
             onSetLoading(false);
         }
     }
 
     useEffect(() => {
-        if (!position) return;
+        if (!selectedJob) return;
 
-        const end = position.nextPaymentDate;
-        const start = getPastDate(position.paymentLapse, end);
+        const end = selectedJob.nextPaymentDate;
+        const start = getPastDate(selectedJob.paymentLapse, end);
         jobService
-            .getLastPayment(start, end, position.id)
+            .getLastPayment(start, end, selectedJob.id)
             .then((paymentRes) => {
                 console.log(paymentRes);
                 // if (jobList.length > 0) {
@@ -138,20 +142,14 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
 
     return (
         <div>
-            {position && (
+            {selectedJob && (
                 <FormManager
                     inputs={[
                         {
                             type: "text",
                             id: "positionName",
                             label: "Position name",
-                            defaultValue: position.name,
-                        },
-                        {
-                            type: "number",
-                            label: "Price per hour",
-                            id: "hourPrice",
-                            defaultValue: position?.hourPrice.toString(),
+                            defaultValue: selectedJob.name,
                         },
                         {
                             type: "customDate",
@@ -161,8 +159,8 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
                             yearMax: "2024",
                             defaultValue: getDateAsInputValue(
                                 getPastDate(
-                                    position.paymentLapse,
-                                    position.nextPaymentDate
+                                    selectedJob.paymentLapse,
+                                    selectedJob.nextPaymentDate
                                 )
                             ),
                         } as dateInput,
@@ -173,14 +171,14 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
                             yearMin: "2023",
                             yearMax: "2024",
                             defaultValue: getDateAsInputValue(
-                                position.nextPaymentDate
+                                selectedJob.nextPaymentDate
                             ),
                         },
                     ]}
                     submitCallback={handleSubmit}
                     updateAnswers={handleUpdateAnswers}
                     submitText={"Update job"}
-                    Loading={loading}
+                    loading={loading}
                     serverErrorMsg={errorMsg}
                 >
                     {cycleStart && cycleEnd && (

@@ -36,7 +36,8 @@ import InputTime from "./blocks/time/Time";
 type thisProps = {
     inputs: inputField[];
     submitCallback: () => void;
-    Loading?: boolean;
+    loading?: boolean;
+    disabled?: boolean;
     updateAnswer: (answer: formAnswersType) => void;
     formAnswers: formAnswersType[];
     submitText: string;
@@ -48,7 +49,8 @@ type thisProps = {
 const Form: FunctionComponent<thisProps> = ({
     inputs,
     submitCallback,
-    Loading,
+    loading,
+    disabled,
     updateAnswer,
     formAnswers,
     submitText,
@@ -169,8 +171,8 @@ const Form: FunctionComponent<thisProps> = ({
 
     //Check if form is ready for submit
     useEffect(() => {
-        setSubmitEnabled(!hasFormErrors && !Loading);
-    }, [formAnswers, inputs, Loading, hasFormErrors]);
+        setSubmitEnabled(!hasFormErrors && !loading);
+    }, [formAnswers, inputs, loading, hasFormErrors]);
 
     useEffect(() => {
         if (serverErrorMsg) setShowError(true);
@@ -305,9 +307,9 @@ const Form: FunctionComponent<thisProps> = ({
                     <button
                         className={styles.submitButton}
                         type="submit"
-                        disabled={!submitEnabled}
+                        disabled={disabled || !submitEnabled}
                     >
-                        {Loading ? <Spinner /> : submitText}
+                        {loading ? <Spinner /> : submitText}
                     </button>
                 )}
                 {hasFormErrors && (

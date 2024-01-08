@@ -3,20 +3,19 @@ import { FunctionComponent, useState, useEffect, createContext } from "react";
 import Calendar from "../calendar/Calendar";
 import Summary from "../summary/Summary";
 import JobPanel from "../jobPanel/jobPanel";
-import { jobPosition } from "../../types/job/Position";
 import styles from "./Dashboard.module.scss";
 import shiftService from "../../services/shiftService";
 import { shiftState } from "../../types/job/Shift";
 import { datesAreEqual, getPastDate } from "../../services/dateService";
 import DatePickerPanel from "./datePickerPanel/DatePickerPanel";
+import { Job } from "../../classes/JobPosition";
 //#endregion
 
 type thisProps = unknown;
-export const JobContext = createContext<jobPosition | null>(null);
+export const JobContext = createContext<Job | null>(null);
 
 const Dashboard: FunctionComponent<thisProps> = () => {
-    const [selectedPosition, setSelectedPosition] =
-        useState<jobPosition | null>(null);
+    const [selectedJob, setSelectedJob] = useState<Job | null>(null);
     const [endDate, setEndDate] = useState<Date>();
     const [startDate, setStartDate] = useState<Date>();
     const [shiftList, setShiftList] = useState<shiftState[]>([]);
@@ -26,7 +25,7 @@ const Dashboard: FunctionComponent<thisProps> = () => {
         setStartDate(start);
     }
 
-    function getDates(selectedPosition: jobPosition) {
+    function getDates(selectedPosition: Job) {
         const nextPaySplit = selectedPosition.nextPaymentDate;
         const end = nextPaySplit ?? new Date();
         const daysBetweenPayment = selectedPosition.paymentLapse;
@@ -35,9 +34,9 @@ const Dashboard: FunctionComponent<thisProps> = () => {
     }
 
     useEffect(() => {
-        if (!selectedPosition) return;
+        if (!selectedJob) return;
 
-        const { start, end } = getDates(selectedPosition);
+        const { start, end } = getDates(selectedJob);
         const shiftStart = startDate ?? start;
         const shiftEnd = endDate ?? end;
         if (
@@ -47,7 +46,7 @@ const Dashboard: FunctionComponent<thisProps> = () => {
             !datesAreEqual(endDate, end)
         ) {
             shiftService
-                .getShifts(shiftStart, shiftEnd, selectedPosition.id)
+                .getShifts(shiftStart, shiftEnd, selectedJob.id)
                 .then((shiftList) => {
                     const shiftsStates = shiftList.map((shiftBase) =>
                         shiftService.getShiftAsState(shiftBase)
@@ -57,15 +56,13 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                     if (!endDate) setEndDate(shiftEnd);
                 });
         }
-    }, [selectedPosition, endDate, startDate]);
+    }, [selectedJob, endDate, startDate]);
 
     return (
-        <JobContext.Provider value={selectedPosition}>
+        <JobContext.Provider value={selectedJob}>
             <div className={styles.mainBody}>
-                <JobPanel
-                    onSetSelectedPosition={setSelectedPosition}
-                ></JobPanel>
-                {selectedPosition && endDate && startDate && (
+                <JobPanel onSetSelectedJob={setSelectedJob} />
+                {selectedJob && endDate && startDate && (
                     <div className={styles.calendarAnimWrapper}>
                         <DatePickerPanel
                             end={endDate}
@@ -77,7 +74,6 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                                 endDate={endDate}
                                 startDate={startDate}
                                 shiftList={shiftList}
-                                overnightJob={false}
                                 onSetShiftList={setShiftList}
                             ></Calendar>
                             <Summary

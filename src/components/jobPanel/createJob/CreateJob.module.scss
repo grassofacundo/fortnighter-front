@@ -1,6 +1,14 @@
-.formWrapper {
+@import "../../../style/animations";
+
+.formContainer {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
+}
+
+.submittedForm {
+    button[class*="submitButton"] {
+        animation: 250ms linear hide-up forwards;
+    }
 }

@@ -6,6 +6,7 @@ import {
     useCallback,
     Dispatch,
     SetStateAction,
+    useContext,
 } from "react";
 import styles from "./Calendar.module.scss";
 import {
@@ -17,13 +18,13 @@ import {
 } from "../../services/dateService";
 import { dateArray, shiftGrid, shiftState } from "../../types/job/Shift";
 import Workday from "./Workday";
+import { JobContext } from "../dashboard/Dashboard";
 //#endregion
 
 type thisProps = {
     endDate: Date;
     startDate: Date;
     shiftList: shiftState[];
-    overnightJob: boolean;
     onSetShiftList: Dispatch<SetStateAction<shiftState[]>>;
 };
 
@@ -31,9 +32,10 @@ const Calendar: FunctionComponent<thisProps> = ({
     endDate,
     startDate,
     shiftList,
-    overnightJob,
     onSetShiftList,
 }) => {
+    const position = useContext(JobContext);
+
     const [shiftGrid, setShiftGrid] = useState<shiftGrid[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -53,7 +55,13 @@ const Calendar: FunctionComponent<thisProps> = ({
                 );
                 const shift = index > -1 ? shifts[index] : undefined;
                 let dateToSave = [localEndDate] as dateArray;
-                if (shift && !datesAreEqual(shift.startTime, shift.endTime)) {
+                if (
+                    position?.workdayTimes &&
+                    !datesAreEqual(
+                        position.workdayTimes.regular.normal.start,
+                        shift.endTime
+                    )
+                ) {
                     const start = structuredClone(shift.startTime);
                     const end = structuredClone(shift.endTime);
                     dateToSave = [start, end];
@@ -102,7 +110,6 @@ const Calendar: FunctionComponent<thisProps> = ({
                             shift={shift.shift}
                             onUpdateShift={updateShift}
                             onCreateShift={createShift}
-                            order={i}
                         />
                     ))}
                 </div>

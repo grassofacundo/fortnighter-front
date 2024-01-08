@@ -1,9 +1,9 @@
 import {
-    hourNum,
     hourNumPlusZero,
     hourStr,
     meridianValues,
     minuteNum,
+    minuteStr,
     timeStructure,
 } from "../../../types/TimeType";
 
@@ -35,7 +35,7 @@ export function getDefaultMeridian(
     }
 }
 
-export function getHour(time: timeStructure): hourNumPlusZero {
+export function getHourNumber(time: timeStructure): hourNumPlusZero {
     const splitTime = time.split(":");
     const hourStr = splitTime[0] as hourStr;
     let hourNum = 0 as hourNumPlusZero;
@@ -49,7 +49,13 @@ export function getHour(time: timeStructure): hourNumPlusZero {
     return hourNum;
 }
 
-export function getMinutes(time: timeStructure): minuteNum {
+export function getHourString(time: timeStructure): hourStr {
+    const splitTime = time.split(":");
+    const hourStr = splitTime[0] as hourStr;
+    return hourStr;
+}
+
+export function getMinutesNumber(time: timeStructure): minuteNum {
     let minuteNum = 0;
     try {
         const minuteStr = time.split(":")[1].split("-")[0];
@@ -59,6 +65,17 @@ export function getMinutes(time: timeStructure): minuteNum {
         console.log(error);
     }
     return minuteNum as minuteNum;
+}
+
+export function getMinutesString(time: timeStructure): minuteStr {
+    let minuteStr = "00" as minuteStr;
+    try {
+        minuteStr = time.split(":")[1].split("-")[0] as minuteStr;
+    } catch (error) {
+        console.log("Error parsing minute");
+        console.log(error);
+    }
+    return minuteStr;
 }
 
 export function getMeridian(time: timeStructure): meridianValues {
@@ -73,9 +90,15 @@ export function getMeridian(time: timeStructure): meridianValues {
 }
 
 export function getAs24Format(time: timeStructure): number {
-    const hour = getHour(time);
-    const minutes = getMinutes(time);
+    const hour = getHourNumber(time);
+    const minutes = getMinutesNumber(time);
     const hourAndMinutes = hour + (minutes === 30 ? 0.5 : 0);
     const meridian = getMeridian(time);
     return meridian === "PM" ? hourAndMinutes + 12 : hourAndMinutes;
+}
+
+export function getTime(time: timeStructure): `${hourStr}:${minuteStr}` {
+    const hour = getHourString(time);
+    const minute = getMinutesString(time);
+    return `${hour}:${minute}`;
 }

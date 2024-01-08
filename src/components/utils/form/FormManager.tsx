@@ -20,7 +20,8 @@ type thisProps = {
     inputs: inputField[];
     updateAnswers?: (answers: parsedAnswers) => void;
     submitCallback: (answers: parsedAnswers) => Promise<void>;
-    Loading?: boolean;
+    loading?: boolean;
+    disabled?: boolean;
     submitText?: string;
     serverErrorMsg?: string;
     children?: ReactNode;
@@ -30,7 +31,8 @@ const FormManager: FunctionComponent<thisProps> = ({
     inputs,
     updateAnswers,
     submitCallback,
-    Loading,
+    loading,
+    disabled,
     submitText,
     serverErrorMsg,
     children,
@@ -181,9 +183,9 @@ const FormManager: FunctionComponent<thisProps> = ({
     //#endregion
 
     useEffect(() => {
-        if (!Loading && serverErrorMsg) setServerError(serverErrorMsg);
+        if (!loading && serverErrorMsg) setServerError(serverErrorMsg);
         if (!serverErrorMsg) setServerError("");
-    }, [Loading, serverErrorMsg]);
+    }, [loading, serverErrorMsg]);
 
     useEffect(() => {
         inputs.forEach((input) => {
@@ -200,13 +202,14 @@ const FormManager: FunctionComponent<thisProps> = ({
             <Form
                 inputs={inputs}
                 submitCallback={handleCallback}
-                Loading={Loading}
+                loading={loading}
                 updateAnswer={updateAnswer}
                 formAnswers={formAnswers}
                 submitText={submitText ?? "Submit"}
                 serverErrorMsg={serverError}
                 resetServerError={() => setServerError("")}
                 children={children}
+                disabled={disabled}
             />
         </div>
     );

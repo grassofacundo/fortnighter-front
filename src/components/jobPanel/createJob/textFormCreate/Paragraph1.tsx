@@ -1,7 +1,11 @@
 //#region Dependency list
-import { FunctionComponent, Dispatch, SetStateAction, useEffect } from "react";
-import { workdayTimeType } from "./PricesForm";
-import CustomSelect from "../../../blocks/customSelect/CustomSelect";
+import {
+    FunctionComponent,
+    Dispatch,
+    SetStateAction,
+    useEffect,
+    useState,
+} from "react";
 import InputTime from "../../../utils/form/blocks/time/Time";
 import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
@@ -10,19 +14,16 @@ import {
     timeStructure,
 } from "../../../utils/form/types/TimeType";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
-import styles from "./PricesForm.module.scss";
 import { getAs24Format } from "../../../utils/form/blocks/time/select/TimeMethods";
+import styles from "./TextFormCreate.module.scss";
 //#endregion
 
 type thisProps = {
-    setWorkdayType: Dispatch<SetStateAction<workdayTimeType>>;
     setWorkDayTimeStart: Dispatch<SetStateAction<timeStructure | undefined>>;
     setWorkDayTimeEnd: Dispatch<SetStateAction<timeStructure | undefined>>;
     setWorkDayPrice: Dispatch<SetStateAction<number | undefined>>;
-    setFinishNextDay: Dispatch<SetStateAction<boolean>>;
     workDayTimeStart: timeStructure | undefined;
     workDayTimeEnd: timeStructure | undefined;
-    finishNextDay: boolean;
     handleNumberChange(
         answer: formAnswersType,
         callback: Dispatch<SetStateAction<number | undefined>>
@@ -30,22 +31,14 @@ type thisProps = {
 };
 
 const Paragraph1: FunctionComponent<thisProps> = ({
-    setWorkdayType,
     setWorkDayTimeStart,
     setWorkDayTimeEnd,
     setWorkDayPrice,
-    setFinishNextDay,
     workDayTimeStart,
     workDayTimeEnd,
-    finishNextDay,
     handleNumberChange,
 }) => {
-    const workdayOptions = [
-        { label: "weekday", value: "regular" },
-        { label: "saturday", value: "saturday" },
-        { label: "sunday", value: "sunday" },
-        { label: "holiday", value: "holiday" },
-    ];
+    const [finishNextDay, setFinishNextDay] = useState<boolean>(false);
 
     useEffect(() => {
         if (workDayTimeStart && workDayTimeEnd) {
@@ -53,24 +46,11 @@ const Paragraph1: FunctionComponent<thisProps> = ({
             const hour2 = getAs24Format(workDayTimeEnd);
             setFinishNextDay(hour1 > hour2);
         }
-    }, [workDayTimeStart, workDayTimeEnd, setFinishNextDay]);
+    }, [workDayTimeStart, workDayTimeEnd]);
 
     return (
         <div className={`${styles.paragraph} ${styles.show}`}>
-            My regular workday during a
-            <CustomSelect
-                placeHolder={"Weekday type"}
-                options={workdayOptions.map((day) => {
-                    return {
-                        value: day.value,
-                        label: day.label,
-                        selected: day.value === "regular",
-                    };
-                })}
-                onChange={(value) => setWorkdayType(value as workdayTimeType)}
-                customClass={styles.inlineSelect}
-            />
-            is from
+            My regular workday during a weekday is from
             <InputTime
                 formAnswers={
                     workDayTimeStart
