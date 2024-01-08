@@ -25,6 +25,6 @@ export interface shiftState extends shiftBase {
 
 export type dateArray = [Date, Date?];
 export type shiftGrid = {
-    date: dateArray;
+    date: Date;
     shift?: shiftState;
 };

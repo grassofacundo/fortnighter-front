@@ -8,7 +8,6 @@ import {
     SetStateAction,
     useContext,
 } from "react";
-import styles from "./Calendar.module.scss";
 import {
     datesAreEqual,
     getDaysBetweenDates,
@@ -19,6 +18,7 @@ import {
 import { dateArray, shiftGrid, shiftState } from "../../types/job/Shift";
 import Workday from "./Workday";
 import { JobContext } from "../dashboard/Dashboard";
+import styles from "./Calendar.module.scss";
 //#endregion
 
 type thisProps = {
@@ -34,7 +34,7 @@ const Calendar: FunctionComponent<thisProps> = ({
     shiftList,
     onSetShiftList,
 }) => {
-    const position = useContext(JobContext);
+    const selectedJob = useContext(JobContext);
 
     const [shiftGrid, setShiftGrid] = useState<shiftGrid[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -54,19 +54,9 @@ const Calendar: FunctionComponent<thisProps> = ({
                     datesAreEqual(shift.startTime, getPlainDate(localEndDate))
                 );
                 const shift = index > -1 ? shifts[index] : undefined;
-                let dateToSave = [localEndDate] as dateArray;
-                if (
-                    position?.workdayTimes &&
-                    !datesAreEqual(
-                        position.workdayTimes.regular.normal.start,
-                        shift.endTime
-                    )
-                ) {
-                    const start = structuredClone(shift.startTime);
-                    const end = structuredClone(shift.endTime);
-                    dateToSave = [start, end];
-                }
-                days[i - 1] = { date: dateToSave, shift };
+
+                const date = localEndDate;
+                days[i - 1] = { date, shift };
                 localEndDate = getPastDate(1, localEndDate);
             }
             return days.reverse();
@@ -105,8 +95,8 @@ const Calendar: FunctionComponent<thisProps> = ({
                 <div className={styles.daysWrapper}>
                     {shiftGrid.map((shift, i) => (
                         <Workday
-                            key={parseDateAsId(shift.date[0])}
-                            days={shift.date}
+                            key={parseDateAsId(shift.date)}
+                            day={shift.date}
                             shift={shift.shift}
                             onUpdateShift={updateShift}
                             onCreateShift={createShift}
@@ -119,3 +109,7 @@ const Calendar: FunctionComponent<thisProps> = ({
 };
 
 export default Calendar;
+
+/*
+
+*/
