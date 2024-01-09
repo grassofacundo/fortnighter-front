@@ -1,9 +1,10 @@
 //#region Dependency list
-import { Dispatch, FunctionComponent, SetStateAction } from "react";
+import { Dispatch, FunctionComponent, SetStateAction, useContext } from "react";
 import FormUpdate from "./FormUpdate";
 import styles from "./UpdateJob.module.scss";
 import { Job } from "../../../classes/JobPosition";
 import TextFormUpdate from "./textFormUpdate/TextFormUpdate";
+import { JobContext } from "../../dashboard/Dashboard";
 //#endregion
 
 type thisProps = {
@@ -19,6 +20,8 @@ const UpdateJob: FunctionComponent<thisProps> = ({
     loading,
     onSetLoading,
 }) => {
+    const selectedJob = useContext(JobContext);
+
     const submitForm = (job: Job) => onEnd(job);
 
     return (
@@ -29,11 +32,14 @@ const UpdateJob: FunctionComponent<thisProps> = ({
                 loading={loading}
                 onSetLoading={onSetLoading}
             />
-            <TextFormUpdate
-                onSetLoading={onSetLoading}
-                onEnd={submitForm}
-                loading={loading}
-            />
+            {selectedJob && (
+                <TextFormUpdate
+                    onSetLoading={onSetLoading}
+                    selectedJob={selectedJob}
+                    onEnd={submitForm}
+                    loading={loading}
+                />
+            )}
         </div>
     );
 };

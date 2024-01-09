@@ -1,6 +1,16 @@
+import { getAs24Format } from "../components/utils/form/blocks/time/select/TimeMethods";
+import {
+    hourStr,
+    minuteStr,
+    timeStructure,
+} from "../components/utils/form/types/TimeType";
 import FetchService from "../services/fetchService";
 import { eventReturn } from "../types/database/databaseTypes";
-import { priceStructure, workDayStructure } from "../types/job/Position";
+import {
+    priceStructure,
+    workDayStructure,
+    workDayType,
+} from "../types/job/Position";
 
 const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;
 
@@ -43,5 +53,50 @@ export class BaseJob {
             body,
         });
         return response;
+    }
+
+    getTime(
+        type: workDayType,
+        time: "start" | "end"
+    ): timeStructure | undefined {
+        const workDayTime = this.workdayTimes[type];
+        if (!workDayTime) return;
+        const selectedTime =
+            time === "start" ? workDayTime.startTime : workDayTime.endTime;
+        const meridian =
+            time === "start"
+                ? workDayTime.startMeridian
+                : workDayTime.endMeridian;
+        return `${selectedTime}-${meridian}` as timeStructure;
+    }
+
+    getHour(type: workDayType, time: "start" | "end"): hourStr | undefined {
+        const workDayTime = this.workdayTimes[type];
+        if (!workDayTime) return;
+        const selectedTime =
+            time === "start" ? workDayTime.startTime : workDayTime.endTime;
+        const hour = selectedTime.split(":")[0];
+        return hour as hourStr;
+    }
+
+    getMinute(type: workDayType, time: "start" | "end"): minuteStr | undefined {
+        const workDayTime = this.workdayTimes[type];
+        if (!workDayTime) return;
+        const selectedTime =
+            time === "start" ? workDayTime.startTime : workDayTime.endTime;
+        const hour = selectedTime.split(":")[1];
+        return hour as minuteStr;
+    }
+
+    workOvernight(type: workDayType): boolean {
+        const workDayTime = this.workdayTimes[type];
+        if (!workDayTime) return false;
+        const hour1 = getAs24Format(
+            `${workDayTime.startTime}-${workDayTime.startMeridian}`
+        );
+        const hour2 = getAs24Format(
+            `${workDayTime.endTime}-${workDayTime.endMeridian}`
+        );
+        return hour1 >= hour2;
     }
 }

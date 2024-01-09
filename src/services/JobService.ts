@@ -1,11 +1,8 @@
 //#region Dependency list
+import { Job } from "../classes/JobPosition";
 import { eventReturn } from "../types/database/databaseTypes";
 import { payment, paymentBase } from "../types/job/Payment";
-import {
-    baseJobPosition,
-    dbJobPosition,
-    jobPosition,
-} from "../types/job/Position";
+import { dbJobPositionType } from "../types/job/Position";
 import { getDateAsInputValue } from "./dateService";
 import FetchService from "./fetchService";
 //#endregion
@@ -17,49 +14,9 @@ class JobService {
         console.log("Nothing to initialize");
     }
 
-    /**
-     * Create a new job position in the database
-     *
-     * @param newJobPosition - An object following the baseJobPosition interface structure
-     * @returns An eventReturn return object. If ok, the content will be a jobPosition object.
-     */
-    async createJobPosition(
-        newJobPosition: baseJobPosition<Date>
-    ): Promise<eventReturn<dbJobPosition>> {
-        const url = `${this.url}/job/create`;
-        const method = "PUT";
-        const body = { ...newJobPosition };
-        const response = await FetchService.fetchPost<dbJobPosition>({
-            url,
-            method,
-            body,
-        });
-        return response;
-    }
-
-    /**
-     * Create a new job position in the database
-     *
-     * @param jobPositionToUpdate - An object following the baseJobPosition interface structure
-     * @returns An eventReturn return object. If ok, the content will be a jobPosition object.
-     */
-    async updateJobPosition(
-        jobPositionToUpdate: baseJobPosition<Date>
-    ): Promise<eventReturn<dbJobPosition>> {
-        const url = `${this.url}/job/update`;
-        const method = "PUT";
-        const body = { ...jobPositionToUpdate };
-        const response = await FetchService.fetchPost<dbJobPosition>({
-            url,
-            method,
-            body,
-        });
-        return response;
-    }
-
-    async getJobPositions(): Promise<dbJobPosition[]> {
+    async getJobPositions(): Promise<dbJobPositionType[]> {
         const url = `${this.url}/job/get-all`;
-        const response = await FetchService.fetchGet<dbJobPosition[]>(url);
+        const response = await FetchService.fetchGet<dbJobPositionType[]>(url);
         if (
             FetchService.isOk(response) &&
             response.content &&
@@ -74,11 +31,12 @@ class JobService {
         }
     }
 
-    parseAsJobPosition(dbJobPosition: dbJobPosition): jobPosition {
-        return {
+    parseAsJobPosition(dbJobPosition: dbJobPositionType): Job {
+        const job = new Job({
             ...dbJobPosition,
             nextPaymentDate: new Date(dbJobPosition.nextPaymentDate),
-        };
+        });
+        return job;
     }
 
     /**

@@ -23,6 +23,7 @@ import { Job } from "../../../classes/JobPosition";
 
 type answerData = {
     jobName: string;
+    companyName?: string;
     hourPrice: number;
     cycleEnd: Date;
     cycleStart: Date;
@@ -64,6 +65,7 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
         let data: answerData | undefined = undefined;
         try {
             const jobName = answers.positionName as string;
+            const companyName = answers.companyName as string;
             const hourPrice = Number(answers.hourPrice);
             const cycleEndInput = setDateFromInput(answers.cycleEnd as string);
             const cycleStartInput = setDateFromInput(
@@ -72,6 +74,7 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
 
             data = {
                 jobName,
+                companyName,
                 hourPrice,
                 cycleEnd: cycleEndInput,
                 cycleStart: cycleStartInput,
@@ -98,6 +101,7 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
         const job = new Job({
             id: selectedJob.id,
             name: data.jobName,
+            companyName: data.companyName,
             hourPrice: selectedJob.hourPrice,
             workdayTimes: selectedJob.workdayTimes,
             paymentLapse: getDaysBetweenDates(data.cycleStart, data.cycleEnd),
@@ -150,6 +154,14 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
                             id: "positionName",
                             label: "Position name",
                             defaultValue: selectedJob.name,
+                        },
+                        {
+                            type: "text",
+                            id: "companyName",
+                            placeholder: "Name of company",
+                            label: "Name of company",
+                            isOptional: true,
+                            defaultValue: selectedJob.companyName,
                         },
                         {
                             type: "customDate",

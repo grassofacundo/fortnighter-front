@@ -30,12 +30,22 @@ export type hourPriceType = {
     overtime?: number;
     overwork?: number;
 };
-export type workDayStructure = {
-    regular: workDayType;
-    saturday?: workDayType;
-    sunday?: workDayType;
-    holiday?: workDayType;
+
+export type workDayType = "regular" | "saturday" | "sunday" | "holiday";
+type workDayFields = {
+    startTime: time;
+    startMeridian: "AM" | "PM";
+    endTime: time;
+    endMeridian: "AM" | "PM";
+    length: number;
 };
+export type workDayStructure = {
+    regular: workDayFields;
+    saturday?: workDayFields;
+    sunday?: workDayFields;
+    holiday?: workDayFields;
+};
+
 type minute = "00" | "30";
 type hour =
     | "00"
@@ -52,11 +62,3 @@ type hour =
     | "11"
     | "12";
 type time = `${hour}:${minute}`;
-
-export type workDayType = {
-    startTime: time;
-    startMeridian: "AM" | "PM";
-    endTime: time;
-    endMeridian: "AM" | "PM";
-    length: number;
-};

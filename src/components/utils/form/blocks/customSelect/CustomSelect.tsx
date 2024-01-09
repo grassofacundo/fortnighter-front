@@ -18,23 +18,20 @@ interface thisProps extends inputProp {
     fields: inputSelectType;
 }
 
-// CustomSelect component
 const CustomSelect: FunctionComponent<thisProps> = ({
     fields,
-    //formAnswers,
     onUpdateAnswer,
 }) => {
     const { id, label, options, isMulti, isSearchable } = fields;
 
-    // State variables using React hooks
-    const [showMenu, setShowMenu] = useState<boolean>(false); // Controls the visibility of the dropdown menu
+    const [showMenu, setShowMenu] = useState<boolean>(false);
     const [multiValues, setMultiValues] = useState(
         options.filter((o) => o.selected)
     );
     const [value, setValue] = useState<option | null>(getValue());
-    const [searchValue, setSearchValue] = useState<string>(""); // Stores the value entered in the search input
-    const searchRef = useRef<HTMLInputElement>(null); // Reference to the search input element
-    const inputRef = useRef<HTMLDivElement>(null); // Reference to the custom select input element
+    const [searchValue, setSearchValue] = useState<string>("");
+    const searchRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLDivElement>(null);
     const root = document.querySelector("#root") as HTMLElement;
 
     useEffect(() => {
@@ -169,10 +166,7 @@ const CustomSelect: FunctionComponent<thisProps> = ({
     }
 
     return (
-        <div
-            //className={`${styles.customDropdownContainer} ${customClass}`}
-            className={`inputClass ${styles.customDropdownContainer}`}
-        >
+        <div className={`inputClass ${styles.customDropdownContainer}`}>
             <div
                 ref={inputRef}
                 onClick={() => handleShowMenu()}

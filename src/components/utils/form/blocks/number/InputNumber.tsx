@@ -18,6 +18,14 @@ const InputNumber: FunctionComponent<thisProps> = ({
         onUpdateAnswer({ id: target.id, value: target.value, error: "" });
     };
 
+    function handleDefaultValue() {
+        if (!defaultValue) return "";
+        if (typeof defaultValue === "number") {
+            return Number(defaultValue).toString();
+        }
+        return defaultValue;
+    }
+
     return (
         <div className="inputClass">
             <label htmlFor={id}>{label}</label>
@@ -27,7 +35,7 @@ const InputNumber: FunctionComponent<thisProps> = ({
                 placeholder={placeholder}
                 required={!isOptional}
                 onChange={(target) => validInput(target)}
-                defaultValue={defaultValue}
+                defaultValue={handleDefaultValue()}
                 step={step}
             ></input>
         </div>

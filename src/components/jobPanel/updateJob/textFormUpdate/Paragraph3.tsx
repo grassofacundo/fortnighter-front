@@ -5,6 +5,7 @@ import {
     SetStateAction,
     useEffect,
     useCallback,
+    useContext,
 } from "react";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 import { hourNum } from "../../../../types/dateService";
@@ -12,18 +13,22 @@ import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
 import { timeStructure } from "../../../utils/form/types/TimeType";
 import styles from "./TextFormUpdate.module.scss";
+import { workDayType } from "../../../../types/job/Position";
+import { JobContext } from "../../../dashboard/Dashboard";
 //#endregion
 
 type thisProps = {
-    setWorkDayLength: Dispatch<SetStateAction<hourNum | undefined>>;
-    setOverworkDayPrice: Dispatch<SetStateAction<number | undefined>>;
+    setWorkDayLength: Dispatch<SetStateAction<number>>;
+    setOverworkDayPrice: Dispatch<SetStateAction<number>>;
     overtimePrice: number | undefined;
-    workDayLength: hourNum | undefined;
+    overworkPrice: number | undefined;
+    workdayType: workDayType | undefined;
+    workDayLength: number;
     workDayTimeStart: timeStructure | undefined;
     workDayTimeEnd: timeStructure | undefined;
     handleNumberChange(
         answer: formAnswersType,
-        callback: Dispatch<SetStateAction<number | undefined>>
+        callback: Dispatch<SetStateAction<number>>
     ): void;
 };
 
@@ -31,11 +36,15 @@ const Paragraph3: FunctionComponent<thisProps> = ({
     setWorkDayLength,
     setOverworkDayPrice,
     overtimePrice,
+    overworkPrice,
+    workdayType,
     workDayLength,
     workDayTimeStart,
     workDayTimeEnd,
     handleNumberChange,
 }) => {
+    const selectedJob = useContext(JobContext);
+
     function getTimeFromWorkdayTime(
         workdayTime: timeStructure,
         time: "hour" | "minute"
@@ -94,15 +103,13 @@ const Paragraph3: FunctionComponent<thisProps> = ({
             }`}
         >
             My regular workday is
-            {overtimePrice && (
+            {overtimePrice && workdayType && (
                 <InputNumber
                     formAnswers={[]}
                     onUpdateAnswer={(answer: formAnswersType) =>
                         handleNumberChange(
                             answer,
-                            setWorkDayLength as Dispatch<
-                                SetStateAction<number | undefined>
-                            >
+                            setWorkDayLength as Dispatch<SetStateAction<number>>
                         )
                     }
                     fields={
@@ -112,33 +119,30 @@ const Paragraph3: FunctionComponent<thisProps> = ({
                             min: 0,
                             max: 23,
                             placeholder: "8",
-                            defaultValue:
-                                workDayTimeStart && workDayTimeEnd
-                                    ? getHourDifference(
-                                          workDayTimeStart,
-                                          workDayTimeEnd
-                                      )
-                                    : "8",
+                            defaultValue: workDayLength,
                         } as inputNumber
                     }
                 />
             )}
             hours long, after that, the overwork price is $
-            <InputNumber
-                formAnswers={[]}
-                onUpdateAnswer={(answer: formAnswersType) =>
-                    handleNumberChange(answer, setOverworkDayPrice)
-                }
-                fields={
-                    {
-                        type: "number",
-                        id: "priceOfOverwork",
-                        min: 0,
-                        max: 23,
-                        placeholder: "20",
-                    } as inputNumber
-                }
-            />
+            {workdayType && (
+                <InputNumber
+                    formAnswers={[]}
+                    onUpdateAnswer={(answer: formAnswersType) =>
+                        handleNumberChange(answer, setOverworkDayPrice)
+                    }
+                    fields={
+                        {
+                            type: "number",
+                            id: "priceOfOverwork",
+                            min: 0,
+                            max: 23,
+                            placeholder: "20",
+                            defaultValue: overworkPrice,
+                        } as inputNumber
+                    }
+                />
+            )}
             .
         </div>
     );

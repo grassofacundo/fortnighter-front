@@ -25,6 +25,7 @@ export interface inputBase {
     id: string;
     isOptional?: boolean;
     defaultValue?: inputValues;
+    customClass?: CSSModuleClasses[string];
 }
 
 export interface input extends inputBase {

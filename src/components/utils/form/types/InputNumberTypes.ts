@@ -6,5 +6,5 @@ export interface inputNumber extends input {
     min?: number;
     max?: number;
     maxLength?: number;
-    defaultValue?: string;
+    defaultValue?: string | number;
 }
