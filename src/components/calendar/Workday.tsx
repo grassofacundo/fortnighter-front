@@ -36,20 +36,37 @@ const Workday: FunctionComponent<thisProps> = ({
             className={`${styles.dayBody} ${isExpanded ? styles.expanded : ""}`}
         >
             <div className={styles.headerContainer}>
-                <p>{`${getStringDMY(day)}`}</p>
+                <div className={styles.headerText}>
+                    <p>{`${getStringDMY(day)}`}</p>
+                    {shift && (
+                        <p className={styles.extraInformation}>{`${
+                            shift.isHoliday
+                                ? "(HOL)"
+                                : shift.startsOnSaturday()
+                                ? "(SAT)"
+                                : shift.startsOnSunday()
+                                ? "(SUN)"
+                                : ""
+                        } Worked ${shift.getHoursWorked()} hours`}</p>
+                    )}
+                </div>
+
                 <button onClick={() => setIsExpanded((v) => !v)}>
                     {isExpanded ? "Hide" : "Show"}
                 </button>
             </div>
-            {isExpanded && selectedJob && (
-                <ShiftForm
-                    jobId={selectedJob.id}
-                    id={parseDateAsId(day)}
-                    date={getDateAsInputValue(day)}
-                    onEnd={updateShiftList}
-                    shift={shift}
-                />
-            )}
+            <div className={styles.contentContainer}>
+                {isExpanded && selectedJob && (
+                    <ShiftForm
+                        jobId={selectedJob.id}
+                        id={parseDateAsId(day)}
+                        date={getDateAsInputValue(day)}
+                        onEnd={updateShiftList}
+                        shift={shift}
+                    />
+                )}
+                {shift && <div>Local summary</div>}
+            </div>
         </div>
     );
 };

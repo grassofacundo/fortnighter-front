@@ -32,9 +32,24 @@
     align-items: center;
     height: var(--containerHeight);
     padding: 0 5px;
+
+    .headerText {
+        display: flex;
+        gap: 5px;
+
+        .extraInformation {
+            font-size: 14px;
+            color: grey;
+        }
+    }
+
     button {
         border: none;
         box-shadow: none;
         padding: 0;
     }
+}
+
+.contentContainer {
+    display: flex;
 }
