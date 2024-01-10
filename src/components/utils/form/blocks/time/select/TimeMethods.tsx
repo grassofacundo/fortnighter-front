@@ -11,14 +11,14 @@ import {
 export function getDefaultHourValue(defaultValue: string | undefined) {
     if (!defaultValue || typeof defaultValue !== "string") return;
     const splitTime = defaultValue.split(":");
-    return splitTime[0];
+    return splitTime[0].length === 1 ? `0${splitTime[0]}` : splitTime[0];
 }
 
 export function getDefaultMinuteValue(defaultValue: string | undefined) {
     if (!defaultValue || typeof defaultValue !== "string") return;
     let splitTime = defaultValue.split(":");
     splitTime = splitTime[1].split("-");
-    return splitTime[0];
+    return splitTime[0].length === 1 ? `0${splitTime[0]}` : splitTime[0];
 }
 
 export function getDefaultMeridian(
@@ -104,7 +104,10 @@ export function getTime(
 ): `${hourStr}:${minuteStr}` | `${hourStr24}:${minuteStr}` {
     const hourStr = getHourString(time);
     const hourNum = getHourNumber(time);
-    const minute = getMinutesString(time);
+    const minute =
+        getMinutesString(time).length === 1
+            ? (`0${getMinutesString(time)}` as minuteStr)
+            : getMinutesString(time);
     const meridian = getMeridian(time);
     const hourVal = as24Format
         ? (`${meridian === "PM" ? hourNum + 12 : hourStr}` as hourStr24)

@@ -59,9 +59,12 @@ const InputTime: FunctionComponent<thisProps> = ({
             let hour = 1;
             try {
                 hour = Number(target.value);
-                if (hour > 12) hour = 12;
-                if (hour < 1) hour = 1;
-                if (Number(target.value) !== hour) updateInput("hour", hour);
+                let hourStr = "";
+                if (hour > 12) hourStr = "12";
+                if (hour < 1) hourStr = "1";
+                if (!hourStr) hourStr = `${hour}`;
+                if (hourStr.length === 1) hourStr = `0${hourStr}`;
+                if (target.value !== hourStr) updateInput("hour", hourStr);
             } catch (error) {
                 console.log(error);
             }
@@ -74,13 +77,18 @@ const InputTime: FunctionComponent<thisProps> = ({
             let minute = 0;
             try {
                 minute = Number(target.value);
-                if (minute > 30) minute = 30;
-                if (minute < 0) minute = 0;
-                if (minute === 3) minute = 30;
+                let minuteStr = "";
+                if (minute > 30) minuteStr = "30";
+                if (minute < 0) minuteStr = "00";
+                if (minute === 3) minuteStr = "30";
                 if (minute !== 0 && minute !== 30)
-                    minute > 15 ? (minute = 30) : (minute = 0);
-                if (Number(target.value) !== minute)
-                    updateInput("minute", minute);
+                    minute > 15 ? (minuteStr = "30") : (minuteStr = "00");
+
+                if (!minuteStr) minuteStr = `${minute}`;
+                if (minuteStr.length === 1) minuteStr = `0${minuteStr}`;
+
+                if (target.value !== minuteStr)
+                    updateInput("minute", minuteStr);
             } catch (error) {
                 console.log(error);
             }
