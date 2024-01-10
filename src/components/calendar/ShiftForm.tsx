@@ -11,6 +11,7 @@ import {
 } from "../utils/form/blocks/time/select/TimeMethods";
 import { Shift } from "../../classes/Shift";
 import { BaseShift } from "../../classes/BaseShift";
+import { getTomorrow } from "../../services/dateService";
 //#endregion
 
 type thisProps = {
@@ -48,12 +49,14 @@ const ShiftForm: FunctionComponent<thisProps> = ({
             );
         }
         const isHoliday = answers[`isHoliday${id}`] as boolean;
+
         const start = new Date(
             `${date}T${getTime(answers.startWork as timeStructure, true)}`
         );
-        const end = new Date(
+        let end = new Date(
             `${date}T${getTime(answers.endWork as timeStructure, true)}`
         );
+        if (start >= end) end = getTomorrow(end);
 
         if (isHoliday == null) {
             setErrorMsg("Error on is holiday value");
@@ -74,12 +77,15 @@ const ShiftForm: FunctionComponent<thisProps> = ({
             : new BaseShift(jobId, isHoliday, start, end);
 
         const response = await shiftObj.save();
-        if (response.ok && response.content) {
+        if (response.ok) {
             setErrorMsg("");
             onEnd(
                 shiftObj instanceof Shift
                     ? shiftObj
-                    : new Shift({ ...shiftObj, id: response.content })
+                    : new Shift({
+                          ...shiftObj,
+                          id: response.content ? response.content : "",
+                      })
             );
         }
         setLoading(false);

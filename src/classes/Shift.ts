@@ -13,9 +13,6 @@ export class Shift extends BaseShift {
         isHoliday: boolean;
         start: Date;
         end: Date;
-        hoursWorked: number;
-        isSaturday: boolean;
-        isSunday: boolean;
     }) {
         super(shift.jobId, shift.isHoliday, shift.start, shift.end);
         this.id = shift.id;

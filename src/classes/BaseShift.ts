@@ -1,3 +1,4 @@
+import { getTomorrow } from "../services/dateService";
 import FetchService from "../services/fetchService";
 import { eventReturn } from "../types/database/databaseTypes";
 
@@ -8,29 +9,43 @@ export class BaseShift {
     isHoliday: boolean;
     start: Date;
     end: Date;
-    hoursWorked: number;
-    isSaturday: boolean;
-    isSunday: boolean;
 
     constructor(jobId: string, isHoliday: boolean, start: Date, end: Date) {
         this.jobId = jobId;
         this.isHoliday = isHoliday;
         this.start = start;
         this.end = end;
-        this.hoursWorked = this.getHoursWorked(start, end);
-        this.isSaturday = start.getDay() === 6;
-        this.isSunday = start.getDay() === 0;
     }
 
-    getHoursWorked(startDate: Date, endDate: Date): number {
-        const startHour = startDate.getHours();
-        const startMinutes = startDate.getMinutes() === 30 ? 0.5 : 0;
+    getHoursWorked(): number {
+        const startHour = this.start.getHours();
+        const startMinutes = this.start.getMinutes() === 30 ? 0.5 : 0;
         const start = startHour + startMinutes;
-        const endHour = endDate.getHours();
-        const endMinutes = endDate.getMinutes() === 30 ? 0.5 : 0;
-        const end = endHour + endMinutes;
+        const endHour = this.end.getHours();
+        const endMinutes = this.end.getMinutes() === 30 ? 0.5 : 0;
+        const end = endHour + endMinutes + (this.isOvernight() ? 24 : 0);
         const diff = end - start;
         return diff;
+    }
+
+    startsOnSaturday() {
+        return this.start.getDay() === 6;
+    }
+
+    endOnSaturday() {
+        return this.end.getDay() === 6;
+    }
+
+    startsOnSunday() {
+        return this.start.getDay() === 0;
+    }
+
+    endsOnSunday() {
+        return this.end.getDay() === 0;
+    }
+
+    isOvernight() {
+        return getTomorrow(this.start).getDate() === this.end.getDate();
     }
 
     async save(): Promise<eventReturn<void>> {
