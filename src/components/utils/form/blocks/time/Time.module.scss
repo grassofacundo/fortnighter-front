@@ -1,13 +1,19 @@
 .timeInputBody {
-    margin-top: 2px !important;
+    .timeLabel {
+        margin-bottom: 10px;
+    }
 
     .inputContainer {
         display: flex;
         flex-direction: row;
         margin-top: 0;
+        gap: 5px;
+        align-items: center;
 
         .inputWrapper {
-            width: 3em;
+            display: flex;
+            align-items: center;
+            width: fit-content;
             height: 2em;
         }
 
@@ -26,7 +32,6 @@
     .customDropdownContainer {
         display: flex;
         align-items: center;
-        margin-right: 10px;
 
         &:hover {
             cursor: pointer;
@@ -34,6 +39,7 @@
 
         .dropdownInput {
             display: flex;
+            color: var(--textColor);
 
             .svgWrapper {
                 display: flex;

@@ -1,6 +1,7 @@
 //#region Dependency list
 import { FunctionComponent, ChangeEvent, useRef } from "react";
 import {
+    hourStr,
     inputTimeType,
     meridianValues,
     timeStructure,
@@ -12,6 +13,7 @@ import {
     getDefaultHourValue,
     getDefaultMinuteValue,
     getDefaultMeridian,
+    dateAsTimeStructure,
 } from "./select/TimeMethods";
 //#endregion
 
@@ -31,12 +33,20 @@ const InputTime: FunctionComponent<thisProps> = ({
     const h = hour;
     const m = minute;
 
+    function getDefaultValue(): timeStructure | undefined {
+        if (!defaultValue) return;
+
+        return defaultValue instanceof Date
+            ? dateAsTimeStructure(defaultValue)
+            : (defaultValue as timeStructure);
+    }
+
     function validInput({ target }: ChangeEvent<HTMLInputElement>): void {
         const prevAnswer = formAnswers.find((answer) => answer.id === id);
         const prevValue: timeStructure =
             (prevAnswer?.value as timeStructure) ??
             (`00:00-${getDefaultMeridian(
-                defaultValue,
+                getDefaultValue(),
                 meridian
             )}` as timeStructure);
 
@@ -89,7 +99,7 @@ const InputTime: FunctionComponent<thisProps> = ({
         const prevAnswer = formAnswers.find((answer) => answer.id === id);
         const prevValue =
             (prevAnswer?.value as string) ??
-            `00:00-${getDefaultMeridian(defaultValue, meridian)}`;
+            `00:00-${getDefaultMeridian(getDefaultValue(), meridian)}`;
 
         const time = prevValue.split("-")[0];
         const newAnswer = `${time}-${meridianParam}`;
@@ -99,7 +109,7 @@ const InputTime: FunctionComponent<thisProps> = ({
             error: "",
         });
     }
-    ("");
+
     function updateInput(
         time: "hour" | "minute",
         value: string | number
@@ -118,7 +128,7 @@ const InputTime: FunctionComponent<thisProps> = ({
 
     return (
         <div className={`inputClass ${styles.timeInputBody}`}>
-            {label && <p>{label}</p>}
+            {label && <p className={styles.timeLabel}>{label}</p>}
             <div className={styles.inputContainer}>
                 {/* Hour input */}
                 <div className={styles.inputWrapper}>
@@ -132,11 +142,11 @@ const InputTime: FunctionComponent<thisProps> = ({
                         placeholder={h.placeholder}
                         required={!h.isOptional}
                         onChange={(target) => validInput(target)}
-                        defaultValue={getDefaultHourValue(defaultValue)}
+                        defaultValue={getDefaultHourValue(getDefaultValue())}
                         step={h.step}
                     ></input>
                 </div>
-                <p>:</p>
+                <p className={styles.separator}>:</p>
                 {/* Minutes input */}
                 <div className={styles.inputWrapper}>
                     <input
@@ -149,12 +159,14 @@ const InputTime: FunctionComponent<thisProps> = ({
                         placeholder={m.placeholder}
                         required={!m.isOptional}
                         onChange={(target) => validInput(target)}
-                        defaultValue={getDefaultMinuteValue(defaultValue)}
+                        defaultValue={getDefaultMinuteValue(getDefaultValue())}
                         step={m.step}
                     ></input>
                 </div>
                 <TimeSelect
-                    isAm={getDefaultMeridian(defaultValue, meridian) === "AM"}
+                    isAm={
+                        getDefaultMeridian(getDefaultValue(), meridian) === "AM"
+                    }
                     onMeridiemChange={updateMeridian}
                 ></TimeSelect>
             </div>

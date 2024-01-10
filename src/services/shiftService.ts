@@ -1,5 +1,6 @@
-import { eventReturn } from "../types/database/databaseTypes";
-import { shiftBase, shiftDb, shiftState } from "../types/job/Shift";
+import { BaseShift } from "../classes/BaseShift";
+import { Shift } from "../classes/Shift";
+import { shiftDb } from "../types/job/Shift";
 import { getDateAsInputValue, getPlainDate } from "./dateService";
 import FetchService from "./fetchService";
 
@@ -16,58 +17,13 @@ class ShiftService {
         }
     }
 
-    getHoursWorked(startDate: Date, endDate: Date): number {
-        const startHour = startDate.getHours();
-        const startMinutes = startDate.getMinutes() === 30 ? 0.5 : 0;
-        const startTime = startHour + startMinutes;
-        const endHour = endDate.getHours();
-        const endMinutes = endDate.getMinutes() === 30 ? 0.5 : 0;
-        const endTime = endHour + endMinutes;
-        const diff = endTime - startTime;
-        return diff;
-    }
-
-    isSaturday(date: Date): boolean {
-        return date.getDay() === 6;
-    }
-
-    isSunday(date: Date): boolean {
-        return date.getDay() === 0;
-    }
-
-    getShiftAsState(shift: shiftBase | shiftDb): shiftState {
-        const start =
-            typeof shift.startTime === "string"
-                ? new Date(shift.startTime)
-                : shift.startTime;
-        const end =
-            typeof shift.endTime === "string"
-                ? new Date(shift.endTime)
-                : shift.endTime;
-        const plainDate = this.getDateAfterStartAndEnd(start, end);
-        const shiftState = {
-            jobPositionId: shift.jobPositionId,
-            isHoliday: shift.isHoliday,
-            startTime: start,
-            endTime: end,
-            date: plainDate,
-            hoursWorked: this.getHoursWorked(start, end),
-            isSaturday: this.isSaturday(plainDate),
-            isSunday: this.isSunday(plainDate),
-        };
-        return shiftState;
-    }
-
-    async setShift(shift: shiftBase): Promise<eventReturn<shiftBase>> {
-        const url = `${this.url}/shift/create`;
-        const method = "PUT";
-        const body = { ...shift };
-        const response = await FetchService.fetchPost<shiftBase>({
-            url,
-            method,
-            body,
-        });
-        return response;
+    convertShiftFromDbToShift(shiftDb: shiftDb, jobId: string): Shift {
+        const start = new Date(shiftDb.startTime);
+        const end = new Date(shiftDb.endTime);
+        const isHoliday = shiftDb.isHoliday;
+        const shiftBase = new BaseShift(jobId, isHoliday, start, end);
+        const shift = new Shift({ ...shiftBase, id: shiftDb.id });
+        return shift;
     }
 
     async getShifts(

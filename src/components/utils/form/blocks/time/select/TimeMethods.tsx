@@ -1,6 +1,7 @@
 import {
     hourNumPlusZero,
     hourStr,
+    hourStr24,
     meridianValues,
     minuteNum,
     minuteStr,
@@ -97,8 +98,34 @@ export function getAs24Format(time: timeStructure): number {
     return meridian === "PM" ? hourAndMinutes + 12 : hourAndMinutes;
 }
 
-export function getTime(time: timeStructure): `${hourStr}:${minuteStr}` {
-    const hour = getHourString(time);
+export function getTime(
+    time: timeStructure,
+    as24Format = false
+): `${hourStr}:${minuteStr}` | `${hourStr24}:${minuteStr}` {
+    const hourStr = getHourString(time);
+    const hourNum = getHourNumber(time);
     const minute = getMinutesString(time);
-    return `${hour}:${minute}`;
+    const meridian = getMeridian(time);
+    const hourVal = as24Format
+        ? (`${meridian === "PM" ? hourNum + 12 : hourStr}` as hourStr24)
+        : hourStr;
+    return `${hourVal}:${minute}`;
+}
+
+export function dateAsTimeStructure(date: Date): timeStructure {
+    const hourNum = date.getHours();
+    const meridian = hourNum > 12 ? "PM" : "AM";
+    const isPm = meridian === "PM";
+    const hour =
+        `${hourNum}`.length === 1
+            ? (`0${hourNum}` as hourStr)
+            : (`${isPm ? hourNum - 12 : hourNum}` as hourStr);
+    const minutesNum = date.getMinutes();
+    const minutes =
+        minutesNum === 30 || minutesNum === 0
+            ? `${minutesNum}`
+            : minutesNum > 15
+            ? "30"
+            : "00";
+    return `${hour}:${minutes}-${meridian}` as timeStructure;
 }

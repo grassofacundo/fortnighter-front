@@ -5,10 +5,10 @@ import Summary from "../summary/Summary";
 import JobPanel from "../jobPanel/jobPanel";
 import styles from "./Dashboard.module.scss";
 import shiftService from "../../services/shiftService";
-import { shiftState } from "../../types/job/Shift";
 import { datesAreEqual, getPastDate } from "../../services/dateService";
 import DatePickerPanel from "./datePickerPanel/DatePickerPanel";
 import { Job } from "../../classes/JobPosition";
+import { Shift } from "../../classes/Shift";
 //#endregion
 
 type thisProps = unknown;
@@ -18,7 +18,7 @@ const Dashboard: FunctionComponent<thisProps> = () => {
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
     const [endDate, setEndDate] = useState<Date>();
     const [startDate, setStartDate] = useState<Date>();
-    const [shiftList, setShiftList] = useState<shiftState[]>([]);
+    const [shiftList, setShiftList] = useState<Shift[]>([]);
 
     function handleDateChange(end: Date, start: Date) {
         setEndDate(end);
@@ -48,10 +48,13 @@ const Dashboard: FunctionComponent<thisProps> = () => {
             shiftService
                 .getShifts(shiftStart, shiftEnd, selectedJob.id)
                 .then((shiftList) => {
-                    const shiftsStates = shiftList.map((shiftBase) =>
-                        shiftService.getShiftAsState(shiftBase)
+                    const shifts = shiftList.map((shiftFromDb) =>
+                        shiftService.convertShiftFromDbToShift(
+                            shiftFromDb,
+                            selectedJob.id
+                        )
                     );
-                    setShiftList(shiftsStates);
+                    setShiftList(shifts);
                     if (!startDate) setStartDate(shiftStart);
                     if (!endDate) setEndDate(shiftEnd);
                 });

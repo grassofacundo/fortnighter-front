@@ -5,7 +5,6 @@ import {
     SetStateAction,
     useEffect,
     useCallback,
-    useContext,
 } from "react";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 import { hourNum } from "../../../../types/dateService";
@@ -14,7 +13,6 @@ import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
 import { timeStructure } from "../../../utils/form/types/TimeType";
 import styles from "./TextFormUpdate.module.scss";
 import { workDayType } from "../../../../types/job/Position";
-import { JobContext } from "../../../dashboard/Dashboard";
 //#endregion
 
 type thisProps = {
@@ -43,8 +41,6 @@ const Paragraph3: FunctionComponent<thisProps> = ({
     workDayTimeEnd,
     handleNumberChange,
 }) => {
-    const selectedJob = useContext(JobContext);
-
     function getTimeFromWorkdayTime(
         workdayTime: timeStructure,
         time: "hour" | "minute"

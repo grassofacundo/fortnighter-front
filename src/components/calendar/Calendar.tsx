@@ -6,7 +6,6 @@ import {
     useCallback,
     Dispatch,
     SetStateAction,
-    useContext,
 } from "react";
 import {
     datesAreEqual,
@@ -15,18 +14,22 @@ import {
     getPlainDate,
     parseDateAsId,
 } from "../../services/dateService";
-import { dateArray, shiftGrid, shiftState } from "../../types/job/Shift";
 import Workday from "./Workday";
-import { JobContext } from "../dashboard/Dashboard";
 import styles from "./Calendar.module.scss";
+import { Shift } from "../../classes/Shift";
 //#endregion
 
 type thisProps = {
     endDate: Date;
     startDate: Date;
-    shiftList: shiftState[];
-    onSetShiftList: Dispatch<SetStateAction<shiftState[]>>;
+    shiftList: Shift[];
+    onSetShiftList: Dispatch<SetStateAction<Shift[]>>;
 };
+
+type shiftGrid = {
+    date: Date;
+    shift?: Shift;
+}[];
 
 const Calendar: FunctionComponent<thisProps> = ({
     endDate,
@@ -34,29 +37,27 @@ const Calendar: FunctionComponent<thisProps> = ({
     shiftList,
     onSetShiftList,
 }) => {
-    const selectedJob = useContext(JobContext);
-
-    const [shiftGrid, setShiftGrid] = useState<shiftGrid[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [shiftGrid, setShiftGrid] = useState<shiftGrid>([]);
 
     const setDays = useCallback(
-        (shifts: shiftState[]): shiftGrid[] => {
+        (shifts: Shift[]): shiftGrid => {
             let localEndDate: Date = structuredClone(endDate);
             const localStartDate: Date = structuredClone(startDate);
 
             const daysNum =
                 getDaysBetweenDates(localStartDate, localEndDate) + 1; //Necessary offset apparently.
             //I think when JS calculates the past date, it starts subtracting from the day before.
-            //meaning there is an implicit +1 there.
-            const days: shiftGrid[] = Array(daysNum);
+            //meaning there is an implicit -1 there.
+            const days: shiftGrid = Array(daysNum);
             for (let i = daysNum; i > 0; i--) {
                 const index = shifts.findIndex((shift) =>
-                    datesAreEqual(shift.startTime, getPlainDate(localEndDate))
+                    datesAreEqual(shift.start, getPlainDate(localEndDate))
                 );
-                const shift = index > -1 ? shifts[index] : undefined;
 
-                const date = localEndDate;
-                days[i - 1] = { date, shift };
+                days[i - 1] =
+                    index > -1
+                        ? { date: localEndDate, shift: shifts[index] }
+                        : { date: localEndDate };
                 localEndDate = getPastDate(1, localEndDate);
             }
             return days.reverse();
@@ -64,36 +65,34 @@ const Calendar: FunctionComponent<thisProps> = ({
         [endDate, startDate]
     );
 
-    function updateShift(updatedShift: shiftState): void {
+    function updateShift(updatedShift: Shift): void {
         const shiftIndex = shiftList.findIndex((shift) =>
-            datesAreEqual(shift.startTime, updatedShift.startTime)
+            datesAreEqual(shift.start, updatedShift.start)
         );
         if (shiftIndex < 0)
             throw new Error("Shift date is not included on loaded shifts");
 
-        const shiftListCopy = structuredClone(shiftList);
-        shiftListCopy[shiftIndex] = updatedShift;
-        onSetShiftList(shiftListCopy);
+        const shifts = structuredClone(shiftList);
+        shifts[shiftIndex] = updatedShift;
+        onSetShiftList(shifts);
     }
 
-    function createShift(updatedShift: shiftState): void {
-        const shiftListCopy = structuredClone(shiftList);
-        shiftListCopy.push(updatedShift);
-        onSetShiftList(shiftListCopy);
+    function createShift(createdShift: Shift): void {
+        const shifts = structuredClone(shiftList);
+        shifts.push(createdShift);
+        onSetShiftList(shifts);
     }
 
     useEffect(() => {
-        setLoading(true);
         const gridToSave = setDays(shiftList);
         setShiftGrid(gridToSave);
-        setLoading(false);
     }, [setDays, shiftList]);
 
     return (
         <div className={styles.calendar}>
             <div className={styles.daysWrapperAnimation}>
                 <div className={styles.daysWrapper}>
-                    {shiftGrid.map((shift, i) => (
+                    {shiftGrid.map((shift) => (
                         <Workday
                             key={parseDateAsId(shift.date)}
                             day={shift.date}
