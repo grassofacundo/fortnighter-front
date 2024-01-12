@@ -2,7 +2,8 @@ Tax and benefits
 - Implement another text, but this time in the summary section to allow creating tax and benefits 
 
 Calculating the salary
-- Implement a "local" summary in the shift with the information for that specific shift. Can we use that data in the general summary? How could I know...
+- Set isOvernight for job
+- Finish calculating regular worked hours in shift summary (Check if shift is included between regular paid hours)
 
 Get the job position from DB and pre fill the hour price text-form in the update section:
 - Regular is working, not the rest
