@@ -10,10 +10,6 @@ import FetchService from "./fetchService";
 class JobService {
     url = `${import.meta.env.VITE_SERVER_DOMAIN}`;
 
-    init() {
-        console.log("Nothing to initialize");
-    }
-
     async getJobPositions(): Promise<dbJobPositionType[]> {
         const url = `${this.url}/job/get-all`;
         const response = await FetchService.fetchGet<dbJobPositionType[]>(url);

@@ -4,7 +4,6 @@ import Paragraph1 from "./Paragraph1";
 import Paragraph2 from "./Paragraph2";
 import Paragraph3 from "./Paragraph3";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
-import { timeStructure } from "../../../utils/form/types/TimeType";
 import {
     priceStructure,
     workDayStructure,
@@ -12,10 +11,11 @@ import {
 } from "../../../../types/job/Position";
 import {
     getMeridian,
-    getTime,
+    getTime12,
 } from "../../../utils/form/blocks/time/select/TimeMethods";
 import { Job } from "../../../../classes/JobPosition";
 import styles from "./TextFormUpdate.module.scss";
+import { time12Meridian } from "../../../utils/form/types/TimeType";
 //#endregion
 
 type thisProps = {
@@ -31,29 +31,29 @@ const TextFormUpdate: FunctionComponent<thisProps> = ({
     onSetLoading,
     onEnd,
 }) => {
-    const r = "regular";
+    const r = "week";
 
     const [workdayType, setWorkdayType] = useState<workDayType>(r);
-    const [workDayTimeStart, setWorkDayTimeStart] = useState<timeStructure>(
+    const [workDayTimeStart, setWorkDayTimeStart] = useState<time12Meridian>(
         selectedJob.getTime(r, "start") ?? "00:00-AM"
     );
-    const [workDayTimeEnd, setWorkDayTimeEnd] = useState<timeStructure>(
+    const [workDayTimeEnd, setWorkDayTimeEnd] = useState<time12Meridian>(
         selectedJob.getTime(r, "end") ?? "00:00-PM"
     );
     const [workDayLength, setWorkDayLength] = useState<number>(
-        selectedJob.workdayTimes.regular.length
+        selectedJob.workdayTimes.week.length
     );
     const [finishNextDay, setFinishNextDay] = useState<boolean>(
         selectedJob.workOvernight(r)
     );
     const [workDayPrice, setWorkDayPrice] = useState<number>(
-        selectedJob.hourPrice.regular.normal
+        selectedJob.hourPrice.week.regular
     );
     const [overtimePrice, setOvertimeDayPrice] = useState<number>(
-        selectedJob.hourPrice.regular.overtime ?? 0
+        selectedJob.hourPrice.week.overtime ?? 0
     );
     const [overworkPrice, setOverworkDayPrice] = useState<number>(
-        selectedJob.hourPrice.regular.overwork ?? 0
+        selectedJob.hourPrice.week.overwork ?? 0
     );
     const [error, setError] = useState<string>("");
 
@@ -88,7 +88,7 @@ const TextFormUpdate: FunctionComponent<thisProps> = ({
             return;
         }
         if (
-            workdayType !== "regular" &&
+            workdayType !== "week" &&
             workdayType !== "saturday" &&
             workdayType !== "sunday" &&
             workdayType !== "holiday"
@@ -100,29 +100,28 @@ const TextFormUpdate: FunctionComponent<thisProps> = ({
         setError("");
 
         const hourPrice: priceStructure = {
-            regular: {
-                normal: selectedJob.hourPrice.regular.normal,
+            week: {
+                regular: selectedJob.hourPrice.week.regular,
             },
         };
 
         hourPrice[workdayType] = {
-            normal: workDayPrice,
+            regular: workDayPrice,
             overtime: overtimePrice,
             overwork: overtimePrice,
         };
 
         const workdayTimes: workDayStructure = {
-            regular: selectedJob.workdayTimes.regular,
+            week: selectedJob.workdayTimes.week,
         };
 
         workdayTimes[workdayType] = {
-            startTime: getTime(workDayTimeStart),
+            startTime: getTime12(workDayTimeStart),
             startMeridian: getMeridian(workDayTimeStart),
-            endTime: getTime(workDayTimeEnd),
+            endTime: getTime12(workDayTimeEnd),
             endMeridian: getMeridian(workDayTimeEnd),
             length: workDayLength,
         };
-
         const job = new Job({
             id: selectedJob.id,
             name: selectedJob.name,

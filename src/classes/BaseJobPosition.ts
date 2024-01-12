@@ -1,8 +1,8 @@
 import { getAs24Format } from "../components/utils/form/blocks/time/select/TimeMethods";
 import {
-    hourStr,
+    hourStr12,
     minuteStr,
-    timeStructure,
+    time12Meridian,
 } from "../components/utils/form/types/TimeType";
 import FetchService from "../services/fetchService";
 import { eventReturn } from "../types/database/databaseTypes";
@@ -58,7 +58,7 @@ export class BaseJob {
     getTime(
         type: workDayType,
         time: "start" | "end"
-    ): timeStructure | undefined {
+    ): time12Meridian | undefined {
         const workDayTime = this.workdayTimes[type];
         if (!workDayTime) return;
         const selectedTime =
@@ -67,16 +67,16 @@ export class BaseJob {
             time === "start"
                 ? workDayTime.startMeridian
                 : workDayTime.endMeridian;
-        return `${selectedTime}-${meridian}` as timeStructure;
+        return `${selectedTime}-${meridian}` as time12Meridian;
     }
 
-    getHour(type: workDayType, time: "start" | "end"): hourStr | undefined {
+    getHour(type: workDayType, time: "start" | "end"): hourStr12 | undefined {
         const workDayTime = this.workdayTimes[type];
         if (!workDayTime) return;
         const selectedTime =
             time === "start" ? workDayTime.startTime : workDayTime.endTime;
         const hour = selectedTime.split(":")[0];
-        return hour as hourStr;
+        return hour as hourStr12;
     }
 
     getMinute(type: workDayType, time: "start" | "end"): minuteStr | undefined {

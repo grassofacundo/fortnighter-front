@@ -14,7 +14,7 @@ import {
     getPlainDate,
     parseDateAsId,
 } from "../../services/dateService";
-import Workday from "./Workday";
+import Workday from "./Workday/Workday";
 import styles from "./Calendar.module.scss";
 import { Shift } from "../../classes/Shift";
 //#endregion

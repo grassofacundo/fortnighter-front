@@ -25,7 +25,6 @@ const Summary: FunctionComponent<thisProps> = ({ shiftList, searchDates }) => {
     const [error, setError] = useState<string>("");
     const [datesAreValid, setDatesAreValid] = useState<boolean>(true);
 
-    console.log(startDate);
     const checkDateValidity = useCallback(
         ({
             moment,

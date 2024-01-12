@@ -1,5 +1,12 @@
 import { BaseShift } from "../classes/BaseShift";
+import { Job } from "../classes/JobPosition";
 import { Shift } from "../classes/Shift";
+import {
+    dateAsTimeStructure,
+    getAs24Format,
+} from "../components/utils/form/blocks/time/select/TimeMethods";
+import { hourNum } from "../types/dateService";
+import { workDayType } from "../types/job/Position";
 import { shiftDb } from "../types/job/Shift";
 import { getDateAsInputValue, getPlainDate } from "./dateService";
 import FetchService from "./fetchService";
@@ -45,6 +52,33 @@ class ShiftService {
         } else {
             return [];
         }
+    }
+
+    getRegularWorkedHours(shift: Shift, job: Job, day: workDayType): hourNum {
+        const workDay = job.workdayTimes[day] ? day : "week";
+
+        const workShiftStartTime = job.getTime(workDay, "start") ?? `00:00-AM`; //Second condition should never happen
+        const workShiftStart = getAs24Format(workShiftStartTime);
+        const workShiftEndTime = job.getTime(workDay, "end") ?? `12:00-PM`; //Second condition should never happen
+        const workShiftEnd =
+            getAs24Format(workShiftEndTime) + (shift.isOvernight() ? 24 : 0);
+        const shiftStartTime = dateAsTimeStructure(shift.start);
+        const shiftStart = getAs24Format(shiftStartTime);
+        const shiftEndTime = dateAsTimeStructure(shift.end);
+        const shiftEnd =
+            getAs24Format(shiftEndTime) + (shift.isOvernight() ? 24 : 0);
+
+        let regularHoursWorked: hourNum = 0;
+        if (shiftStart < workShiftStart && shiftEnd > workShiftEnd)
+            return regularHoursWorked;
+
+        for (let i = 0; i < shift.getHoursWorked(); i++) {
+            const currentStart = shiftStart + i;
+            if (currentStart >= workShiftStart && currentStart <= workShiftEnd)
+                regularHoursWorked++;
+        }
+
+        return regularHoursWorked as hourNum;
     }
 }
 

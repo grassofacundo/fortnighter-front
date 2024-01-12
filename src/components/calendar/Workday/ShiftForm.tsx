@@ -1,17 +1,17 @@
 //#region Dependency list
 import { FunctionComponent, useState } from "react";
-import FormManager from "../utils/form/FormManager";
-import { parsedAnswers } from "../utils/form/types/FormTypes";
-import { inputNumber } from "../utils/form/types/InputNumberTypes";
-import { inputTimeType, timeStructure } from "../utils/form/types/TimeType";
-import { checkbox } from "../utils/form/types/CheckboxTypes";
+import FormManager from "../../utils/form/FormManager";
+import { parsedAnswers } from "../../utils/form/types/FormTypes";
+import { inputNumber } from "../../utils/form/types/InputNumberTypes";
+import { inputTimeType, time12Meridian } from "../../utils/form/types/TimeType";
+import { checkbox } from "../../utils/form/types/CheckboxTypes";
 import {
     dateAsTimeStructure,
-    getTime,
-} from "../utils/form/blocks/time/select/TimeMethods";
-import { Shift } from "../../classes/Shift";
-import { BaseShift } from "../../classes/BaseShift";
-import { getTomorrow } from "../../services/dateService";
+    getTime24,
+} from "../../utils/form/blocks/time/select/TimeMethods";
+import { Shift } from "../../../classes/Shift";
+import { BaseShift } from "../../../classes/BaseShift";
+import { getTomorrow } from "../../../services/dateService";
 //#endregion
 
 type thisProps = {
@@ -36,11 +36,9 @@ const ShiftForm: FunctionComponent<thisProps> = ({
         try {
             !!answers[`isHoliday${id}`];
             new Date(
-                `${date}T${getTime(answers.startWork as timeStructure, true)}`
+                `${date}T${getTime24(answers.startWork as time12Meridian)}`
             );
-            new Date(
-                `${date}T${getTime(answers.endWork as timeStructure, true)}`
-            );
+            new Date(`${date}T${getTime24(answers.endWork as time12Meridian)}`);
         } catch (error) {
             setErrorMsg(
                 error instanceof Error
@@ -51,10 +49,10 @@ const ShiftForm: FunctionComponent<thisProps> = ({
         const isHoliday = answers[`isHoliday${id}`] as boolean;
 
         const start = new Date(
-            `${date}T${getTime(answers.startWork as timeStructure, true)}`
+            `${date}T${getTime24(answers.startWork as time12Meridian)}`
         );
         let end = new Date(
-            `${date}T${getTime(answers.endWork as timeStructure, true)}`
+            `${date}T${getTime24(answers.endWork as time12Meridian)}`
         );
         if (start >= end) end = getTomorrow(end);
 

@@ -1,7 +1,6 @@
 //#region Dependency list
 import { FunctionComponent, ChangeEvent, useRef } from "react";
 import {
-    hourStr,
     inputTimeType,
     meridianValues,
     timeStructure,

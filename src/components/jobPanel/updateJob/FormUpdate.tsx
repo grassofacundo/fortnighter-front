@@ -128,6 +128,7 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
         jobService
             .getLastPayment(start, end, selectedJob.id)
             .then((paymentRes) => {
+                console.log("Logging payments brought from DB");
                 console.log(paymentRes);
                 // if (jobList.length > 0) {
                 //     const parsedJobList = jobList.map((job) =>

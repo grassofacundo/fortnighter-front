@@ -5,10 +5,11 @@ import {
     getDateAsInputValue,
     getStringDMY,
     parseDateAsId,
-} from "../../services/dateService";
-import { JobContext } from "../dashboard/Dashboard";
-import { Shift } from "../../classes/Shift";
+} from "../../../services/dateService";
+import { JobContext } from "../../dashboard/Dashboard";
+import { Shift } from "../../../classes/Shift";
 import ShiftForm from "./ShiftForm";
+import ShiftSummary from "./ShiftSummary/ShiftSummary";
 //#endregion
 
 type thisProps = {
@@ -57,15 +58,19 @@ const Workday: FunctionComponent<thisProps> = ({
             </div>
             <div className={styles.contentContainer}>
                 {isExpanded && selectedJob && (
-                    <ShiftForm
-                        jobId={selectedJob.id}
-                        id={parseDateAsId(day)}
-                        date={getDateAsInputValue(day)}
-                        onEnd={updateShiftList}
-                        shift={shift}
-                    />
+                    <>
+                        <ShiftForm
+                            jobId={selectedJob.id}
+                            id={parseDateAsId(day)}
+                            date={getDateAsInputValue(day)}
+                            onEnd={updateShiftList}
+                            shift={shift}
+                        />
+                        {shift && (
+                            <ShiftSummary shift={shift} job={selectedJob} />
+                        )}
+                    </>
                 )}
-                {shift && <div>Local summary</div>}
             </div>
         </div>
     );

@@ -1,6 +1,5 @@
 //#region Dependency list
 import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
-import { timeStructure } from "../../../utils/form/types/TimeType";
 import { hourNum } from "../../../../types/dateService";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import {
@@ -12,10 +11,11 @@ import Paragraph2 from "./Paragraph2";
 import Paragraph3 from "./Paragraph3";
 import {
     getMeridian,
-    getTime,
+    getTime12,
 } from "../../../utils/form/blocks/time/select/TimeMethods";
 import { textFormData } from "../CreateJob";
 import styles from "./TextFormCreate.module.scss";
+import { time12Meridian } from "../../../utils/form/types/TimeType";
 //#endregion
 
 type thisProps = {
@@ -32,8 +32,8 @@ const TextFormCreate: FunctionComponent<thisProps> = ({
     error,
     loading,
 }) => {
-    const [workDayTimeStart, setWorkDayTimeStart] = useState<timeStructure>();
-    const [workDayTimeEnd, setWorkDayTimeEnd] = useState<timeStructure>();
+    const [workDayTimeStart, setWorkDayTimeStart] = useState<time12Meridian>();
+    const [workDayTimeEnd, setWorkDayTimeEnd] = useState<time12Meridian>();
     const [workDayLength, setWorkDayLength] = useState<hourNum>();
     const [workDayPrice, setWorkDayPrice] = useState<number>();
     const [overtimePrice, setOvertimeDayPrice] = useState<number>();
@@ -67,18 +67,18 @@ const TextFormCreate: FunctionComponent<thisProps> = ({
         onSetError("");
 
         const prices: priceStructure = {
-            regular: {
-                normal: workDayPrice,
+            week: {
+                regular: workDayPrice,
                 overtime: overtimePrice,
                 overwork: overtimePrice,
             },
         };
 
         const workdayTimes: workDayStructure = {
-            regular: {
-                startTime: getTime(workDayTimeStart),
+            week: {
+                startTime: getTime12(workDayTimeStart),
                 startMeridian: getMeridian(workDayTimeStart),
-                endTime: getTime(workDayTimeEnd),
+                endTime: getTime12(workDayTimeEnd),
                 endMeridian: getMeridian(workDayTimeEnd),
                 length: workDayLength,
             },

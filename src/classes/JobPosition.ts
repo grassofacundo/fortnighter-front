@@ -38,4 +38,8 @@ export class Job extends BaseJob {
         });
         return response;
     }
+
+    isOvernight() {
+        //return getTomorrow(this.start).getDate() === this.end.getDate();
+    }
 }

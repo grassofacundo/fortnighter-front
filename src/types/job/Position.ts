@@ -1,3 +1,5 @@
+import { time12 } from "../../components/utils/form/types/TimeType";
+
 /**
  * Database job position type
  *
@@ -20,45 +22,28 @@ export type dbJobPositionType = {
 };
 
 export type priceStructure = {
-    regular: hourPriceType;
+    week: hourPriceType;
     saturday?: hourPriceType;
     sunday?: hourPriceType;
     holiday?: hourPriceType;
 };
 export type hourPriceType = {
-    normal: number;
+    regular: number;
     overtime?: number;
     overwork?: number;
 };
 
-export type workDayType = "regular" | "saturday" | "sunday" | "holiday";
+export type workDayType = "week" | "saturday" | "sunday" | "holiday";
 type workDayFields = {
-    startTime: time;
+    startTime: time12;
     startMeridian: "AM" | "PM";
-    endTime: time;
+    endTime: time12;
     endMeridian: "AM" | "PM";
     length: number;
 };
 export type workDayStructure = {
-    regular: workDayFields;
+    week: workDayFields;
     saturday?: workDayFields;
     sunday?: workDayFields;
     holiday?: workDayFields;
 };
-
-type minute = "00" | "30";
-type hour =
-    | "00"
-    | "01"
-    | "02"
-    | "03"
-    | "04"
-    | "05"
-    | "06"
-    | "07"
-    | "08"
-    | "09"
-    | "10"
-    | "11"
-    | "12";
-type time = `${hour}:${minute}`;

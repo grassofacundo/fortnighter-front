@@ -16,10 +16,12 @@ export type timeSelectProps = {
     onMeridiemChange(meridian: meridianValues): void;
 };
 
-export type timeStructure = `${hourStr}:${minuteStr}-${meridianValues}`;
+export type time12 = `${hourStr12}:${minuteStr}`;
+export type time24 = `${hourStr24}:${minuteStr}`;
+export type time12Meridian = `${time12}-${meridianValues}`;
 export type minuteNum = 0 | 30;
 export type minuteStr = "00" | "30";
-export type hourStr =
+export type hourStr12 =
     | "00"
     | "01"
     | "02"
