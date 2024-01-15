@@ -34,16 +34,16 @@ export type hourPriceType = {
 };
 
 export type workDayType = "week" | "saturday" | "sunday" | "holiday";
+export type workDayStructure = {
+    week: workDayFields;
+    saturday?: workDayFields;
+    sunday?: workDayFields;
+    holiday?: workDayFields;
+};
 type workDayFields = {
     startTime: time12;
     startMeridian: "AM" | "PM";
     endTime: time12;
     endMeridian: "AM" | "PM";
     length: number;
-};
-export type workDayStructure = {
-    week: workDayFields;
-    saturday?: workDayFields;
-    sunday?: workDayFields;
-    holiday?: workDayFields;
 };

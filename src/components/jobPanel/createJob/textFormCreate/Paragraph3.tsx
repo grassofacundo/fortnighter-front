@@ -10,7 +10,7 @@ import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 import { hourNum } from "../../../../types/dateService";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
-import { timeStructure } from "../../../utils/form/types/TimeType";
+import { time12Meridian } from "../../../utils/form/types/TimeType";
 import styles from "./TextFormCreate.module.scss";
 //#endregion
 
@@ -19,8 +19,8 @@ type thisProps = {
     setOverworkDayPrice: Dispatch<SetStateAction<number | undefined>>;
     overtimePrice: number | undefined;
     workDayLength: hourNum | undefined;
-    workDayTimeStart: timeStructure | undefined;
-    workDayTimeEnd: timeStructure | undefined;
+    workDayTimeStart: time12Meridian | undefined;
+    workDayTimeEnd: time12Meridian | undefined;
     handleNumberChange(
         answer: formAnswersType,
         callback: Dispatch<SetStateAction<number | undefined>>
@@ -37,7 +37,7 @@ const Paragraph3: FunctionComponent<thisProps> = ({
     handleNumberChange,
 }) => {
     function getTimeFromWorkdayTime(
-        workdayTime: timeStructure,
+        workdayTime: time12Meridian,
         time: "hour" | "minute"
     ) {
         const hour = workdayTime.split(":");
@@ -45,7 +45,7 @@ const Paragraph3: FunctionComponent<thisProps> = ({
     }
 
     const getHourDifference = useCallback(
-        (time1: timeStructure, time2: timeStructure) => {
+        (time1: time12Meridian, time2: time12Meridian) => {
             const isAm1 = time1.indexOf("AM") !== -1;
             const isAm2 = time2.indexOf("AM") !== -1;
             const hour1Str = getTimeFromWorkdayTime(time1, "hour");
@@ -118,7 +118,7 @@ const Paragraph3: FunctionComponent<thisProps> = ({
                     }
                 />
             )}
-            hours long, after that, the overwork price is $
+            hours long, after that, the price is $
             <InputNumber
                 formAnswers={[]}
                 onUpdateAnswer={(answer: formAnswersType) =>

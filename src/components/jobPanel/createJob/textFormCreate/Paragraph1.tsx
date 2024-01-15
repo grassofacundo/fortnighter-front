@@ -11,7 +11,7 @@ import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 import {
     inputTimeType,
-    timeStructure,
+    time12Meridian,
 } from "../../../utils/form/types/TimeType";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import { getAs24Format } from "../../../utils/form/blocks/time/select/TimeMethods";
@@ -19,11 +19,11 @@ import styles from "./TextFormCreate.module.scss";
 //#endregion
 
 type thisProps = {
-    setWorkDayTimeStart: Dispatch<SetStateAction<timeStructure | undefined>>;
-    setWorkDayTimeEnd: Dispatch<SetStateAction<timeStructure | undefined>>;
+    setWorkDayTimeStart: Dispatch<SetStateAction<time12Meridian | undefined>>;
+    setWorkDayTimeEnd: Dispatch<SetStateAction<time12Meridian | undefined>>;
     setWorkDayPrice: Dispatch<SetStateAction<number | undefined>>;
-    workDayTimeStart: timeStructure | undefined;
-    workDayTimeEnd: timeStructure | undefined;
+    workDayTimeStart: time12Meridian | undefined;
+    workDayTimeEnd: time12Meridian | undefined;
     handleNumberChange(
         answer: formAnswersType,
         callback: Dispatch<SetStateAction<number | undefined>>
@@ -64,7 +64,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                         : []
                 }
                 onUpdateAnswer={(answer: formAnswersType) =>
-                    setWorkDayTimeStart(answer.value as timeStructure)
+                    setWorkDayTimeStart(answer.value as time12Meridian)
                 }
                 fields={
                     {
@@ -102,7 +102,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                             : []
                     }
                     onUpdateAnswer={(answer: formAnswersType) =>
-                        setWorkDayTimeEnd(answer.value as timeStructure)
+                        setWorkDayTimeEnd(answer.value as time12Meridian)
                     }
                     fields={
                         {

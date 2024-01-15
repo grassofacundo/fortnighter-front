@@ -55,30 +55,69 @@ class ShiftService {
     }
 
     getRegularWorkedHours(shift: Shift, job: Job, day: workDayType): hourNum {
-        const workDay = job.workdayTimes[day] ? day : "week";
+        const workDay = job.workdayTimes[day]?.startTime ? day : "week";
 
         const workShiftStartTime = job.getTime(workDay, "start") ?? `00:00-AM`; //Second condition should never happen
         const workShiftStart = getAs24Format(workShiftStartTime);
         const workShiftEndTime = job.getTime(workDay, "end") ?? `12:00-PM`; //Second condition should never happen
         const workShiftEnd =
-            getAs24Format(workShiftEndTime) + (shift.isOvernight() ? 24 : 0);
+            getAs24Format(workShiftEndTime) +
+            (job.isOvernight(workDay) ? 24 : 0);
+
         const shiftStartTime = dateAsTimeStructure(shift.start);
         const shiftStart = getAs24Format(shiftStartTime);
-        const shiftEndTime = dateAsTimeStructure(shift.end);
-        const shiftEnd =
-            getAs24Format(shiftEndTime) + (shift.isOvernight() ? 24 : 0);
+        // const shiftEndTime = dateAsTimeStructure(shift.end);
+        // const shiftEnd =
+        //     getAs24Format(shiftEndTime) + (shift.isOvernight() ? 24 : 0);
 
         let regularHoursWorked: hourNum = 0;
-        if (shiftStart < workShiftStart && shiftEnd > workShiftEnd)
-            return regularHoursWorked;
+        // if (shiftStart < workShiftStart && shiftEnd > workShiftEnd)
+        //     return regularHoursWorked;
 
         for (let i = 0; i < shift.getHoursWorked(); i++) {
-            const currentStart = shiftStart + i;
-            if (currentStart >= workShiftStart && currentStart <= workShiftEnd)
+            const timeWorked = shiftStart + i;
+            if (timeWorked >= workShiftStart && timeWorked <= workShiftEnd)
                 regularHoursWorked++;
         }
 
         return regularHoursWorked as hourNum;
+    }
+
+    getOvertimeWorkedHours(shift: Shift, job: Job, day: workDayType): hourNum {
+        const workDay = job.workdayTimes[day]?.startTime ? day : "week";
+
+        const workShiftStartTime = job.getTime(workDay, "start") ?? `00:00-AM`; //Second condition should never happen
+        const workShiftStart =
+            getAs24Format(workShiftStartTime) -
+            (job.isOvernight(workDay) ? 24 : 0);
+        const workShiftEndTime = job.getTime(workDay, "end") ?? `12:00-PM`; //Second condition should never happen
+        const workShiftEnd = getAs24Format(workShiftEndTime);
+
+        const shiftStartTime = dateAsTimeStructure(shift.start);
+        const shiftStart = getAs24Format(shiftStartTime);
+        // const shiftEndTime = dateAsTimeStructure(shift.end);
+        // const shiftEnd =
+        //     getAs24Format(shiftEndTime) + (shift.isOvernight() ? 24 : 0);
+
+        let regularHoursWorked: hourNum = 0;
+        // if (shiftStart < workShiftStart && shiftEnd > workShiftEnd)
+        //     return regularHoursWorked;
+
+        for (let i = 0; i < shift.getHoursWorked(); i++) {
+            const timeWorked = shiftStart + i;
+            const afterEnd = timeWorked >= workShiftEnd;
+            if (afterEnd && timeWorked <= workShiftStart + (afterEnd ? 24 : 0))
+                regularHoursWorked++;
+        }
+
+        return regularHoursWorked as hourNum;
+    }
+
+    getOverworkedHours(shift: Shift, job: Job, day: workDayType): hourNum {
+        const workDay = job.workdayTimes[day]?.startTime ? day : "week";
+        return shift.getHoursWorked() > workDay.length
+            ? ((shift.getHoursWorked() - workDay.length) as hourNum)
+            : 0;
     }
 }
 

@@ -2,15 +2,15 @@
 import { FunctionComponent, Dispatch, SetStateAction } from "react";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
-import { timeStructure } from "../../../utils/form/types/TimeType";
+import { time12Meridian } from "../../../utils/form/types/TimeType";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 import styles from "./TextFormCreate.module.scss";
 //#endregion
 
 type thisProps = {
     setOvertimeDayPrice: Dispatch<SetStateAction<number | undefined>>;
-    workDayTimeEnd: timeStructure | undefined;
-    workDayTimeStart: timeStructure | undefined;
+    workDayTimeEnd: time12Meridian | undefined;
+    workDayTimeStart: time12Meridian | undefined;
     workDayPrice: number | undefined;
     handleNumberChange(
         answer: formAnswersType,
@@ -34,7 +34,7 @@ const Paragraph2: FunctionComponent<thisProps> = ({
                 hasWorkDayInfo ? styles.show : ""
             }`}
         >
-            After those hours, the overtime price is $
+            After those hours, the price is $
             <InputNumber
                 formAnswers={[]}
                 onUpdateAnswer={(answer: formAnswersType) =>

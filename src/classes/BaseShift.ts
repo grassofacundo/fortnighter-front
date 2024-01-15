@@ -1,6 +1,7 @@
 import { getTomorrow } from "../services/dateService";
 import FetchService from "../services/fetchService";
 import { eventReturn } from "../types/database/databaseTypes";
+import { workDayType } from "../types/job/Position";
 
 const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;
 
@@ -46,6 +47,14 @@ export class BaseShift {
 
     isOvernight() {
         return getTomorrow(this.start).getDate() === this.end.getDate();
+    }
+
+    getTypeDay(): workDayType {
+        let day = "week" as workDayType;
+        if (this.startsOnSaturday()) day = "saturday";
+        if (this.startsOnSunday()) day = "sunday";
+        if (this.isHoliday) day = "holiday";
+        return day;
     }
 
     async save(): Promise<eventReturn<void>> {

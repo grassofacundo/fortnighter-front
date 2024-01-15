@@ -2,7 +2,7 @@
 import { FunctionComponent, Dispatch, SetStateAction } from "react";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
-import { timeStructure } from "../../../utils/form/types/TimeType";
+import { time12Meridian } from "../../../utils/form/types/TimeType";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 import styles from "./TextFormUpdate.module.scss";
 import { workDayType } from "../../../../types/job/Position";
@@ -11,8 +11,8 @@ import { workDayType } from "../../../../types/job/Position";
 type thisProps = {
     setOvertimeDayPrice: Dispatch<SetStateAction<number>>;
     workdayType: workDayType;
-    workDayTimeEnd: timeStructure;
-    workDayTimeStart: timeStructure;
+    workDayTimeEnd: time12Meridian;
+    workDayTimeStart: time12Meridian;
     workDayPrice: number;
     overtimePrice: number;
     handleNumberChange(
@@ -42,7 +42,7 @@ const Paragraph2: FunctionComponent<thisProps> = ({
                 hasWorkDayInfo ? styles.show : ""
             }`}
         >
-            After those hours, the overtime price is $
+            After those hours, the price is $
             {workdayType && (
                 <InputNumber
                     formAnswers={[]}

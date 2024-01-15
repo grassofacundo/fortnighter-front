@@ -1,0 +1,41 @@
+.timeline {
+    display: flex;
+    justify-content: start;
+    width: 100%;
+    flex-wrap: wrap;
+
+    .timestamp {
+        width: 2em;
+        height: 1em;
+        border: 1px solid var(--borderColor);
+
+        &.regular {
+            background-color: var(--contrastColor);
+        }
+        &.overtime {
+            background-color: var(--borderColor);
+            border: 1px solid var(--mainColor);
+        }
+        &.overwork {
+            background-color: var(--secondaryColor);
+        }
+    }
+}
+
+.infoPayText {
+    &.regular {
+        p {
+            color: var(--contrastColor);
+        }
+    }
+    &.overtime {
+        p {
+            color: var(--borderColor);
+        }
+    }
+    &.overwork {
+        p {
+            color: var(--secondaryColor);
+        }
+    }
+}

@@ -1,6 +1,11 @@
+import { getAs24Format } from "../components/utils/form/blocks/time/select/TimeMethods";
 import FetchService from "../services/fetchService";
 import { eventReturn } from "../types/database/databaseTypes";
-import { priceStructure, workDayStructure } from "../types/job/Position";
+import {
+    priceStructure,
+    workDayStructure,
+    workDayType,
+} from "../types/job/Position";
 import { BaseJob } from "./BaseJobPosition";
 
 const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;
@@ -39,7 +44,14 @@ export class Job extends BaseJob {
         return response;
     }
 
-    isOvernight() {
-        //return getTomorrow(this.start).getDate() === this.end.getDate();
+    isOvernight(type: workDayType) {
+        const dayType = this.workdayTimes[type] ?? this.workdayTimes.week;
+        const date1 = getAs24Format(
+            `${dayType.startTime}-${dayType.startMeridian}`
+        );
+        const date2 = getAs24Format(
+            `${dayType.endTime}-${dayType.endMeridian}`
+        );
+        return date1 >= date2;
     }
 }
