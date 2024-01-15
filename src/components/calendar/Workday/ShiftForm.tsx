@@ -35,10 +35,17 @@ const ShiftForm: FunctionComponent<thisProps> = ({
     async function handleSubmit(answers: parsedAnswers): Promise<void> {
         try {
             !!answers[`isHoliday${id}`];
-            new Date(
+            const date1 = new Date(
                 `${date}T${getTime24(answers.startWork as time12Meridian)}`
             );
-            new Date(`${date}T${getTime24(answers.endWork as time12Meridian)}`);
+            if (isNaN(date1.getDate()))
+                throw new Error("Error parsing start date");
+
+            const date2 = new Date(
+                `${date}T${getTime24(answers.endWork as time12Meridian)}`
+            );
+            if (isNaN(date2.getDate()))
+                throw new Error("Error parsing end date");
         } catch (error) {
             setErrorMsg(
                 error instanceof Error

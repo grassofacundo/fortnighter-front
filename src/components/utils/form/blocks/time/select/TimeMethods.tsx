@@ -120,7 +120,9 @@ export function getTime24(time: time12Meridian): time24 {
     const hourVal = `${
         meridian === "PM" ? hourNum + 12 : hourStr
     }` as hourStr24;
-    return `${hourVal}:${minute}` as time24;
+    return `${
+        hourVal.length === 1 ? `0${hourVal}` : hourVal
+    }:${minute}` as time24;
 }
 
 export function dateAsTimeStructure(date: Date): time12Meridian {

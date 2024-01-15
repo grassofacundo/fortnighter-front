@@ -99,4 +99,11 @@ export class BaseJob {
         );
         return hour1 >= hour2;
     }
+
+    getLength(type: workDayType): number {
+        const workDayTime = this.workdayTimes[type];
+        if (!workDayTime) return 0;
+
+        return workDayTime.length;
+    }
 }
