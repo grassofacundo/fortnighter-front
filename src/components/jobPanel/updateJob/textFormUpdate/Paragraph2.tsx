@@ -42,7 +42,7 @@ const Paragraph2: FunctionComponent<thisProps> = ({
                 hasWorkDayInfo ? styles.show : ""
             }`}
         >
-            After those hours, the price is $
+            Outside of those hours, the price is $
             {workdayType && (
                 <InputNumber
                     formAnswers={[]}

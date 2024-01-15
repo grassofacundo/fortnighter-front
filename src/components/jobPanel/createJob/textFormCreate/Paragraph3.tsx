@@ -118,7 +118,7 @@ const Paragraph3: FunctionComponent<thisProps> = ({
                     }
                 />
             )}
-            hours long, after that, the price is $
+            hours long, if I work more, the price is $
             <InputNumber
                 formAnswers={[]}
                 onUpdateAnswer={(answer: formAnswersType) =>

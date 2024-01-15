@@ -68,7 +68,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
 
     return (
         <div className={`${styles.paragraph} ${styles.show}`}>
-            My regular workday during a
+            During a
             <CustomSelect
                 placeHolder={"Weekday type"}
                 options={workdayOptions.map((day) => {
@@ -81,7 +81,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                 onChange={(value) => setWorkdayType(value as workDayType)}
                 customClass={styles.inlineSelect}
             />
-            is from
+            if I work from
             {workDayTimeStart && (
                 <InputTime
                     formAnswers={
@@ -163,7 +163,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                     <span className={styles.popUp}>The next day</span>
                 )}
             </div>
-            and the price is $
+            I get paid $
             {workDayPrice && (
                 <InputNumber
                     formAnswers={[]}
@@ -182,7 +182,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                     }
                 />
             )}
-            .
+            the hour.
         </div>
     );
 };

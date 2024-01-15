@@ -50,7 +50,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
 
     return (
         <div className={`${styles.paragraph} ${styles.show}`}>
-            My regular workday during a weekday is from
+            During the week, if I work between
             <InputTime
                 formAnswers={
                     workDayTimeStart
@@ -126,7 +126,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                     <span className={styles.popUp}>The next day</span>
                 )}
             </div>
-            and the price is $
+            I get paid $
             <InputNumber
                 formAnswers={[]}
                 onUpdateAnswer={(answer: formAnswersType) =>
@@ -142,7 +142,7 @@ const Paragraph1: FunctionComponent<thisProps> = ({
                     } as inputNumber
                 }
             />
-            .
+            the hour.
         </div>
     );
 };
