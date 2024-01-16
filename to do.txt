@@ -1,13 +1,25 @@
 BREAKING!! overtime and overwork may not be two different things, is all overtime. I should think about that. Can I get the length of the worktime from thr start and end? In that case, the job text will be way shorter and simpler. Any overtime is always the same price? It should be.
 
+
+Summary:
+    Calculating the summary money:
+    - Add the force price section.
+    - General testing.
+
+    - Change show/hide words with something, possible the arrow
+
+
 Tax and benefits
 - Implement another text, but this time in the summary section to allow creating tax and benefits
-
-Calculating the salary
-- I still need testing and bug fixing when calculating shift summary.
-- There is a known bug, when the hour has half hour.
-- Still need to decide the colors for the timetable.
 
 Get the job position from DB and pre fill the hour price text-form in the update section:
 - Regular is working, not the rest
 - Handle changing the values when switching from regular to any other workday type
+
+Form:
+- Add focus on time dropdown
+- Fix key input on time
+- Fix close when clicking outside in time input
+- Give more space for extra numbers (in Argentina can be up to 5 numbers)
+
+- Add hover style on checkbox
