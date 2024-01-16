@@ -33,6 +33,7 @@ body {
     --textColor-dark: #{colors.$textColor-dark};
     --borderColor-dark: #{colors.$borderColor-dark};
     --darkContrastColor-dark: #{colors.$darkContrastColor-dark};
+    --lightContrastColor-dark: #{colors.$lightContrastColor-dark};
     --contrastColor-dark: #{colors.$contrastColor-dark};
 
     //Set light variables
@@ -42,6 +43,7 @@ body {
     --textColor-light: #{colors.$textColor-light};
     --borderColor-light: #{colors.$borderColor-light};
     --darkContrastColor-light: #{colors.$darkContrastColor-light};
+    --lightContrastColor-light: #{colors.$lightContrastColor-light};
     --contrastColor-light: #{colors.$contrastColor-light};
     @media (prefers-color-scheme: dark) {
         --bgColor: var(--bgColor-dark);
@@ -50,6 +52,7 @@ body {
         --textColor: var(--textColor-dark);
         --borderColor: var(--borderColor-dark);
         --darkContrastColor: #{colors.$darkContrastColor-dark};
+        --lightContrastColor: #{colors.$lightContrastColor-dark};
         --contrastColor: var(--contrastColor-dark);
     }
 
@@ -60,6 +63,7 @@ body {
         --textColor: var(--textColor-light);
         --borderColor: var(--borderColor-light);
         --darkContrastColor: #{colors.$darkContrastColor-light};
+        --lightContrastColor: #{colors.$lightContrastColor-light};
         --contrastColor: var(--contrastColor-light);
     }
 

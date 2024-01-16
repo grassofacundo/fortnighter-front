@@ -11,7 +11,10 @@ export interface shiftDb {
 export type forcedPayInfoStructure = Partial<
     Record<workDayType, paymentInfoType>
 >;
-export type paymentInfoType = Partial<Record<paymentTypes, priceAndHours>>;
+export type paymentInfoType = {
+    payInfo: Partial<Record<paymentTypes, priceAndHours>>;
+    total: number;
+};
 export type paymentTypes = "regular" | "overtime" | "overwork";
 export type priceAndHours = {
     price: number;

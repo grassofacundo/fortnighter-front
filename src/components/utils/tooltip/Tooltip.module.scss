@@ -1,0 +1,18 @@
+@import "../../../style/placeholders";
+
+.tooltip {
+    position: absolute;
+    top: var(--tooltip-top, 0);
+    left: var(--tooltip-left, 0);
+
+    display: flex;
+    flex-wrap: wrap;
+    width: 150px;
+    padding: 10px;
+    background-color: var(--mainColor);
+    @extend %normal-border;
+
+    p {
+        text-align: center;
+    }
+}

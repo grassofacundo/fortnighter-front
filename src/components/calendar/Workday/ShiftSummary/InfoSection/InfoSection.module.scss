@@ -1,0 +1,14 @@
+.payInfoSection {
+    margin-top: 15px;
+}
+
+.infoPayText {
+    transform: translateX(0);
+    transition: transform 100ms;
+    color: var(--lightContrastColor) !important;
+
+    &.active {
+        color: var(--textColor) !important;
+        transform: translateX(10px);
+    }
+}

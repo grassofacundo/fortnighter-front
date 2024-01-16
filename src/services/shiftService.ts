@@ -66,22 +66,17 @@ class ShiftService {
 
         const shiftStartTime = dateAsTimeStructure(shift.start);
         const shiftStart = getAs24Format(shiftStartTime);
-        // const shiftEndTime = dateAsTimeStructure(shift.end);
-        // const shiftEnd =
-        //     getAs24Format(shiftEndTime) + (shift.isOvernight() ? 24 : 0);
 
         let regularHoursWorked: hourNum = 0;
-        // if (shiftStart < workShiftStart && shiftEnd > workShiftEnd)
-        //     return regularHoursWorked;
 
         const hoursWorked =
             shift.getHoursWorked() >= job.getLength(workDay)
                 ? job.getLength(workDay)
                 : shift.getHoursWorked();
-        for (let i = 0; i < hoursWorked; i++) {
+        for (let i = 0; i < hoursWorked; i = i + 0.5) {
             const timeWorked = shiftStart + i;
             if (timeWorked >= workShiftStart && timeWorked <= workShiftEnd)
-                regularHoursWorked++;
+                regularHoursWorked = regularHoursWorked + 0.5;
         }
 
         return regularHoursWorked as hourNum;
@@ -94,36 +89,12 @@ class ShiftService {
         if (regularWorkedHours >= job.getLength(workDay)) return 0;
         const newWorkDayLength = job.getLength(workDay) - regularWorkedHours;
 
-        //const workShiftStartTime = job.getTime(workDay, "start") ?? `00:00-AM`; //Second condition should never happen
-        // const workShiftStart =
-        //     getAs24Format(workShiftStartTime) -
-        //     (job.isOvernight(workDay) ? 24 : 0);
-        //const workShiftEndTime = job.getTime(workDay, "end") ?? `12:00-PM`; //Second condition should never happen
-        //const workShiftEnd = getAs24Format(workShiftEndTime);
-
-        //const shiftStartTime = dateAsTimeStructure(shift.start);
-        //const shiftStart = getAs24Format(shiftStartTime);
-        // const shiftEndTime = dateAsTimeStructure(shift.end);
-        // const shiftEnd =
-        //     getAs24Format(shiftEndTime) + (shift.isOvernight() ? 24 : 0);
-
-        //let overtimeHoursWorked: hourNum = 0;
-        // if (shiftStart < workShiftStart && shiftEnd > workShiftEnd)
-        //     return overtimeHoursWorked;
-
         const nonRegularWorkedHours =
             shift.getHoursWorked() - regularWorkedHours;
         const hoursWorked =
             nonRegularWorkedHours >= newWorkDayLength
                 ? newWorkDayLength
                 : nonRegularWorkedHours;
-
-        // for (let i = 0; i < hoursWorked; i++) {
-        //     const timeWorked = shiftStart + i;
-        //     const afterEnd = timeWorked >= workShiftEnd;
-        //     if (afterEnd && timeWorked <= workShiftStart + (afterEnd ? 24 : 0))
-        //         overtimeHoursWorked++;
-        // }
 
         return hoursWorked as hourNum;
     }
@@ -133,6 +104,27 @@ class ShiftService {
         return shift.getHoursWorked() > job.getLength(workDay)
             ? ((shift.getHoursWorked() - job.getLength(workDay)) as hourNum)
             : 0;
+    }
+
+    getTotal(shift: Shift, job: Job, day: workDayType): number {
+        const jobDay = job.hourPrice?.[day];
+        if (!jobDay?.regular && !jobDay?.overtime && !jobDay?.overwork)
+            return 0;
+
+        let regularTotal = 0;
+        const regularHours = this.getRegularWorkedHours(shift, job, day);
+        const regularPrice = jobDay?.regular ?? 0;
+        regularTotal += regularHours * regularPrice;
+
+        const overtimeHours = this.getOvertimeWorkedHours(shift, job, day);
+        const overtimePrice = jobDay?.overtime ?? 0;
+        regularTotal += overtimeHours * overtimePrice;
+
+        const overworkHours = this.getOverworkedHours(shift, job, day);
+        const overworkPrice = jobDay?.overwork ?? 0;
+        regularTotal += overworkHours * overworkPrice;
+
+        return regularTotal;
     }
 }
 
