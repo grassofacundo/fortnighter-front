@@ -1,13 +1,9 @@
-BREAKING!! overtime and overwork may not be two different things, is all overtime. I should think about that. Can I get the length of the worktime from thr start and end? In that case, the job text will be way shorter and simpler. Any overtime is always the same price? It should be.
+BREAKING!! overtime and overwork may not be two different things, is all overtime. I should think about that. Can I get the length of the worktime from the start and end? In that case, the job text will be way shorter and simpler. Any overtime is always the same price? It should be.
 
 
 Summary:
     Calculating the summary money:
-    - Add the force price section.
     - General testing.
-
-    - Change show/hide words with something, possible the arrow
-
 
 Tax and benefits
 - Implement another text, but this time in the summary section to allow creating tax and benefits
