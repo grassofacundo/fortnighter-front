@@ -6,6 +6,7 @@ export interface shiftDb {
     isHoliday: boolean;
     startTime: string;
     endTime: string;
+    forcedTotal?: number;
 }
 
 export type forcedPayInfoStructure = Partial<

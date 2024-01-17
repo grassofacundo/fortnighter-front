@@ -1,9 +1,15 @@
-import { useRef, FunctionComponent, ReactNode } from "react";
+import {
+    useRef,
+    FunctionComponent,
+    useEffect,
+    ReactElement,
+    Children,
+} from "react";
 import { Transition } from "react-transition-group";
 
 type thisProps = {
     inState: boolean;
-    children: ReactNode;
+    children: ReactElement;
     unmountOnExit?: boolean;
     customClass?: CSSModuleClasses[string];
     onExitEvent?: <T extends unknown[], R>(...args: T) => R | void;
@@ -19,6 +25,18 @@ const InOutAnim: FunctionComponent<thisProps> = ({
     onExitEvent,
 }) => {
     const nodeRef = useRef(null);
+
+    useEffect(() => {
+        const wrapper = nodeRef.current as HTMLDivElement | null;
+        if (!wrapper) return;
+
+        if (!inState && !unmountOnExit) {
+            wrapper.setAttribute("inert", "");
+        } else {
+            wrapper.removeAttribute("inert");
+        }
+    }, [inState, unmountOnExit]);
+
     return (
         <Transition
             nodeRef={nodeRef}

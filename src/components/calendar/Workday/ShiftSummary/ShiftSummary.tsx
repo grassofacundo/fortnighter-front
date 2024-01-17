@@ -7,15 +7,23 @@ import { workDayType } from "../../../../types/job/Position";
 import shiftService from "../../../../services/shiftService";
 import style from "./ShiftSummary.module.scss";
 import Chart from "./chart/Chart";
+import InfoSection from "./chart/InfoSection/InfoSection";
 //#endregion
 
 type thisProps = {
     shift: Shift;
     job: Job;
+    id: string;
+    onEnd(shift: Shift): void;
 };
 export type timelines = "regular" | "overtime" | "overwork";
 
-const ShiftSummary: FunctionComponent<thisProps> = ({ shift, job }) => {
+const ShiftSummary: FunctionComponent<thisProps> = ({
+    shift,
+    job,
+    id,
+    onEnd,
+}) => {
     const handleDefaultTypeDay = useCallback(
         (shiftTypeDay: workDayType): workDayType => {
             const jobDay = job.hourPrice?.[shiftTypeDay];
@@ -25,9 +33,6 @@ const ShiftSummary: FunctionComponent<thisProps> = ({ shift, job }) => {
     );
     const getInfo = useCallback(
         (day: workDayType): paymentInfoType => {
-            const shiftDay = shift?.paymentInfo?.[day];
-            if (shiftDay) return shiftDay;
-
             const jobDay = job.hourPrice?.[day];
             const r = {
                 price: jobDay?.regular ?? 0,
@@ -49,9 +54,10 @@ const ShiftSummary: FunctionComponent<thisProps> = ({ shift, job }) => {
                     overwork: ow,
                 },
                 total:
+                    shift.forcedTotal ??
                     r.hours * r.price +
-                    ot.hours * ot.price +
-                    ow.hours * ow.price,
+                        ot.hours * ot.price +
+                        ow.hours * ow.price,
             };
         },
         [job, shift]
@@ -60,6 +66,30 @@ const ShiftSummary: FunctionComponent<thisProps> = ({ shift, job }) => {
     const [payInfo, setPayInfo] = useState<paymentInfoType>(
         getInfo(handleDefaultTypeDay(shift.getTypeDay()))
     );
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string>("");
+
+    async function resetForceTotal() {
+        setLoading(true);
+
+        const shiftCopy = structuredClone(shift);
+        const updatedShift = new Shift(shiftCopy);
+        updatedShift.forcedTotal = undefined;
+
+        const response = await updatedShift.save();
+
+        if (response.ok) {
+            setError("");
+            onEnd(updatedShift);
+        }
+
+        setLoading(false);
+
+        if (!response.ok && response.error) {
+            setError(response.error.message);
+            return;
+        }
+    }
 
     useEffect(() => {
         const shiftTypeDay = shift.getTypeDay();
@@ -70,11 +100,30 @@ const ShiftSummary: FunctionComponent<thisProps> = ({ shift, job }) => {
 
     return (
         <div className={style.shiftSummaryBody}>
-            <Chart
-                payInfo={payInfo}
-                typeDay={handleDefaultTypeDay(shift.getTypeDay())}
-                shift={shift}
-            />
+            {!shift.forcedTotal ? (
+                <Chart
+                    payInfo={payInfo}
+                    typeDay={handleDefaultTypeDay(shift.getTypeDay())}
+                    shift={shift}
+                    id={id}
+                    onEnd={onEnd}
+                />
+            ) : (
+                <>
+                    <InfoSection
+                        total={shift.forcedTotal}
+                        totalIsForced={true}
+                    />
+                    <p className={style.showPriceText}>
+                        You can stop forcing the value by clicking{" "}
+                        <button disabled={loading} onClick={resetForceTotal}>
+                            here
+                        </button>{" "}
+                        and get back to calculate the total dynamically.
+                    </p>
+                    {error && <p>{error}</p>}
+                </>
+            )}
         </div>
     );
 };

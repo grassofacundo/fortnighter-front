@@ -25,6 +25,7 @@ type thisProps = {
     submitText?: string;
     serverErrorMsg?: string;
     children?: ReactNode;
+    customClass?: CSSModuleClasses[string];
 };
 
 const FormManager: FunctionComponent<thisProps> = ({
@@ -36,6 +37,7 @@ const FormManager: FunctionComponent<thisProps> = ({
     submitText,
     serverErrorMsg,
     children,
+    customClass,
 }) => {
     const [formAnswers, dispatch] = useReducer(
         fieldsReducer,
@@ -198,7 +200,7 @@ const FormManager: FunctionComponent<thisProps> = ({
     }, [updateAnswers, getParsedAnswers]);
 
     return (
-        <div>
+        <div className={customClass}>
             <Form
                 inputs={inputs}
                 submitCallback={handleCallback}

@@ -29,7 +29,11 @@ class ShiftService {
         const end = new Date(shiftDb.endTime);
         const isHoliday = shiftDb.isHoliday;
         const shiftBase = new BaseShift(jobId, isHoliday, start, end);
-        const shift = new Shift({ ...shiftBase, id: shiftDb.id });
+        const shift = new Shift({
+            ...shiftBase,
+            id: shiftDb.id,
+            forcedTotal: shiftDb.forcedTotal,
+        });
         return shift;
     }
 

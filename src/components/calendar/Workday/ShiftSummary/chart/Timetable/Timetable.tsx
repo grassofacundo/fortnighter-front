@@ -6,10 +6,10 @@ import {
     useState,
     useRef,
 } from "react";
-import { paymentTypes, priceAndHours } from "../../../../../types/job/Shift";
-import Tooltip from "../../../../utils/tooltip/Tooltip";
-import { Shift } from "../../../../../classes/Shift";
-import { timelines } from "../ShiftSummary";
+import { paymentTypes, priceAndHours } from "../../../../../../types/job/Shift";
+import Tooltip from "../../../../../utils/tooltip/Tooltip";
+import { Shift } from "../../../../../../classes/Shift";
+import { timelines } from "../../ShiftSummary";
 import style from "./Timetable.module.scss";
 //#endregion
 
@@ -100,21 +100,29 @@ const Timetable: FunctionComponent<thisProps> = ({
 
             {times.map((time, index) => {
                 return (
-                    time.value > 0 &&
-                    hoursAsArray(time.value).map((t, i) => (
+                    time.value > 0 && (
                         <div
-                            className={`${style[time.name]} ${
-                                style.timestamp
-                            } ${t === 1 ? style.half : ""}`}
-                            style={{
-                                animationDelay: `${
-                                    getDelay(index) + i * delayValue
-                                }ms`,
-                            }}
-                            key={i}
-                            onMouseOver={() => onSetActiveTimeline(time.name)}
-                        ></div>
-                    ))
+                            key={index}
+                            className={`${style[time.name]} ${style.section}`}
+                        >
+                            {hoursAsArray(time.value).map((t, i) => (
+                                <div
+                                    className={`${style.timestamp} ${
+                                        t === 1 ? style.half : ""
+                                    }`}
+                                    style={{
+                                        animationDelay: `${
+                                            getDelay(index) + i * delayValue
+                                        }ms`,
+                                    }}
+                                    key={i}
+                                    onMouseOver={() =>
+                                        onSetActiveTimeline(time.name)
+                                    }
+                                ></div>
+                            ))}
+                        </div>
+                    )
                 );
             })}
         </div>

@@ -1,6 +1,5 @@
 //#region Dependency list
 import { FunctionComponent, useContext, useState } from "react";
-import styles from "./Workday.module.scss";
 import {
     getDateAsInputValue,
     getStringDMY,
@@ -10,6 +9,8 @@ import { JobContext } from "../../dashboard/Dashboard";
 import { Shift } from "../../../classes/Shift";
 import ShiftForm from "./ShiftForm";
 import ShiftSummary from "./ShiftSummary/ShiftSummary";
+import styles from "./Workday.module.scss";
+import Arrow from "../../blocks/icons/Arrow";
 //#endregion
 
 type thisProps = {
@@ -52,8 +53,11 @@ const Workday: FunctionComponent<thisProps> = ({
                     )}
                 </div>
 
-                <button onClick={() => setIsExpanded((v) => !v)}>
-                    {isExpanded ? "Hide" : "Show"}
+                <button
+                    className={styles.arrowButton}
+                    onClick={() => setIsExpanded((v) => !v)}
+                >
+                    {<Arrow isOpen={isExpanded} />}
                 </button>
             </div>
             <div className={styles.contentContainer}>
@@ -67,7 +71,12 @@ const Workday: FunctionComponent<thisProps> = ({
                             shift={shift}
                         />
                         {shift && (
-                            <ShiftSummary shift={shift} job={selectedJob} />
+                            <ShiftSummary
+                                shift={shift}
+                                job={selectedJob}
+                                id={parseDateAsId(day)}
+                                onEnd={updateShiftList}
+                            />
                         )}
                     </>
                 )}

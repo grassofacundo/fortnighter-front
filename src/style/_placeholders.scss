@@ -21,6 +21,10 @@
         box-shadow: unset;
         text-decoration: underline;
     }
+
+    &:disabled {
+        opacity: 0.6;
+    }
 }
 
 %normal-input {

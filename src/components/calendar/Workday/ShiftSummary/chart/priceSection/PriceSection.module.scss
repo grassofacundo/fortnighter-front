@@ -1,0 +1,12 @@
+.formClass {
+    form {
+        flex-direction: row;
+        justify-content: center;
+        gap: 20px;
+        align-items: center;
+
+        input {
+            text-align: center;
+        }
+    }
+}

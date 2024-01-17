@@ -150,7 +150,8 @@ const Form: FunctionComponent<thisProps> = ({
     function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        if (hasFormErrors || hasServerError()) {
+        if (hasFormErrors) {
+            //|| hasServerError()
             setShowError(true);
             return;
         }

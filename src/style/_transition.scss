@@ -15,6 +15,7 @@
 .inOut-exiting {
     opacity: 0;
     transform: translateY(25px);
+    pointer-events: none;
 }
 .inOut-exited {
     opacity: 0;

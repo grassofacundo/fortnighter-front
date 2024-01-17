@@ -1,33 +1,35 @@
 //#region Dependency list
 import { FunctionComponent } from "react";
-import { paymentTypes, priceAndHours } from "../../../../../types/job/Shift";
-import { timelines } from "../ShiftSummary";
+import { paymentTypes, priceAndHours } from "../../../../../../types/job/Shift";
+import { timelines } from "../../ShiftSummary";
 import style from "./InfoSection.module.scss";
 //#endregion
 
 type thisProps = {
-    payInfo: Partial<Record<paymentTypes, priceAndHours>>;
-    activeTimeline: "" | timelines;
+    payInfo?: Partial<Record<paymentTypes, priceAndHours>>;
+    activeTimeline?: "" | timelines;
     total: number;
+    totalIsForced?: boolean;
 };
 
 const InfoSection: FunctionComponent<thisProps> = ({
     payInfo,
     activeTimeline,
     total,
+    totalIsForced,
 }) => {
     const times = [
         {
             name: "regular" as timelines,
-            value: payInfo.regular,
+            value: payInfo?.regular,
         },
         {
             name: "overtime" as timelines,
-            value: payInfo.overtime,
+            value: payInfo?.overtime,
         },
         {
             name: "overwork" as timelines,
-            value: payInfo.overwork,
+            value: payInfo?.overwork,
         },
     ];
 
@@ -43,12 +45,14 @@ const InfoSection: FunctionComponent<thisProps> = ({
                             className={`${style.infoPayText} ${
                                 activeTimeline === time.name ? style.active : ""
                             }`}
-                        >{`Worked ${time.value.hours} regular hours, $${time.value.price} each hour`}</p>
+                        >{`Worked ${time.value.hours} ${time.name} hours, $${time.value.price} each hour`}</p>
                     )
                 );
             })}
 
-            <p>{`Total: $${total}`}</p>
+            <p className={style.totalText}>{`${
+                totalIsForced ? "Forced total" : "Total"
+            }: $${total}`}</p>
         </div>
     );
 };

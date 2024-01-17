@@ -1,0 +1,59 @@
+@import "../../../../../../style/animations";
+
+.warning {
+    cursor: default;
+    margin-right: 10px;
+
+    span {
+        border: 1px solid var(--borderColor);
+        border-radius: 15px;
+        display: block;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+    }
+}
+
+.timeline {
+    display: flex;
+    justify-content: start;
+    width: 100%;
+    flex-wrap: wrap;
+    transition: transform 100ms;
+
+    .section {
+        display: flex;
+
+        &.regular {
+            .timestamp {
+                background-color: var(--contrastColor);
+            }
+        }
+        &.overtime {
+            .timestamp {
+                background-color: var(--lightContrastColor);
+            }
+        }
+        &.overwork {
+            .timestamp {
+                background-color: var(--darkContrastColor);
+            }
+        }
+
+        &:hover {
+            transform: translateY(-2px);
+        }
+    }
+}
+
+.timestamp {
+    width: 2em;
+    height: 1em;
+    border: 1px solid var(--borderColor);
+    opacity: 0;
+    animation: 150ms linear slide-from-left forwards;
+
+    &.half {
+        width: 1em;
+    }
+}

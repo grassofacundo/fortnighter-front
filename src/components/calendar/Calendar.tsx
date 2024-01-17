@@ -72,13 +72,15 @@ const Calendar: FunctionComponent<thisProps> = ({
         if (shiftIndex < 0)
             throw new Error("Shift date is not included on loaded shifts");
 
-        const shifts = structuredClone(shiftList);
+        const shiftListCopy = structuredClone(shiftList);
+        const shifts = shiftListCopy.map((s) => new Shift(s));
         shifts[shiftIndex] = updatedShift;
         onSetShiftList(shifts);
     }
 
     function createShift(createdShift: Shift): void {
-        const shifts = structuredClone(shiftList);
+        const shiftListCopy = structuredClone(shiftList);
+        const shifts = shiftListCopy.map((s) => new Shift(s));
         shifts.push(createdShift);
         onSetShiftList(shifts);
     }

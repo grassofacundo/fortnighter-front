@@ -1,6 +1,18 @@
+@use "../../../../style//placeholders";
+
 .shiftSummaryBody {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    .showPriceText {
+        width: 60%;
+
+        button {
+            @extend %text-button;
+            padding: 0;
+            margin: 0;
+        }
+    }
 }
