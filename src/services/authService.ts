@@ -2,6 +2,13 @@ import { credentials, logInResponse, user } from "../types/auth/user";
 import { eventReturn } from "../types/database/databaseTypes";
 import FetchService from "./fetchService";
 
+/*
+Need some refactor
+Check cookies instead or local storage
+If cookie is expired, do not log out, but call for a token check to the server
+In case the refresh token is also expired, log out.
+*/
+
 class AuthService {
     token: string | null = null;
     expiryDate: string | Date | null = null;

@@ -4,7 +4,6 @@ import App from "./components/App";
 import "./style/_main.scss";
 import authService from "./services/authService";
 
-//dbService.init();
 authService.init();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
