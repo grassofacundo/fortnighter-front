@@ -1,5 +1,5 @@
 import { eventReturn } from "../types/database/databaseTypes";
-import authService from "./authService";
+//import authService from "./authService";
 
 export default class FetchService {
     static async fetchPost<contentType>({
@@ -17,8 +17,9 @@ export default class FetchService {
                 method: method ?? "POST",
                 headers: {
                     "Content-Type": contentType ?? "application/json",
-                    Authorization: `Bearer ${authService.token}`,
+                    // Authorization: `Bearer ${authService.token}`,
                 },
+                credentials: "include",
                 body: JSON.stringify(body),
             });
 
@@ -32,7 +33,10 @@ export default class FetchService {
             }
         } catch (error) {
             eventReturn.error = {
-                message: `Error during ${method} request`,
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : `Error during ${method ?? "POST"} request`,
                 content: error,
             };
         }
@@ -53,9 +57,10 @@ export default class FetchService {
         try {
             const response = await fetch(url, {
                 method: "GET",
-                headers: {
-                    Authorization: `Bearer ${authService.token}`,
-                },
+                credentials: "include",
+                // headers: {
+                //     Authorization: `Bearer ${authService.token}`,
+                // },
             });
             eventReturn.ok = response.ok;
             eventReturn.status = response.status;

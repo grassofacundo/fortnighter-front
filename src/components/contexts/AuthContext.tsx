@@ -28,13 +28,13 @@ const AuthContext = createContext<authContext | null>(null);
 
 export const UserProvider: FunctionComponent<thisProps> = ({ children }) => {
     const [isAuth, setIsAuth] = useState<boolean | null>(null);
-    const timeOutRef = useRef<null | NodeJS.Timeout>(null);
+    //const timeOutRef = useRef<null | NodeJS.Timeout>(null);
     const customEvent: authError = "autherror";
 
-    const handleLogOut = useCallback(() => {
-        authService.logOut();
+    const handleLogOut = useCallback(async () => {
+        await authService.logOut();
         removeEventListener(customEvent, handleLogOut);
-        if (timeOutRef.current) clearTimeout(timeOutRef.current);
+        //if (timeOutRef.current) clearTimeout(timeOutRef.current);
         setIsAuth(false);
     }, []);
 
@@ -44,17 +44,17 @@ export const UserProvider: FunctionComponent<thisProps> = ({ children }) => {
     }, [handleLogOut]);
 
     const handleLogIn = useCallback(() => {
-        setAutoLogout();
+        //setAutoLogout();
         checkUnauthenticatedError();
         setIsAuth(true);
     }, [checkUnauthenticatedError]);
 
-    function setAutoLogout() {
-        timeOutRef.current = setTimeout(() => {
-            authService.logOut();
-            setIsAuth(false);
-        }, authService.getTokenTime());
-    }
+    // function setAutoLogout() {
+    //     timeOutRef.current = setTimeout(() => {
+    //         authService.logOut();
+    //         setIsAuth(false);
+    //     }, authService.getTokenTime());
+    // }
 
     async function createAccount(
         email: string,
@@ -70,9 +70,9 @@ export const UserProvider: FunctionComponent<thisProps> = ({ children }) => {
             password: string
         ): Promise<eventReturn<logInResponse>> => {
             const response = await authService.logIn({ email, password });
-            if (response.ok && response.content) {
-                const { token, user } = response.content as logInResponse;
-                authService.setSession(token, user);
+            if (response.ok && response.content && authService.hasSession()) {
+                const { user } = response.content as logInResponse;
+                authService.setUser(user);
                 handleLogIn();
             }
             return response;

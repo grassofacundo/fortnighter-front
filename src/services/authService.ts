@@ -10,43 +10,72 @@ In case the refresh token is also expired, log out.
 */
 
 class AuthService {
-    token: string | null = null;
-    expiryDate: string | Date | null = null;
     url = `${import.meta.env.VITE_SERVER_DOMAIN}/auth`;
+    sessionId = "";
     user: user | null = null;
 
-    init(): void {
-        this.token = localStorage.getItem("token");
-        this.expiryDate = localStorage.getItem("expiryDate");
-        if (this.expiryDate && new Date(this.expiryDate) <= new Date())
-            this.logOut();
-    }
+    // init(): void {
+    //     const cookies = this.getCookiesObject();
+    //     this.token = this.getCookie("AccessToken");
+    //     if (this.token) this.expiryDate = this.getExpiryDate();
+    //     if (this.expiryDate && new Date(this.expiryDate) <= new Date())
+    //         this.logOut();
+    // }
 
-    setSession(token: string, user: user): void {
-        const expiryDate = new Date(new Date().getTime() + 60 * 60 * 1000);
+    // setSession(user: user): void {
+    //     const expiryDate = new Date(new Date().getTime() + 60 * 60 * 1000);
 
-        this.expiryDate = expiryDate;
-        this.token = token;
-        this.user = user;
+    //     this.expiryDate = expiryDate;
+    //     this.token = token;
+    //     this.user = user;
 
-        localStorage.setItem("expiryDate", expiryDate.toISOString());
-        localStorage.setItem("token", token);
-    }
+    //     localStorage.setItem("expiryDate", expiryDate.toISOString());
+    //     localStorage.setItem("token", token);
+    // }
 
     hasSession(): boolean {
-        let hasSession = true;
-        if (!this.token) hasSession = false;
-        if (!this.expiryDate) hasSession = false;
-        if (this.expiryDate && new Date(this.expiryDate) <= new Date())
-            hasSession = false;
-
+        const cookies = this.getCookiesObject();
+        const hasSession = !!cookies.refreshToken || !!cookies.accessToken;
+        if (hasSession && !this.sessionId) this.setSessionId();
         return hasSession;
     }
 
-    getTokenTime(): number {
-        if (!this.expiryDate) return 0;
-        return new Date(this.expiryDate).getTime() - new Date().getTime();
+    setSessionId() {
+        const cookies = this.getCookiesObject();
+        const refresh = cookies.refreshToken;
+        const splittedToken = refresh.split(".")[1];
+        const atobValue = window.atob(splittedToken);
+        const payload = JSON.parse(atobValue);
+        if (payload.sessionId) this.sessionId = payload.sessionId;
     }
+
+    getCookiesObject(): Record<string, string> {
+        const cookieObject: Record<string, string> = {};
+        const cookies = document.cookie;
+        if (cookies) {
+            const cookiesArr = cookies.split(";");
+            if (cookiesArr.length > 0) {
+                cookiesArr.forEach((cookie) => {
+                    const cookieSplitted = cookie.trim().split("=");
+                    const name = cookieSplitted[0].trim();
+                    const value = cookieSplitted[1].trim();
+                    cookieObject[name] = value;
+                });
+            }
+        }
+
+        return cookieObject;
+    }
+
+    setUser(user: user) {
+        this.user = user;
+    }
+
+    // getExpiryDate(token: string): string {
+    //     const header = JSON.parse(window.atob(token.split(".")[0]));
+    //     const payload = JSON.parse(window.atob(token.split(".")[1]));
+    //     return payload as string;
+    // }
 
     async logIn({
         email,
@@ -82,12 +111,31 @@ class AuthService {
         return response;
     }
 
-    logOut(): void {
-        localStorage.removeItem("token");
-        localStorage.removeItem("expiryDate");
-        this.token = null;
-        this.expiryDate = null;
+    async logOut(): Promise<eventReturn<undefined>> {
+        const url = `${this.url}/logout`;
+        const body = { sessionId: this.sessionId };
+        const method = "DELETE";
+        let response: eventReturn<undefined> = {
+            ok: false,
+            status: 500,
+        };
+        try {
+            response = await FetchService.fetchPost({
+                url,
+                method,
+                body,
+            });
+        } catch (error) {
+            console.error(error);
+        }
+
         this.user = null;
+        return response;
+        // localStorage.removeItem("token");
+        // localStorage.removeItem("expiryDate");
+        // Delete cookies here I guess
+        // this.token = null;
+        // this.expiryDate = null;
     }
 }
 

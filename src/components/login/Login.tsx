@@ -95,7 +95,7 @@ const Login: FunctionComponent = () => {
                         ]}
                         submitCallback={handleSubmit}
                         submitText={hasAccount ? "Log in" : "Sign in"}
-                        Loading={Loading}
+                        loading={Loading}
                         serverErrorMsg={errorMsg}
                     />
                 </>

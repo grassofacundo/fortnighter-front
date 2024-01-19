@@ -17,7 +17,6 @@ export type signUpResponse = {
 };
 
 export type logInResponse = {
-    token: string;
     user: user;
 };
 
