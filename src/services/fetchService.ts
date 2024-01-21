@@ -32,6 +32,7 @@ export default class FetchService {
                 eventReturn.content = result as contentType;
             }
         } catch (error) {
+            eventReturn.ok = false;
             eventReturn.error = {
                 message:
                     error instanceof Error

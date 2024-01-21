@@ -9,6 +9,8 @@ If cookie is expired, do not log out, but call for a token check to the server
 In case the refresh token is also expired, log out.
 */
 
+const cookies = ["accessToken", "refreshToken"];
+
 class AuthService {
     url = `${import.meta.env.VITE_SERVER_DOMAIN}/auth`;
     sessionId = "";
@@ -49,6 +51,10 @@ class AuthService {
         if (payload.sessionId) this.sessionId = payload.sessionId;
     }
 
+    removeSessionId() {
+        this.sessionId = "";
+    }
+
     getCookiesObject(): Record<string, string> {
         const cookieObject: Record<string, string> = {};
         const cookies = document.cookie;
@@ -67,8 +73,16 @@ class AuthService {
         return cookieObject;
     }
 
-    setUser(user: user) {
-        this.user = user;
+    //This would work as a deleteCookie method.
+    expireCookies(): void {
+        cookies.forEach(
+            (cookieName) =>
+                (document.cookie = `${cookieName}= ; expires = Thu, 01 Jan 1970 00:00:00 GMT`)
+        );
+    }
+
+    setUser(user?: user) {
+        this.user = user ?? null;
     }
 
     // getExpiryDate(token: string): string {
@@ -111,11 +125,11 @@ class AuthService {
         return response;
     }
 
-    async logOut(): Promise<eventReturn<undefined>> {
+    async logOut(): Promise<eventReturn<void>> {
         const url = `${this.url}/logout`;
         const body = { sessionId: this.sessionId };
         const method = "DELETE";
-        let response: eventReturn<undefined> = {
+        let response: eventReturn<void> = {
             ok: false,
             status: 500,
         };
@@ -128,14 +142,13 @@ class AuthService {
         } catch (error) {
             console.error(error);
         }
-
-        this.user = null;
         return response;
-        // localStorage.removeItem("token");
-        // localStorage.removeItem("expiryDate");
-        // Delete cookies here I guess
-        // this.token = null;
-        // this.expiryDate = null;
+    }
+
+    logOutCleanUp() {
+        if (this.hasSession()) this.expireCookies();
+        this.removeSessionId();
+        this.setUser();
     }
 }
 

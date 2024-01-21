@@ -43,14 +43,16 @@ const Landing: FunctionComponent = () => {
             }
             {(animationEnded || !!isAuth) && (
                 <footer>
-                    <button
-                        className={styles.logOutButton}
-                        style={{ opacity: isAuth ? "1" : "0" }}
-                        disabled={!!isAuth === false}
-                        onClick={() => authService.logOut()}
-                    >
-                        Log out
-                    </button>
+                    {authContext && (
+                        <button
+                            className={styles.logOutButton}
+                            style={{ opacity: isAuth ? "1" : "0" }}
+                            disabled={!!isAuth === false}
+                            onClick={() => authContext.logOut()}
+                        >
+                            Log out
+                        </button>
+                    )}
                     <button
                         className={`${styles.themeButton} ${
                             theme === "dark" ? styles.inverted : ""
