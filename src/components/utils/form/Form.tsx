@@ -70,8 +70,8 @@ const Form: FunctionComponent<thisProps> = ({
     }
 
     function clearErrors() {
-        //setError(null);
         resetServerError();
+        setShowError(false);
     }
 
     const getEmptyAnswers = useMemo((): inputField[] => {
@@ -156,6 +156,7 @@ const Form: FunctionComponent<thisProps> = ({
             return;
         }
 
+        clearErrors();
         submitCallback();
     }
 
