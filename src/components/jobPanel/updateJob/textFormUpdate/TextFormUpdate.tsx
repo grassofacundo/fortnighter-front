@@ -14,8 +14,8 @@ import {
     getTime12,
 } from "../../../utils/form/blocks/time/select/TimeMethods";
 import { Job } from "../../../../classes/JobPosition";
-import styles from "./TextFormUpdate.module.scss";
 import { time12Meridian } from "../../../utils/form/types/TimeType";
+import styles from "./TextFormUpdate.module.scss";
 //#endregion
 
 type thisProps = {

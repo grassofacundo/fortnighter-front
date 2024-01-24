@@ -1,4 +1,22 @@
+@use "../../../style/placeholders";
+
 .formContainer {
     display: flex;
-    align-items: center;
+    align-items: stretch;
+
+    .textFormsContainer {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        padding-top: 45px;
+
+        .changeSectionButton {
+            position: absolute;
+            top: 10px;
+            left: 2em;
+            margin: 0;
+        }
+    }
 }

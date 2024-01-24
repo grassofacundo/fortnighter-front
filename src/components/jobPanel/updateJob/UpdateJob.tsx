@@ -1,5 +1,11 @@
 //#region Dependency list
-import { Dispatch, FunctionComponent, SetStateAction, useContext } from "react";
+import {
+    Dispatch,
+    FunctionComponent,
+    SetStateAction,
+    useContext,
+    useState,
+} from "react";
 import FormUpdate from "./FormUpdate";
 import styles from "./UpdateJob.module.scss";
 import { Job } from "../../../classes/JobPosition";
@@ -21,6 +27,7 @@ const UpdateJob: FunctionComponent<thisProps> = ({
     onSetLoading,
 }) => {
     const selectedJob = useContext(JobContext);
+    const [isHourPriceActive, setIsHourPriceActive] = useState<boolean>(true);
 
     const submitForm = (job: Job) => onEnd(job);
 
@@ -33,12 +40,26 @@ const UpdateJob: FunctionComponent<thisProps> = ({
                 onSetLoading={onSetLoading}
             />
             {selectedJob && (
-                <TextFormUpdate
-                    onSetLoading={onSetLoading}
-                    selectedJob={selectedJob}
-                    onEnd={submitForm}
-                    loading={loading}
-                />
+                <div className={styles.textFormsContainer}>
+                    <button
+                        className={styles.changeSectionButton}
+                        onClick={() => setIsHourPriceActive((bool) => !bool)}
+                    >
+                        {isHourPriceActive
+                            ? "Set tax or bonus"
+                            : "Set hour price"}
+                    </button>
+                    {isHourPriceActive ? (
+                        <TextFormUpdate
+                            onSetLoading={onSetLoading}
+                            selectedJob={selectedJob}
+                            onEnd={submitForm}
+                            loading={loading}
+                        />
+                    ) : (
+                        <div>Updating tax and bonus</div>
+                    )}
+                </div>
             )}
         </div>
     );
