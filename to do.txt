@@ -1,14 +1,11 @@
 BREAKING!! overtime and overwork may not be two different things, is all overtime. I should think about that. Can I get the length of the worktime from the start and end? In that case, the job text will be way shorter and simpler. Any overtime is always the same price? It should be.
 
-Auth:
-    Adapt client to refresh token logic from the backend
+Tax and bonus
+- Implement another text, but this time in the summary section to allow creating tax and benefits
 
 Summary:
     Calculating the summary money:
     - General testing.
-
-Tax and benefits
-- Implement another text, but this time in the summary section to allow creating tax and benefits
 
 Get the job position from DB and pre fill the hour price text-form in the update section:
 - Regular is working, not the rest
@@ -21,3 +18,26 @@ Form:
 - Give more space for extra numbers (in Argentina can be up to 5 numbers)
 
 - Add hover style on checkbox
+
+----------------------
+
+Tax and bonus guide:
+
+For every worked [shifts], I [got paid/have to pay], [number] [dollar/percentage] {IF PERCENTAGE of my daily gain}.
+
+"For every 1 worked shift, I have to pay 10% of the daily gain"
+"For every 5 worked shifts, I got paid 70$"
+"For every 1 worked shifts, I got paid 5% of the daily gain"
+
+For this payment only, I [got paid/have to pay], [number] [dollar/percentage] {IF PERCENTAGE of my total gain}.
+
+"For this payment only, I got paid $200"
+"For this payment only, I have to pay 30% of my total gain"
+"For this payment only, I got paid 50% of my total gain"
+
+If my [daily gain/total gain] is [more/less] than [Number]. I [got paid/have to pay], [number] [dollar/percentage] {
+IF PERCENTAGE of my daily gain}
+
+"If my daily gain is more than $300. I have to pay 10% of my daily gain."
+"If my daily gain is less than $100. I got paid $50"
+"If my total gain is more than $5000. I have to pay 25% of my total gain."
