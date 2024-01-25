@@ -77,12 +77,14 @@ body {
 p,
 h1,
 h2,
+h3,
 label,
 span {
     color: var(--textColor);
 }
 
-p {
+p,
+h3 {
     font-family: auto;
     margin: 0;
 }

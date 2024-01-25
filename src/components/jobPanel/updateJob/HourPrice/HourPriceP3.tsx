@@ -11,8 +11,8 @@ import { hourNum } from "../../../../types/dateService";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
 import { time12Meridian } from "../../../utils/form/types/TimeType";
-import styles from "./TextFormUpdate.module.scss";
 import { workDayType } from "../../../../types/job/Position";
+import styles from "./HourPrice.module.scss";
 //#endregion
 
 type thisProps = {
@@ -30,7 +30,7 @@ type thisProps = {
     ): void;
 };
 
-const Paragraph3: FunctionComponent<thisProps> = ({
+const HourPriceP3: FunctionComponent<thisProps> = ({
     setWorkDayLength,
     setOverworkDayPrice,
     overtimePrice,
@@ -144,4 +144,4 @@ const Paragraph3: FunctionComponent<thisProps> = ({
     );
 };
 
-export default Paragraph3;
+export default HourPriceP3;

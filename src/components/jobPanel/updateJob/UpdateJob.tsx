@@ -9,8 +9,9 @@ import {
 import FormUpdate from "./FormUpdate";
 import styles from "./UpdateJob.module.scss";
 import { Job } from "../../../classes/JobPosition";
-import TextFormUpdate from "./textFormUpdate/TextFormUpdate";
 import { JobContext } from "../../dashboard/Dashboard";
+import HourPrice from "./HourPrice/HourPrice";
+import TaxAndBonusPanel from "./TaxAndBonus/TaxAndBonusPanel";
 //#endregion
 
 type thisProps = {
@@ -50,14 +51,14 @@ const UpdateJob: FunctionComponent<thisProps> = ({
                             : "Set hour price"}
                     </button>
                     {isHourPriceActive ? (
-                        <TextFormUpdate
+                        <HourPrice
                             onSetLoading={onSetLoading}
                             selectedJob={selectedJob}
                             onEnd={submitForm}
                             loading={loading}
                         />
                     ) : (
-                        <div>Updating tax and bonus</div>
+                        <TaxAndBonusPanel />
                     )}
                 </div>
             )}

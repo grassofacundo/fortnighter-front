@@ -1,0 +1,28 @@
+@use "../../../../style/animations";
+
+.optionWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    height: 100%;
+
+    button {
+        text-align: left;
+        width: 90%;
+        opacity: 0;
+        animation: 250ms linear slide-from-bottom forwards;
+
+        .description {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .examples {
+            display: flex;
+            flex-direction: column;
+            font-style: italic;
+            opacity: 80%;
+        }
+    }
+}

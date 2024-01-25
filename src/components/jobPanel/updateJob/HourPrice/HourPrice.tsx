@@ -1,8 +1,8 @@
 //#region Dependency list
 import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
-import Paragraph1 from "./Paragraph1";
-import Paragraph2 from "./Paragraph2";
-import Paragraph3 from "./Paragraph3";
+import Paragraph1 from "./HourPriceP1";
+import Paragraph2 from "./HourPriceP2";
+import Paragraph3 from "./HourPriceP3";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import {
     priceStructure,
@@ -15,7 +15,7 @@ import {
 } from "../../../utils/form/blocks/time/select/TimeMethods";
 import { Job } from "../../../../classes/JobPosition";
 import { time12Meridian } from "../../../utils/form/types/TimeType";
-import styles from "./TextFormUpdate.module.scss";
+import styles from "./HourPrice.module.scss";
 //#endregion
 
 type thisProps = {
@@ -25,7 +25,7 @@ type thisProps = {
     onEnd(updatedJobPosition: Job): void;
 };
 
-const TextFormUpdate: FunctionComponent<thisProps> = ({
+const HourPrice: FunctionComponent<thisProps> = ({
     loading,
     selectedJob,
     onSetLoading,
@@ -193,4 +193,4 @@ const TextFormUpdate: FunctionComponent<thisProps> = ({
     );
 };
 
-export default TextFormUpdate;
+export default HourPrice;

@@ -16,9 +16,9 @@ import {
 } from "../../../utils/form/types/TimeType";
 import { formAnswersType } from "../../../utils/form/types/FormTypes";
 import { getAs24Format } from "../../../utils/form/blocks/time/select/TimeMethods";
-import styles from "./TextFormUpdate.module.scss";
 import { JobContext } from "../../../dashboard/Dashboard";
 import { workDayType } from "../../../../types/job/Position";
+import styles from "./HourPrice.module.scss";
 //#endregion
 
 type thisProps = {
@@ -44,7 +44,7 @@ const workdayOptions = [
     { label: "holiday", value: "holiday" },
 ];
 
-const Paragraph1: FunctionComponent<thisProps> = ({
+const HourPriceP1: FunctionComponent<thisProps> = ({
     setWorkdayType,
     setWorkDayTimeStart,
     setWorkDayTimeEnd,
@@ -187,4 +187,4 @@ const Paragraph1: FunctionComponent<thisProps> = ({
     );
 };
 
-export default Paragraph1;
+export default HourPriceP1;
