@@ -14,7 +14,7 @@ import CreateJobForm from "./createJob/CreateJob";
 import UpdateJob from "./updateJob/UpdateJob";
 import styles from "./jobPanel.module.scss";
 import { JobContext } from "../dashboard/Dashboard";
-import { Job } from "../../classes/JobPosition";
+import { Job } from "../../classes/job/JobPosition";
 //#endregion
 
 type thisProps = {

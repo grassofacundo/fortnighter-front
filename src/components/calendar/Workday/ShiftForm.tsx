@@ -9,8 +9,8 @@ import {
     dateAsTimeStructure,
     getTime24,
 } from "../../utils/form/blocks/time/select/TimeMethods";
-import { Shift } from "../../../classes/Shift";
-import { BaseShift } from "../../../classes/BaseShift";
+import { Shift } from "../../../classes/shift/Shift";
+import { BaseShift } from "../../../classes/shift/BaseShift";
 import { getTomorrow } from "../../../services/dateService";
 //#endregion
 

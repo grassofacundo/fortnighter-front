@@ -1,16 +1,16 @@
-import { getAs24Format } from "../components/utils/form/blocks/time/select/TimeMethods";
+import { getAs24Format } from "../../components/utils/form/blocks/time/select/TimeMethods";
 import {
     hourStr12,
     minuteStr,
     time12Meridian,
-} from "../components/utils/form/types/TimeType";
-import FetchService from "../services/fetchService";
-import { eventReturn } from "../types/database/databaseTypes";
+} from "../../components/utils/form/types/TimeType";
+import FetchService from "../../services/fetchService";
+import { eventReturn } from "../../types/database/databaseTypes";
 import {
     priceStructure,
     workDayStructure,
     workDayType,
-} from "../types/job/Position";
+} from "../../types/job/Position";
 
 const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;
 

@@ -1,5 +1,5 @@
 //#region Dependency list
-import { Job } from "../classes/JobPosition";
+import { Job } from "../classes/job/JobPosition";
 import { eventReturn } from "../types/database/databaseTypes";
 import { payment, paymentBase } from "../types/job/Payment";
 import { dbJobPositionType } from "../types/job/Position";

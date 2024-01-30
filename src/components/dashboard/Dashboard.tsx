@@ -7,8 +7,8 @@ import styles from "./Dashboard.module.scss";
 import shiftService from "../../services/shiftService";
 import { datesAreEqual, getPastDate } from "../../services/dateService";
 import DatePickerPanel from "./datePickerPanel/DatePickerPanel";
-import { Job } from "../../classes/JobPosition";
-import { Shift } from "../../classes/Shift";
+import { Job } from "../../classes/job/JobPosition";
+import { Shift } from "../../classes/shift/Shift";
 //#endregion
 
 type thisProps = unknown;

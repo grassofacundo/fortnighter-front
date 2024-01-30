@@ -8,7 +8,7 @@ import {
 } from "react";
 import FormUpdate from "./FormUpdate";
 import styles from "./UpdateJob.module.scss";
-import { Job } from "../../../classes/JobPosition";
+import { Job } from "../../../classes/job/JobPosition";
 import { JobContext } from "../../dashboard/Dashboard";
 import HourPrice from "./HourPrice/HourPrice";
 import TaxAndBonusPanel from "./TaxAndBonus/TaxAndBonusPanel";
@@ -29,6 +29,7 @@ const UpdateJob: FunctionComponent<thisProps> = ({
 }) => {
     const selectedJob = useContext(JobContext);
     const [isHourPriceActive, setIsHourPriceActive] = useState<boolean>(true);
+    const [hide, setHide] = useState<boolean>(false);
 
     const submitForm = (job: Job) => onEnd(job);
 
@@ -42,14 +43,18 @@ const UpdateJob: FunctionComponent<thisProps> = ({
             />
             {selectedJob && (
                 <div className={styles.textFormsContainer}>
-                    <button
-                        className={styles.changeSectionButton}
-                        onClick={() => setIsHourPriceActive((bool) => !bool)}
-                    >
-                        {isHourPriceActive
-                            ? "Set tax or bonus"
-                            : "Set hour price"}
-                    </button>
+                    {!hide && (
+                        <button
+                            className={styles.changeSectionButton}
+                            onClick={() =>
+                                setIsHourPriceActive((bool) => !bool)
+                            }
+                        >
+                            {isHourPriceActive
+                                ? "Set tax or bonus"
+                                : "Set hour price"}
+                        </button>
+                    )}
                     {isHourPriceActive ? (
                         <HourPrice
                             onSetLoading={onSetLoading}
@@ -58,7 +63,7 @@ const UpdateJob: FunctionComponent<thisProps> = ({
                             loading={loading}
                         />
                     ) : (
-                        <TaxAndBonusPanel />
+                        <TaxAndBonusPanel onSetHide={setHide} />
                     )}
                 </div>
             )}

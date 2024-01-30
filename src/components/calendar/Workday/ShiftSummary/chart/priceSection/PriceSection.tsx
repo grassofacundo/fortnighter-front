@@ -1,7 +1,7 @@
 //#region Dependency list
 import { FunctionComponent, useState } from "react";
 import FormManager from "../../../../../utils/form/FormManager";
-import { Shift } from "../../../../../../classes/Shift";
+import { Shift } from "../../../../../../classes/shift/Shift";
 import { inputNumber } from "../../../../../utils/form/types/InputNumberTypes";
 import { parsedAnswers } from "../../../../../utils/form/types/FormTypes";
 import style from "./PriceSection.module.scss";

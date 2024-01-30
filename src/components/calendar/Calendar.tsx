@@ -16,7 +16,7 @@ import {
 } from "../../services/dateService";
 import Workday from "./Workday/Workday";
 import styles from "./Calendar.module.scss";
-import { Shift } from "../../classes/Shift";
+import { Shift } from "../../classes/shift/Shift";
 //#endregion
 
 type thisProps = {

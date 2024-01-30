@@ -26,3 +26,81 @@
         }
     }
 }
+
+.changeSectionButton {
+    position: absolute;
+    top: 10px;
+    left: 2em;
+    margin: 0;
+}
+
+.paragraph {
+    padding: 0 10%;
+    font-size: 19px;
+    width: 100%;
+    opacity: 0;
+    color: var(--textColor);
+
+    &.show {
+        animation: 250ms linear slide-from-bottom forwards;
+    }
+
+    span,
+    .inlineSelect,
+    input,
+    .inputWithPopUp,
+    div[class*="inputClass"] {
+        display: inline-block;
+    }
+
+    input {
+        width: 4rem;
+        font-size: 20px !important;
+        border: {
+            top: none !important;
+            left: none !important;
+            right: none !important;
+        }
+    }
+
+    .lineBreak {
+        width: 100%;
+        height: 1px;
+    }
+
+    .inlineSelect {
+        margin: 0 5px;
+    }
+
+    .inputWithPopUp {
+        position: relative;
+        .popUp {
+            position: absolute;
+            text-wrap: nowrap;
+            bottom: -25px;
+            right: 0;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: 250ms linear slide-from-bottom forwards,
+                250ms linear 3s hide-up forwards;
+
+            &::before {
+                content: "<";
+                transform: rotate(90deg) translateX(5px);
+            }
+        }
+    }
+
+    .errorMessage {
+        font-size: 16px;
+    }
+}
+
+.submitButton {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 0;
+}

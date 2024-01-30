@@ -6,7 +6,7 @@ import {
     parseDateAsId,
 } from "../../../services/dateService";
 import { JobContext } from "../../dashboard/Dashboard";
-import { Shift } from "../../../classes/Shift";
+import { Shift } from "../../../classes/shift/Shift";
 import ShiftForm from "./ShiftForm";
 import ShiftSummary from "./ShiftSummary/ShiftSummary";
 import styles from "./Workday.module.scss";

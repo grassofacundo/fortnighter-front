@@ -1,7 +1,7 @@
 //#region Dependency list
 import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
-import { BaseJob } from "../../../classes/BaseJobPosition";
-import { Job } from "../../../classes/JobPosition";
+import { BaseJob } from "../../../classes/job/BaseJobPosition";
+import { Job } from "../../../classes/job/JobPosition";
 import FormCreate from "./FormCreate";
 import styles from "./CreateJob.module.scss";
 import { priceStructure, workDayStructure } from "../../../types/job/Position";

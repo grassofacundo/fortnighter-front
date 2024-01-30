@@ -6,3 +6,21 @@ export type optionItem = {
 };
 
 export type options = optionItem[];
+
+export type byShift = {
+    forEvery: number;
+};
+
+export type byAmount = {
+    moreThan: boolean;
+    lessThan: boolean;
+    amount: number;
+};
+
+export type amountStructure = {
+    increase: boolean;
+    decrease: boolean;
+    isPercentage: boolean;
+    isFixed: boolean;
+    amount: number;
+};

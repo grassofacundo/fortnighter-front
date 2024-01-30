@@ -5,7 +5,7 @@ import { paymentInfoType } from "../../../../../types/job/Shift";
 import Timetable from "./Timetable/Timetable";
 import InfoSection from "./InfoSection/InfoSection";
 import { workDayType } from "../../../../../types/job/Position";
-import { Shift } from "../../../../../classes/Shift";
+import { Shift } from "../../../../../classes/shift/Shift";
 import style from "./Chart.module.scss";
 import { timelines } from "../ShiftSummary";
 import PriceSection from "./priceSection/PriceSection";

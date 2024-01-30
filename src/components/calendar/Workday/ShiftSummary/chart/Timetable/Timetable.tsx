@@ -8,7 +8,7 @@ import {
 } from "react";
 import { paymentTypes, priceAndHours } from "../../../../../../types/job/Shift";
 import Tooltip from "../../../../../utils/tooltip/Tooltip";
-import { Shift } from "../../../../../../classes/Shift";
+import { Shift } from "../../../../../../classes/shift/Shift";
 import { timelines } from "../../ShiftSummary";
 import style from "./Timetable.module.scss";
 //#endregion

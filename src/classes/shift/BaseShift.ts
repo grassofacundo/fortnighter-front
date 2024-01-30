@@ -1,7 +1,7 @@
-import { getTomorrow } from "../services/dateService";
-import FetchService from "../services/fetchService";
-import { eventReturn } from "../types/database/databaseTypes";
-import { workDayType } from "../types/job/Position";
+import { getTomorrow } from "../../services/dateService";
+import FetchService from "../../services/fetchService";
+import { eventReturn } from "../../types/database/databaseTypes";
+import { workDayType } from "../../types/job/Position";
 
 const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;
 

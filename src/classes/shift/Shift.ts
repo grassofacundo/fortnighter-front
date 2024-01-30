@@ -1,5 +1,5 @@
-import FetchService from "../services/fetchService";
-import { eventReturn } from "../types/database/databaseTypes";
+import FetchService from "../../services/fetchService";
+import { eventReturn } from "../../types/database/databaseTypes";
 import { BaseShift } from "./BaseShift";
 
 const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;

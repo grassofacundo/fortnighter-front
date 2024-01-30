@@ -13,7 +13,7 @@ import {
     getMeridian,
     getTime12,
 } from "../../../utils/form/blocks/time/select/TimeMethods";
-import { Job } from "../../../../classes/JobPosition";
+import { Job } from "../../../../classes/job/JobPosition";
 import { time12Meridian } from "../../../utils/form/types/TimeType";
 import styles from "./HourPrice.module.scss";
 //#endregion

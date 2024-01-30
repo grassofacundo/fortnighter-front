@@ -1,6 +1,6 @@
-import { BaseShift } from "../classes/BaseShift";
-import { Job } from "../classes/JobPosition";
-import { Shift } from "../classes/Shift";
+import { BaseShift } from "../classes/shift/BaseShift";
+import { Job } from "../classes/job/JobPosition";
+import { Shift } from "../classes/shift/Shift";
 import {
     dateAsTimeStructure,
     getAs24Format,

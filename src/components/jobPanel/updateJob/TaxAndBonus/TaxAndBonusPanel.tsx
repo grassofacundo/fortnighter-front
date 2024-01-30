@@ -1,16 +1,32 @@
 //#region Dependency list
-import { FunctionComponent, useState } from "react";
+import {
+    Dispatch,
+    FunctionComponent,
+    SetStateAction,
+    useEffect,
+    useState,
+} from "react";
 import { optionName, options } from "../../../../types/job/Modifiers";
-import styles from "./TaxAndBonusPanel.module.scss";
 import ByShiftText from "./ByShiftText";
 import ByPaymentText from "./ByPaymentText";
 import ByAmountText from "./ByAmountText";
+import { formAnswersType } from "../../../utils/form/types/FormTypes";
+import PayOrGain from "./PayOrGainText";
+import styles from "./TaxAndBonusPanel.module.scss";
 //#endregion
 
-type thisProps = unknown;
+type thisProps = {
+    onSetHide: Dispatch<SetStateAction<boolean>>;
+};
 
-const TaxAndBonusPanel: FunctionComponent<thisProps> = () => {
+const TaxAndBonusPanel: FunctionComponent<thisProps> = ({ onSetHide }) => {
     const [selectedOption, setSelectedOption] = useState<optionName | "">("");
+    const [toPay, setToPay] = useState<boolean>(true);
+    const [isPercentage, setIsPercentage] = useState<boolean>(false);
+    const [amount, setAmount] = useState<number>(0);
+    const [payGainText, setPayGainText] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
+
     const options: options = [
         {
             id: "shift",
@@ -38,6 +54,28 @@ const TaxAndBonusPanel: FunctionComponent<thisProps> = () => {
         },
     ];
 
+    function handleNumberChange(
+        answer: formAnswersType,
+        callback: Dispatch<SetStateAction<number>>
+    ) {
+        try {
+            const valueNum = Number(answer.value);
+            callback(valueNum);
+        } catch (error) {
+            alert(error);
+        }
+    }
+
+    function validAmount(): string {
+        let error = "";
+        if (amount < 0) error = "Amount cannot be negative";
+        return error;
+    }
+
+    useEffect(() => {
+        onSetHide(!!selectedOption);
+    }, [selectedOption, onSetHide]);
+
     return (
         <div>
             {!selectedOption && (
@@ -45,15 +83,17 @@ const TaxAndBonusPanel: FunctionComponent<thisProps> = () => {
                     {options.map((option, i) => {
                         return (
                             <button
+                                key={i}
                                 style={{ animationDelay: `${i * 50}ms` }}
                                 onClick={() => setSelectedOption(option.id)}
+                                disabled={loading}
                             >
                                 <p className={styles.description}>
                                     {option.description}
                                 </p>
                                 <p className={styles.examples}>
-                                    {option.example.map((example) => (
-                                        <span>{example}</span>
+                                    {option.example.map((example, i) => (
+                                        <span key={i}>{example}</span>
                                     ))}
                                 </p>
                             </button>
@@ -61,9 +101,52 @@ const TaxAndBonusPanel: FunctionComponent<thisProps> = () => {
                     })}
                 </div>
             )}
-            {selectedOption === "shift" && <ByShiftText />}
-            {selectedOption === "payment" && <ByPaymentText />}
-            {selectedOption === "amount" && <ByAmountText />}
+            {selectedOption && (
+                <button
+                    className={styles.changeSectionButton}
+                    onClick={() => setSelectedOption("")}
+                >
+                    Change category
+                </button>
+            )}
+            {selectedOption && (
+                <div className={`${styles.paragraph} ${styles.show}`}>
+                    {selectedOption === "shift" && (
+                        <ByShiftText
+                            handleNumberChange={handleNumberChange}
+                            onSetPayGainText={setPayGainText}
+                            validAmount={validAmount}
+                            payGainText={payGainText}
+                            toPay={toPay}
+                            isPercentage={isPercentage}
+                            amount={amount}
+                            loading={loading}
+                        />
+                    )}
+                    {selectedOption === "payment" && (
+                        <ByPaymentText
+                            onSetPayGainText={setPayGainText}
+                            payGainText={payGainText}
+                        />
+                    )}
+                    {selectedOption === "amount" && (
+                        <ByAmountText
+                            handleNumberChange={handleNumberChange}
+                            onSetPayGainText={setPayGainText}
+                            payGainText={payGainText}
+                        />
+                    )}
+                    <PayOrGain
+                        onSetToPay={setToPay}
+                        onSetIsPercentage={setIsPercentage}
+                        onSetAmount={setAmount}
+                        handleNumberChange={handleNumberChange}
+                        isPercentage={isPercentage}
+                        amount={amount}
+                        text={payGainText}
+                    />
+                </div>
+            )}
         </div>
     );
 };

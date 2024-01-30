@@ -1,7 +1,7 @@
 //#region Dependency list
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
-import { Shift } from "../../../../classes/Shift";
-import { Job } from "../../../../classes/JobPosition";
+import { Shift } from "../../../../classes/shift/Shift";
+import { Job } from "../../../../classes/job/JobPosition";
 import { paymentInfoType } from "../../../../types/job/Shift";
 import { workDayType } from "../../../../types/job/Position";
 import shiftService from "../../../../services/shiftService";

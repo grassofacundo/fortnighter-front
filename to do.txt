@@ -15,7 +15,8 @@ Form:
 - Add focus on time dropdown
 - Fix key input on time
 - Fix close when clicking outside in time input
-- Give more space for extra numbers (in Argentina can be up to 5 numbers)
+- Give more space for extra numbers (in Argentina can be up to 5 numbers). UPDATE: Make the width dynamically change
+maybe update a css variable with every key
 
 - Add hover style on checkbox
 

@@ -18,7 +18,7 @@ import { parsedAnswers } from "../../utils/form/types/FormTypes";
 import jobService from "../../../services/JobService";
 import { dateInput } from "../../utils/form/types/DateInputTypes";
 import { JobContext } from "../../dashboard/Dashboard";
-import { Job } from "../../../classes/JobPosition";
+import { Job } from "../../../classes/job/JobPosition";
 //#endregion
 
 type answerData = {
