@@ -6,12 +6,14 @@ import {
     workDayStructure,
     workDayType,
 } from "../../types/job/Position";
+import { Modifier } from "../modifier/Modifier";
 import { BaseJob } from "./BaseJobPosition";
 
 const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;
 
 export class Job extends BaseJob {
     id: string;
+    modifiers: Modifier[];
 
     constructor(job: {
         id: string;
@@ -21,9 +23,11 @@ export class Job extends BaseJob {
         paymentLapse: number;
         nextPaymentDate: Date;
         companyName?: string;
+        modifiers?: Modifier[];
     }) {
         super(job);
         this.id = job.id;
+        this.modifiers = job.modifiers ?? [];
     }
 
     /**

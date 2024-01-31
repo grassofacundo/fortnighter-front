@@ -1,6 +1,11 @@
 import FetchService from "../../services/fetchService";
 import { eventReturn } from "../../types/database/databaseTypes";
-import { amountStructure, byAmount, byShift } from "../../types/job/Modifiers";
+import {
+    amountStructure,
+    byAmount,
+    byShift,
+    newBaseModifierObj,
+} from "../../types/job/Modifiers";
 import { Modifier } from "./Modifier";
 
 const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;
@@ -13,14 +18,7 @@ export class BaseModifier {
     amount: amountStructure;
     jobId: string;
 
-    constructor(modifier: {
-        name: string;
-        byShift?: byShift;
-        byAmount?: byAmount;
-        paymentId?: string;
-        amount: amountStructure;
-        jobId: string;
-    }) {
+    constructor(modifier: newBaseModifierObj) {
         this.name = modifier.name;
         this.byShift = modifier.byShift;
         this.byAmount = modifier.byAmount;

@@ -3,15 +3,14 @@ import {
     Dispatch,
     FunctionComponent,
     SetStateAction,
+    useContext,
     useEffect,
     useState,
 } from "react";
 import { optionName, options } from "../../../../types/job/Modifiers";
-import ByShiftText from "./ByShiftText";
-import ByPaymentText from "./ByPaymentText";
-import ByAmountText from "./ByAmountText";
-import { formAnswersType } from "../../../utils/form/types/FormTypes";
-import PayOrGain from "./PayOrGainText";
+import ActiveTaxAndBonus from "./ActiveTaxAndBonus/ActiveTaxAndBonus";
+import { JobContext } from "../../../dashboard/Dashboard";
+import CreationSection from "./CreationSection/CreationSection";
 import styles from "./TaxAndBonusPanel.module.scss";
 //#endregion
 
@@ -20,11 +19,8 @@ type thisProps = {
 };
 
 const TaxAndBonusPanel: FunctionComponent<thisProps> = ({ onSetHide }) => {
+    const selectedJob = useContext(JobContext);
     const [selectedOption, setSelectedOption] = useState<optionName | "">("");
-    const [toPay, setToPay] = useState<boolean>(true);
-    const [isPercentage, setIsPercentage] = useState<boolean>(false);
-    const [amount, setAmount] = useState<number>(0);
-    const [payGainText, setPayGainText] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
 
     const options: options = [
@@ -54,30 +50,12 @@ const TaxAndBonusPanel: FunctionComponent<thisProps> = ({ onSetHide }) => {
         },
     ];
 
-    function handleNumberChange(
-        answer: formAnswersType,
-        callback: Dispatch<SetStateAction<number>>
-    ) {
-        try {
-            const valueNum = Number(answer.value);
-            callback(valueNum);
-        } catch (error) {
-            alert(error);
-        }
-    }
-
-    function validAmount(): string {
-        let error = "";
-        if (amount < 0) error = "Amount cannot be negative";
-        return error;
-    }
-
     useEffect(() => {
         onSetHide(!!selectedOption);
     }, [selectedOption, onSetHide]);
 
     return (
-        <div>
+        <div className={styles.panel}>
             {!selectedOption && (
                 <div className={styles.optionWrapper}>
                     {options.map((option, i) => {
@@ -101,50 +79,22 @@ const TaxAndBonusPanel: FunctionComponent<thisProps> = ({ onSetHide }) => {
                     })}
                 </div>
             )}
-            {selectedOption && (
-                <button
-                    className={styles.changeSectionButton}
-                    onClick={() => setSelectedOption("")}
-                >
-                    Change category
-                </button>
-            )}
-            {selectedOption && (
-                <div className={`${styles.paragraph} ${styles.show}`}>
-                    {selectedOption === "shift" && (
-                        <ByShiftText
-                            handleNumberChange={handleNumberChange}
-                            onSetPayGainText={setPayGainText}
-                            validAmount={validAmount}
-                            payGainText={payGainText}
-                            toPay={toPay}
-                            isPercentage={isPercentage}
-                            amount={amount}
-                            loading={loading}
-                        />
-                    )}
-                    {selectedOption === "payment" && (
-                        <ByPaymentText
-                            onSetPayGainText={setPayGainText}
-                            payGainText={payGainText}
-                        />
-                    )}
-                    {selectedOption === "amount" && (
-                        <ByAmountText
-                            handleNumberChange={handleNumberChange}
-                            onSetPayGainText={setPayGainText}
-                            payGainText={payGainText}
-                        />
-                    )}
-                    <PayOrGain
-                        onSetToPay={setToPay}
-                        onSetIsPercentage={setIsPercentage}
-                        onSetAmount={setAmount}
-                        handleNumberChange={handleNumberChange}
-                        isPercentage={isPercentage}
-                        amount={amount}
-                        text={payGainText}
+            {selectedOption && selectedJob && (
+                <div className={styles.modifierWrapper}>
+                    <button
+                        className={styles.changeSectionButton}
+                        onClick={() => setSelectedOption("")}
+                    >
+                        Change category
+                    </button>
+
+                    <CreationSection
+                        selectedOption={selectedOption}
+                        loading={loading}
+                        jobId={selectedJob.id}
+                        onSetLoading={setLoading}
                     />
+                    <ActiveTaxAndBonus selectedOption={selectedOption} />
                 </div>
             )}
         </div>

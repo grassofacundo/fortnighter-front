@@ -1,5 +1,6 @@
 //#region Dependency list
 import { Job } from "../classes/job/JobPosition";
+import { Modifier } from "../classes/modifier/Modifier";
 import { eventReturn } from "../types/database/databaseTypes";
 import { payment, paymentBase } from "../types/job/Payment";
 import { dbJobPositionType } from "../types/job/Position";
@@ -28,9 +29,16 @@ class JobService {
     }
 
     parseAsJobPosition(dbJobPosition: dbJobPositionType): Job {
+        const modifiers: Modifier[] = [];
+        if (dbJobPosition.modifiers) {
+            dbJobPosition.modifiers.forEach((m) =>
+                modifiers.push(new Modifier(m))
+            );
+        }
         const job = new Job({
             ...dbJobPosition,
             nextPaymentDate: new Date(dbJobPosition.nextPaymentDate),
+            modifiers: modifiers,
         });
         return job;
     }

@@ -1,6 +1,11 @@
 import FetchService from "../../services/fetchService";
 import { eventReturn } from "../../types/database/databaseTypes";
-import { amountStructure, byAmount, byShift } from "../../types/job/Modifiers";
+import {
+    amountStructure,
+    byAmount,
+    byShift,
+    newModifierObj,
+} from "../../types/job/Modifiers";
 import { BaseModifier } from "./BaseModifier";
 
 const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;
@@ -8,15 +13,7 @@ const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;
 export class Modifier extends BaseModifier {
     id: string;
 
-    constructor(modifier: {
-        id: string;
-        name: string;
-        byShift: byShift;
-        byAmount: byAmount;
-        paymentId: string;
-        amount: amountStructure;
-        jobId: string;
-    }) {
+    constructor(modifier: newModifierObj) {
         super(modifier);
         this.id = modifier.id;
     }
@@ -32,6 +29,23 @@ export class Modifier extends BaseModifier {
         const method = "PUT";
         const body = { ...this };
         const response = await FetchService.fetchPost<Modifier>({
+            url,
+            method,
+            body,
+        });
+        return response;
+    }
+
+    /**
+     * Delete a modifier fro the database
+     *
+     * @returns An eventReturn object. Content will be empty.
+     */
+    async delete(): Promise<eventReturn<void>> {
+        const url = `${baseUrl}/modifier/delete`;
+        const method = "DELETE";
+        const body = { modifierId: this.id };
+        const response = await FetchService.fetchPost<void>({
             url,
             method,
             body,

@@ -6,7 +6,7 @@ import { text } from "../../types/TextTypes";
 
 interface thisProps extends inputProp {
     fields: text;
-    parentClass: string;
+    parentClass?: string;
 }
 
 const InputText: FunctionComponent<thisProps> = ({
@@ -35,9 +35,9 @@ const InputText: FunctionComponent<thisProps> = ({
                 type="text"
                 id={id}
                 required={!isOptional}
-                placeholder={placeholder}
-                minLength={min}
-                maxLength={max}
+                placeholder={placeholder ?? ""}
+                minLength={min ?? 0}
+                maxLength={max ?? 1000}
                 onChange={(target) => handleInput(target)}
                 defaultValue={defaultValue}
             ></input>

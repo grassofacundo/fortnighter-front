@@ -14,6 +14,8 @@ export type byShift = {
 export type byAmount = {
     moreThan: boolean;
     lessThan: boolean;
+    daily: boolean;
+    total: boolean;
     amount: number;
 };
 
@@ -23,4 +25,23 @@ export type amountStructure = {
     isPercentage: boolean;
     isFixed: boolean;
     amount: number;
+};
+
+export type newBaseModifierObj = {
+    name: string;
+    byShift?: byShift;
+    byAmount?: byAmount;
+    paymentId?: string;
+    amount: amountStructure;
+    jobId: string;
+};
+
+export type newModifierObj = {
+    id: string;
+    name: string;
+    byShift: byShift;
+    byAmount: byAmount;
+    paymentId: string;
+    amount: amountStructure;
+    jobId: string;
 };
