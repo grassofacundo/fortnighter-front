@@ -2,49 +2,39 @@
 import { FunctionComponent, useContext } from "react";
 import styles from "./InfoPanel.module.scss";
 import { getStringDMY } from "../../../services/dateService";
-import { shiftState } from "../../../types/job/Shift";
 import { JobContext } from "../../dashboard/Dashboard";
+import { Shift } from "../../../classes/shift/Shift";
+import {
+    getSaturdays,
+    getSundays,
+    getTotal,
+} from "../../../services/summaryService";
 //#endregion
 
 type thisProps = {
-    shiftList: shiftState[];
+    shiftList: Shift[];
     start: Date;
     end: Date;
 };
 
 const InfoPanel: FunctionComponent<thisProps> = ({ shiftList, start, end }) => {
-    const position = useContext(JobContext);
+    const job = useContext(JobContext);
 
-    function getSaturdays() {
-        const saturdays = shiftList.filter((shift) => shift.isSaturday);
-        return saturdays.length;
-    }
-
-    function getSundays() {
-        const sundays = shiftList.filter((shift) => shift.isSunday);
-        return sundays.length;
-    }
-
-    function getTotal(): number {
-        if (!position) return 0;
-
-        let total = 0;
-        shiftList.forEach((shift) => {
-            if (shift.startTime >= start && shift.endTime <= end)
-                total += shift.hoursWorked * 1; //position.hourPrice;
-        });
-        return total;
-    }
     return (
         <div className={styles.infoPanel}>
-            {position && shiftList.length > 0 && (
+            {job && shiftList.length > 0 && (
                 <div>
-                    <p>{`Next payment: ${getStringDMY(
-                        position.nextPaymentDate
+                    <p>{`Total made: $${getTotal(
+                        shiftList,
+                        job,
+                        start,
+                        end
                     )}`}</p>
-                    <p>{`Total made: $${getTotal()}`}</p>
-                    <p>{`Saturdays worked: ${getSaturdays()}`}</p>
-                    <p>{`Sundays worked: ${getSundays()}`}</p>
+                    <p>{`Next payment: ${getStringDMY(
+                        job.nextPaymentDate
+                    )}`}</p>
+                    <p>{`Saturdays worked: ${getSaturdays(shiftList)}`}</p>
+                    <p>{`Sundays worked: ${getSundays(shiftList)}`}</p>
                 </div>
             )}
             {shiftList.length <= 0 && (

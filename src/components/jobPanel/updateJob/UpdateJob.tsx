@@ -31,13 +31,13 @@ const UpdateJob: FunctionComponent<thisProps> = ({
     const [isHourPriceActive, setIsHourPriceActive] = useState<boolean>(true);
     const [hide, setHide] = useState<boolean>(false);
 
-    const submitForm = (job: Job) => onEnd(job);
+    const postSubmit = (job: Job) => onEnd(job);
 
     return (
         <div className={styles.formContainer}>
             <FormUpdate
                 jobList={jobList}
-                onEnd={submitForm}
+                onEnd={postSubmit}
                 loading={loading}
                 onSetLoading={onSetLoading}
             />
@@ -59,11 +59,14 @@ const UpdateJob: FunctionComponent<thisProps> = ({
                         <HourPrice
                             onSetLoading={onSetLoading}
                             selectedJob={selectedJob}
-                            onEnd={submitForm}
+                            onEnd={postSubmit}
                             loading={loading}
                         />
                     ) : (
-                        <TaxAndBonusPanel onSetHide={setHide} />
+                        <TaxAndBonusPanel
+                            onSetHide={setHide}
+                            onEnd={postSubmit}
+                        />
                     )}
                 </div>
             )}

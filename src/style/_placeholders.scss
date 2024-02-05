@@ -8,6 +8,11 @@
         box-shadow: 0px 0px 0px 3px;
     }
 
+    &:enabled:focus {
+        cursor: pointer;
+        box-shadow: 0px 0px 0px 3px;
+    }
+
     &:disabled {
         opacity: 70%;
     }

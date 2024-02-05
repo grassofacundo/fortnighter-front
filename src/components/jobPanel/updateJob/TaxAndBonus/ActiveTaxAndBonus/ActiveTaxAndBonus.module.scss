@@ -1,4 +1,28 @@
-.activeModifiers {
-    display: flex;
-    align-items: center;
+@use "../../../../../style/placeholders";
+
+.activeModifiersContainer {
+    padding: 0 2em;
+    max-height: 6em;
+    overflow: auto;
+    width: fit-content;
+
+    h3 {
+        margin-bottom: 5px;
+    }
+
+    .activeModifiers {
+        display: flex;
+        align-items: center;
+        margin-left: 5px;
+
+        span {
+            margin: 0 5px;
+        }
+
+        button {
+            @extend %text-button;
+            padding: 0;
+            margin: 0;
+        }
+    }
 }

@@ -3,6 +3,7 @@ import {
     Dispatch,
     FunctionComponent,
     SetStateAction,
+    useContext,
     useEffect,
     useState,
 } from "react";
@@ -15,21 +16,25 @@ import { BaseModifier } from "../../../../../classes/modifier/BaseModifier";
 import styles from "./CreationSection.module.scss";
 import InputText from "../../../../utils/form/blocks/text/Text";
 import { formAnswersType } from "../../../../utils/form/types/FormTypes";
+import { Job } from "../../../../../classes/job/JobPosition";
+import { Modifier } from "../../../../../classes/modifier/Modifier";
+import { JobContext } from "../../../../dashboard/Dashboard";
 //#endregion
 
 type thisProps = {
     selectedOption: optionName;
     loading: boolean;
-    jobId: string;
     onSetLoading: Dispatch<SetStateAction<boolean>>;
+    onEnd(updatedJobPosition: Job): void;
 };
 
 const CreationSection: FunctionComponent<thisProps> = ({
     selectedOption,
     loading,
-    jobId,
     onSetLoading,
+    onEnd,
 }) => {
+    const selectedJob = useContext(JobContext);
     const [payGainText, setPayGainText] = useState<string>("");
     const [error, setError] = useState<string>("");
     const [modifier, setModifier] = useState<BaseModifier>(
@@ -42,7 +47,7 @@ const CreationSection: FunctionComponent<thisProps> = ({
                 isFixed: true,
                 amount: 0,
             },
-            jobId,
+            jobId: selectedJob?.id ?? "",
         })
     );
 
@@ -123,9 +128,19 @@ const CreationSection: FunctionComponent<thisProps> = ({
             setError(response.error.message);
             onSetLoading(false);
         }
-        if (response.ok && response.content) {
+        if (response.ok && response.content && selectedJob) {
             const id = response.content.id;
-            alert(`Modifier ${id} created`);
+            const newModifier = new Modifier({ ...modifier, id });
+            const jobCopy = structuredClone(selectedJob);
+            const newModifierList = [
+                ...jobCopy.modifiers.map((m) => new Modifier(m)),
+                newModifier,
+            ];
+            const updatedJob = new Job({
+                ...jobCopy,
+                modifiers: newModifierList,
+            });
+            onEnd(updatedJob);
             onSetLoading(false);
         }
     }

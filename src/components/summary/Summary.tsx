@@ -1,14 +1,14 @@
 //#region Dependency list
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
-import { shiftState } from "../../types/job/Shift";
 import styles from "./Summary.module.scss";
 import { getFutureDate, getPastDate } from "../../services/dateService";
 import DatePicker from "../datePicker/DatePicker";
 import InfoPanel from "./infoPanel/InfoPanel";
+import { Shift } from "../../classes/shift/Shift";
 //#endregion
 
 type thisProps = {
-    shiftList: shiftState[];
+    shiftList: Shift[];
     searchDates: {
         start: Date;
         end: Date;
@@ -17,7 +17,9 @@ type thisProps = {
 
 const Summary: FunctionComponent<thisProps> = ({ shiftList, searchDates }) => {
     const [startDate, setStartDate] = useState<Date>(searchDates.start);
-    const [endDate, setEndDate] = useState<Date>(searchDates.end);
+    const [endDate, setEndDate] = useState<Date>(
+        new Date(searchDates.end.setHours(23, 59))
+    );
     const [startPickerDate, setStartPickerDate] = useState<Date>(
         searchDates.start
     );
@@ -81,11 +83,7 @@ const Summary: FunctionComponent<thisProps> = ({ shiftList, searchDates }) => {
 
     return (
         <div className={styles.summaryBody}>
-            <InfoPanel
-                shiftList={shiftList}
-                start={searchDates.start}
-                end={searchDates.end}
-            />
+            <InfoPanel shiftList={shiftList} start={startDate} end={endDate} />
             {shiftList.length > 0 && (
                 <DatePicker
                     id="summary-dates"

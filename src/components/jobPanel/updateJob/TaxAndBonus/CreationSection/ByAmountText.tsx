@@ -31,8 +31,8 @@ const ByAmountText: FunctionComponent<thisProps> = ({
         return {
             amount: 0,
             lessThan: false,
-            moreThan: false,
-            daily: false,
+            moreThan: true,
+            daily: true,
             total: false,
         };
     }
@@ -117,7 +117,7 @@ const ByAmountText: FunctionComponent<thisProps> = ({
                 onChange={changeMoreLess}
                 customClass={styles.inlineSelect}
             />
-            than
+            than $
             <InputNumber
                 formAnswers={[]}
                 onUpdateAnswer={changeAmount}

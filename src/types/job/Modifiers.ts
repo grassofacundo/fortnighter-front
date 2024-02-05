@@ -36,12 +36,6 @@ export type newBaseModifierObj = {
     jobId: string;
 };
 
-export type newModifierObj = {
+export interface newModifierObj extends newBaseModifierObj {
     id: string;
-    name: string;
-    byShift: byShift;
-    byAmount: byAmount;
-    paymentId: string;
-    amount: amountStructure;
-    jobId: string;
-};
+}
