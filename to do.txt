@@ -1,44 +1,26 @@
-BREAKING!! overtime and overwork may not be two different things, is all overtime. I should think about that. Can I get the length of the work time from the start and end? In that case, the job text will be way shorter and simpler. Any overtime is always the same price? It should be.
-
-Tax and bonus
-- Implement another text, but this time in the summary section to allow creating tax and benefits
-
-Summary:
-    Calculating the summary money:
-    - General testing.
-
 Get the job position from DB and pre fill the hour price text-form in the update section:
 - Regular is working, not the rest
 - Handle changing the values when switching from regular to any other workday type
 
+Payment
+- Allow saving a current payment information, making it uneditable.
+- After a payment is saved, I should retrieve it with the job to set last payment date
+
+Tax and bonus
+ - Implement by payment
+ - Implement an exclamation mark that shows a tooltip with the tax content in a text format
+
+Summary:
+    - Decide what information should I show
+    - General testing.
+    - Use summary service methods to calculate daily shift amount to avoid duplicate code
+
 Form:
-- Add focus on time dropdown
-- Fix key input on time
-- Fix close when clicking outside in time input
-- Give more space for extra numbers (in Argentina can be up to 5 numbers). UPDATE: Make the width dynamically change
-maybe update a css variable with every key
-
-- Add hover style on checkbox
-
-----------------------
-
-Tax and bonus guide:
-
-For every worked [shifts], I [got paid/have to pay], [number] [dollar/percentage] {IF PERCENTAGE of my daily gain}.
-
-"For every 1 worked shift, I have to pay 10% of the daily gain"
-"For every 5 worked shifts, I got paid 70$"
-"For every 1 worked shifts, I got paid 5% of the daily gain"
-
-For this payment only, I [got paid/have to pay], [number] [dollar/percentage] {IF PERCENTAGE of my total gain}.
-
-"For this payment only, I got paid $200"
-"For this payment only, I have to pay 30% of my total gain"
-"For this payment only, I got paid 50% of my total gain"
-
-If my [daily gain/total gain] is [more/less] than [Number]. I [got paid/have to pay], [number] [dollar/percentage] {
-IF PERCENTAGE of my daily gain}
-
-"If my daily gain is more than $300. I have to pay 10% of my daily gain."
-"If my daily gain is less than $100. I got paid $50"
-"If my total gain is more than $5000. I have to pay 25% of my total gain."
+    * Time input
+        - Add focus on time dropdown
+        - Fix close when clicking outside in time input
+    * Number input
+        - Give more space for extra numbers (in Argentina can be up to 5 numbers). 
+        UPDATE: Make the width dynamically change maybe update a css variable with every key
+    * Checkbox input
+        - Add hover style on checkbox
