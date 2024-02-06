@@ -99,7 +99,9 @@ const TaxAndBonusPanel: FunctionComponent<thisProps> = ({
                         onSetLoading={setLoading}
                         onEnd={onEnd}
                     />
-                    <ActiveTaxAndBonus onEnd={onEnd} />
+                    {selectedJob.modifiers.length > 0 && (
+                        <ActiveTaxAndBonus onEnd={onEnd} />
+                    )}
                 </div>
             )}
         </div>

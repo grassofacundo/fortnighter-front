@@ -1,7 +1,8 @@
 //#region Dependency list
-import { ChangeEvent, FunctionComponent } from "react";
+import { ChangeEvent, FunctionComponent, useRef } from "react";
 import { inputNumber } from "../../types/InputNumberTypes";
 import { inputProp } from "../../types/FormTypes";
+import styles from "./InputNumber.module.scss";
 //#endregion
 
 interface thisProps extends inputProp {
@@ -13,8 +14,18 @@ const InputNumber: FunctionComponent<thisProps> = ({
     onUpdateAnswer,
 }) => {
     const { isOptional, id, placeholder, label, defaultValue, step } = fields;
+    const wrapper = useRef<HTMLDivElement>(null);
 
     const validInput = ({ target }: ChangeEvent<HTMLInputElement>) => {
+        if (wrapper.current) {
+            const newWidth =
+                target.value.length < 4
+                    ? 4
+                    : target.value.length > 6
+                    ? 8
+                    : target.value.length + 2;
+            wrapper.current.style.setProperty(`--width`, `${newWidth}rem`);
+        }
         onUpdateAnswer({ id: target.id, value: target.value, error: "" });
     };
 
@@ -27,7 +38,7 @@ const InputNumber: FunctionComponent<thisProps> = ({
     }
 
     return (
-        <div className="inputClass">
+        <div ref={wrapper} className={`${styles.wrapper} inputClass`}>
             <label htmlFor={id}>{label}</label>
             <input
                 type="number"

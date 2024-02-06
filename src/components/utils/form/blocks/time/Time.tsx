@@ -3,7 +3,7 @@ import { FunctionComponent, ChangeEvent, useRef } from "react";
 import {
     inputTimeType,
     meridianValues,
-    timeStructure,
+    time12Meridian,
 } from "../../types/TimeType";
 import { inputProp } from "../../types/FormTypes";
 import TimeSelect from "./select/TimeSelect";
@@ -32,22 +32,22 @@ const InputTime: FunctionComponent<thisProps> = ({
     const h = hour;
     const m = minute;
 
-    function getDefaultValue(): timeStructure | undefined {
+    function getDefaultValue(): time12Meridian | undefined {
         if (!defaultValue) return;
 
         return defaultValue instanceof Date
             ? dateAsTimeStructure(defaultValue)
-            : (defaultValue as timeStructure);
+            : (defaultValue as time12Meridian);
     }
 
     function validInput({ target }: ChangeEvent<HTMLInputElement>): void {
         const prevAnswer = formAnswers.find((answer) => answer.id === id);
-        const prevValue: timeStructure =
-            (prevAnswer?.value as timeStructure) ??
+        const prevValue: time12Meridian =
+            (prevAnswer?.value as time12Meridian) ??
             (`00:00-${getDefaultMeridian(
                 getDefaultValue(),
                 meridian
-            )}` as timeStructure);
+            )}` as time12Meridian);
 
         let newAnswer = "";
 
@@ -79,7 +79,10 @@ const InputTime: FunctionComponent<thisProps> = ({
                 let minuteStr = "";
                 if (minute > 30) minuteStr = "30";
                 if (minute < 0) minuteStr = "00";
-                if (minute === 3) minuteStr = "30";
+                if (minute === 3) {
+                    minuteStr = "30";
+                    minute = 30;
+                }
                 if (minute !== 0 && minute !== 30)
                     minute > 15 ? (minuteStr = "30") : (minuteStr = "00");
 

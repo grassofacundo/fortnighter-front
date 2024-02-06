@@ -1,0 +1,7 @@
+.wrapper {
+    --width: 4rem;
+
+    input {
+        width: var(--width, 4rem);
+    }
+}
