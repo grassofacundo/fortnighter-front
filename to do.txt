@@ -1,3 +1,7 @@
+BREAKING Handle the new job structure and combine it with the payment model.
+This should mean to do many changes on both the front and the back.
+Good luck!
+
 Get the job position from DB and pre fill the hour price text-form in the update section:
 - Regular is working, not the rest
 - Handle changing the values when switching from regular to any other workday type
@@ -24,3 +28,7 @@ Form:
         UPDATE: Make the width dynamically change maybe update a css variable with every key
     * Checkbox input
         - Add hover style on checkbox
+
+Miscellaneous
+    - Create a new hook that handle a setState of an instanced object.
+    This could probably do the structure clone + new class() and then a setState
