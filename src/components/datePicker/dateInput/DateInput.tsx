@@ -1,11 +1,12 @@
 //#region Dependency list
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import {
     getLastDayOfMonth,
     getLastMonth,
     getNextMonth,
     getTomorrow,
     getYesterday,
+    isValid,
     setDateFromInput,
 } from "../../../services/dateService";
 import Day from "./Day";
@@ -25,7 +26,7 @@ type thisProps = {
     yearMin?: number;
     yearMax?: number;
     label: string;
-    onHandleDateChange(date: Date): void;
+    onHandleDateChange(date?: Date): void;
 };
 type time = "day" | "month" | "year";
 export type dateField = {
@@ -54,14 +55,18 @@ const DateInput: FunctionComponent<thisProps> = ({
 
     function update(changingTime: "day" | "month" | "year"): void {
         const inputDate = getDateAfterInput(changingTime);
-        const newDay = inputDate.getDate();
-        setInputValue("day", newDay.toString());
-        const inputMonth = inputDate.getMonth() + 1;
-        setInputValue("month", inputMonth.toString());
-        const inputYear = inputDate.getFullYear();
-        setInputValue("year", inputYear.toString());
+        if (isValid(inputDate)) {
+            const newDay = inputDate.getDate();
+            setInputValue("day", newDay.toString());
+            const inputMonth = inputDate.getMonth() + 1;
+            setInputValue("month", inputMonth.toString());
+            const inputYear = inputDate.getFullYear();
+            setInputValue("year", inputYear.toString());
 
-        onHandleDateChange(inputDate);
+            onHandleDateChange(inputDate);
+        } else {
+            onHandleDateChange();
+        }
     }
 
     function getInputValue(time: time): string {

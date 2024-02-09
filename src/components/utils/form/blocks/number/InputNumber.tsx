@@ -1,7 +1,7 @@
 //#region Dependency list
 import { ChangeEvent, FunctionComponent, useRef } from "react";
-import { inputNumber } from "../../types/InputNumberTypes";
-import { inputProp } from "../../types/FormTypes";
+import { inputNumber } from "./Types";
+import { inputProp } from "../../FormTypes";
 import styles from "./InputNumber.module.scss";
 //#endregion
 

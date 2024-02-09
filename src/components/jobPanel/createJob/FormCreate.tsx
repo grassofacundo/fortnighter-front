@@ -1,15 +1,16 @@
 //#region Dependency list
 import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
 import FormManager from "../../utils/form/FormManager";
-import { parsedAnswers } from "../../utils/form/types/FormTypes";
+import { parsedAnswers } from "../../utils/form/FormTypes";
 import {
     getDateAsInputValue,
     getDaysBetweenDates,
     getPastDate,
     getToday,
+    isValid,
     setDateFromInput,
 } from "../../../services/dateService";
-import { dateInput, year } from "../../utils/form/types/DateInputTypes";
+import { dateInput, year } from "../../utils/form/blocks/date/Types";
 import { formData } from "./CreateJob";
 import styles from "./CreateJob.module.scss";
 //#endregion
@@ -17,8 +18,8 @@ import styles from "./CreateJob.module.scss";
 type answerData = {
     positionName: string;
     companyName?: string;
-    cycleEnd: Date;
-    cycleStart: Date;
+    nextPayment: Date;
+    lastPayment: Date;
 };
 type thisProps = {
     onEnd: (formData: formData) => void;
@@ -38,12 +39,29 @@ const FormCreate: FunctionComponent<thisProps> = ({
     submitted,
     loading,
 }) => {
-    const [cycleEnd, setCycleEnd] = useState<string>(getEndDate());
-    const [cycleStart, setCycleStart] = useState<string>(getStartDate());
+    const [nextPayment, setNextPayment] = useState<string | null>(getEndDate());
+    const [lastPayment, setLastPayment] = useState<string | null>(
+        getStartDate()
+    );
 
     function handleUpdateAnswers(answers: parsedAnswers): void {
-        if (answers.cycleEnd) setCycleEnd(answers.cycleEnd as string);
-        if (answers.cycleStart) setCycleStart(answers.cycleStart as string);
+        const validLastPayment =
+            answers.nextPayment &&
+            isValid(new Date(answers.nextPayment as string));
+        const validNextPayment =
+            answers.lastPayment &&
+            isValid(new Date(answers.lastPayment as string));
+
+        if (validLastPayment) {
+            setNextPayment(answers.nextPayment as string);
+        } else {
+            setNextPayment(null);
+        }
+        if (validNextPayment) {
+            setLastPayment(answers.lastPayment as string);
+        } else {
+            setLastPayment(null);
+        }
     }
 
     async function handleSubmit(answers: parsedAnswers): Promise<void> {
@@ -51,16 +69,18 @@ const FormCreate: FunctionComponent<thisProps> = ({
         try {
             const positionName = answers.positionName as string;
             const companyName = answers.companyName as string;
-            const cycleEndInput = setDateFromInput(answers.cycleEnd as string);
-            const cycleStartInput = setDateFromInput(
-                answers.cycleStart as string
+            const nextPaymentInput = setDateFromInput(
+                answers.nextPayment as string
+            );
+            const lastPaymentInput = setDateFromInput(
+                answers.lastPayment as string
             );
 
             data = {
                 positionName,
                 companyName,
-                cycleEnd: cycleEndInput,
-                cycleStart: cycleStartInput,
+                nextPayment: nextPaymentInput,
+                lastPayment: lastPaymentInput,
             };
         } catch (error) {
             onSetError(
@@ -70,18 +90,21 @@ const FormCreate: FunctionComponent<thisProps> = ({
             );
         }
 
-        if (!data || !data.positionName || !data.cycleEnd) {
+        if (
+            !data ||
+            !data.positionName ||
+            !data.lastPayment ||
+            !data.nextPayment
+        ) {
             onSetError("Error on form answers");
             return;
         }
 
-        const daysDiff = getDaysBetweenDates(data.cycleStart, data.cycleEnd);
-
         const formData: formData = {
             name: data.positionName,
             companyName: data.companyName,
-            paymentLapse: daysDiff,
-            nextPaymentDate: data.cycleEnd,
+            startDate: data.lastPayment,
+            endDate: data.nextPayment,
         };
 
         onEnd(formData);
@@ -106,20 +129,20 @@ const FormCreate: FunctionComponent<thisProps> = ({
                     },
                     {
                         type: "customDate",
-                        id: "cycleStart",
+                        id: "lastPayment",
                         label: "Date of your last payment",
                         yearMin: `${new Date().getFullYear() - 1}` as year,
                         yearMax: `${new Date().getFullYear() + 1}` as year,
-                        defaultValue: cycleStart,
+                        defaultValue: lastPayment,
                     } as dateInput,
                     {
                         type: "customDate",
-                        id: "cycleEnd",
+                        id: "nextPayment",
                         label: "Date of your next payment",
                         yearMin: `${new Date().getFullYear() - 1}` as year,
                         yearMax: `${new Date().getFullYear() + 1}` as year,
-                        defaultValue: cycleEnd,
-                    },
+                        defaultValue: nextPayment,
+                    } as dateInput,
                 ]}
                 submitCallback={handleSubmit}
                 updateAnswers={handleUpdateAnswers}
@@ -128,10 +151,10 @@ const FormCreate: FunctionComponent<thisProps> = ({
                 disabled={submitted}
                 serverErrorMsg={error}
             />
-            {cycleStart && cycleEnd && (
+            {lastPayment && nextPayment && (
                 <p>{`Do you get paid every ${getDaysBetweenDates(
-                    setDateFromInput(cycleStart),
-                    setDateFromInput(cycleEnd)
+                    setDateFromInput(lastPayment),
+                    setDateFromInput(nextPayment)
                 )} days?`}</p>
             )}
         </div>

@@ -2,8 +2,8 @@
 import { FunctionComponent, useState } from "react";
 import FormManager from "../../../../../utils/form/FormManager";
 import { Shift } from "../../../../../../classes/shift/Shift";
-import { inputNumber } from "../../../../../utils/form/types/InputNumberTypes";
-import { parsedAnswers } from "../../../../../utils/form/types/FormTypes";
+import { inputNumber } from "../../../../../utils/form/blocks/number/Types";
+import { parsedAnswers } from "../../../../../utils/form/FormTypes";
 import style from "./PriceSection.module.scss";
 //#endregion
 

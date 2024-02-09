@@ -2,7 +2,7 @@ import { FunctionComponent, useContext, useState } from "react";
 import FormManager from "../utils/form/FormManager";
 import AuthContext from "../contexts/AuthContext";
 import styles from "./Login.module.scss";
-import { parsedAnswers } from "../utils/form/types/FormTypes";
+import { parsedAnswers } from "../utils/form/FormTypes";
 
 const Login: FunctionComponent = () => {
     const authContext = useContext(AuthContext);

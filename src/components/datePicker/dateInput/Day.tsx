@@ -20,14 +20,14 @@ const Day: FunctionComponent<dateField> = ({
         const input = document.getElementById(id) as HTMLInputElement;
         if (!input) return;
 
-        let inputMonth = 0;
+        let inputDay = 0;
         try {
-            inputMonth = Number(event.target.value);
+            inputDay = Number(event.target.value);
         } catch (error) {
             return;
         }
-        if (inputMonth > max) input.value = max.toString();
-        if (inputMonth < min) input.value = min.toString();
+        if (inputDay > max) input.value = max.toString();
+        if (inputDay < min) input.value = min.toString();
         update();
     }
 

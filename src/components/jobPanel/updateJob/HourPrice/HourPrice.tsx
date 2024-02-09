@@ -3,7 +3,7 @@ import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
 import Paragraph1 from "./HourPriceP1";
 import Paragraph2 from "./HourPriceP2";
 import Paragraph3 from "./HourPriceP3";
-import { formAnswersType } from "../../../utils/form/types/FormTypes";
+import { formAnswersType } from "../../../utils/form/FormTypes";
 import {
     priceStructure,
     workDayStructure,
@@ -14,7 +14,7 @@ import {
     getTime12,
 } from "../../../utils/form/blocks/time/select/TimeMethods";
 import { Job } from "../../../../classes/job/JobPosition";
-import { time12Meridian } from "../../../utils/form/types/TimeType";
+import { time12Meridian } from "../../../utils/form/blocks/time/Types";
 import styles from "./HourPrice.module.scss";
 //#endregion
 

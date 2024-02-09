@@ -8,6 +8,10 @@ import {
     year,
 } from "../types/dateService";
 
+export function isValid(date: Date): boolean {
+    return date.toString() !== "Invalid Date";
+}
+
 export function setDateFromInput(targetValue: string | dateParts): Date {
     if (typeof targetValue === "string") {
         return new Date(`${targetValue}T00:00`);

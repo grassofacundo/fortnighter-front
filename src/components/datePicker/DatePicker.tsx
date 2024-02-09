@@ -43,7 +43,7 @@ const DatePicker: FunctionComponent<thisProps> = ({
                 id={`${id}-start`}
                 label="From"
                 defaultValue={startDate}
-                onHandleDateChange={(date: Date) =>
+                onHandleDateChange={(date?: Date) =>
                     onChange({
                         moment: "start",
                         startParam: date,
@@ -54,7 +54,7 @@ const DatePicker: FunctionComponent<thisProps> = ({
                 id={`${id}-end`}
                 label="To"
                 defaultValue={endDate}
-                onHandleDateChange={(date: Date) =>
+                onHandleDateChange={(date?: Date) =>
                     onChange({
                         moment: "end",
                         endParam: date,

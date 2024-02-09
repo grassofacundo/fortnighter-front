@@ -1,11 +1,21 @@
 //#region Dependency list
 import { FunctionComponent } from "react";
-import { inputProp } from "../../types/FormTypes";
-import { dateInput } from "../../types/DateInputTypes";
+import { inputProp } from "../../FormTypes";
+import { dateInput, monthNum, time, year } from "./Types";
 import Day from "./Day";
 import Month from "./Month";
 import Year from "./Year";
 import styles from "./DateInput.module.scss";
+import {
+    getDateAsInputValue,
+    getLastDayOfMonth,
+    getLastMonth,
+    getNextMonth,
+    getTomorrow,
+    getYesterday,
+    isValid,
+    setDateFromInput,
+} from "./Methods";
 //#endregion
 
 interface thisProps extends inputProp {
@@ -14,7 +24,6 @@ interface thisProps extends inputProp {
 
 const DateInput: FunctionComponent<thisProps> = ({
     fields,
-    formAnswers,
     onUpdateAnswer,
 }) => {
     const {
@@ -28,42 +37,81 @@ const DateInput: FunctionComponent<thisProps> = ({
         defaultValue,
         label,
     } = fields;
-    const prevAnswer = formAnswers.find((answer) => answer.id === id);
-    const prevValue = prevAnswer?.value as string;
 
-    function getDateAsInputValue(date: Date): string {
-        const day = date.getDate();
-        const month = date.getMonth() + 1;
-        return `${date.getFullYear()}-${month > 9 ? month : `0${month}`}-${
-            day > 9 ? day : `0${day}`
-        }`; //T00:00
+    const dayId = `day-${id}`;
+    const monthId = `month-${id}`;
+    const yearId = `year-${id}`;
+
+    function update(changingTime: "day" | "month" | "year"): void {
+        const inputDate = getDateAfterInput(changingTime);
+        if (isValid(inputDate)) {
+            const newDay = inputDate.getDate();
+            setInputValue("day", newDay.toString());
+            const inputMonth = inputDate.getMonth() + 1;
+            setInputValue("month", inputMonth.toString());
+            const inputYear = inputDate.getFullYear();
+            setInputValue("year", inputYear.toString());
+
+            onUpdateAnswer({
+                id,
+                value: getDateAsInputValue(inputDate),
+                error: "",
+            });
+        } else {
+            onUpdateAnswer({ id, value: "", error: "Date format not valid" });
+        }
     }
 
-    function setDateFromInput(targetValue?: string): Date {
-        return new Date(`${targetValue}T00:00`);
+    function getInputValue(time: time): string {
+        const i = `${time}-${id}`;
+        const input = document.getElementById(i) as HTMLInputElement;
+        return input.value;
     }
 
-    function updateDay(day: number) {
-        const prevDate = setDateFromInput(prevValue);
-        prevDate.setDate(day);
-        handleChange(getDateAsInputValue(prevDate));
+    function setInputValue(time: time, value: string): void {
+        const i = `${time}-${id}`;
+        const input = document.getElementById(i) as HTMLInputElement;
+        input.value = value;
     }
 
-    function updateMonth(month: number) {
-        const prevDate = setDateFromInput(prevValue);
-        prevDate.setMonth(month - 1); //Month index starts from 0
-        handleChange(getDateAsInputValue(prevDate));
-    }
-
-    function updateYear(year: number) {
-        const prevDate = setDateFromInput(prevValue);
-        prevDate.setFullYear(year);
-        handleChange(getDateAsInputValue(prevDate));
-    }
-
-    function handleChange(value: string) {
-        const error = "";
-        onUpdateAnswer({ id, value, error });
+    function getDateAfterInput(changingTime: "day" | "month" | "year"): Date {
+        let currentDay = getInputValue("day");
+        if (currentDay.length === 1) currentDay = `0${currentDay}`;
+        let currentMonth = getInputValue("month");
+        if (currentMonth.length === 1) currentMonth = `0${currentMonth}`;
+        const currentYear = getInputValue("year");
+        const lastDayOfMonth = getLastDayOfMonth(
+            (Number(currentMonth) - 1) as monthNum,
+            currentYear as year
+        );
+        if (currentDay === "00") {
+            const inputDate = setDateFromInput(
+                `${currentYear}-${currentMonth}-01`
+            );
+            return getYesterday(inputDate);
+        } else if (Number(currentDay) > lastDayOfMonth) {
+            const inputDate = setDateFromInput(
+                `${currentYear}-${currentMonth}-${lastDayOfMonth}`
+            );
+            return changingTime === "day" ? getTomorrow(inputDate) : inputDate;
+        } else if (currentMonth === "13") {
+            const inputDate = setDateFromInput(
+                `${currentYear}-12-${currentDay}`
+            );
+            const nextMonth = getNextMonth(inputDate);
+            return nextMonth;
+        } else if (currentMonth === "00") {
+            const inputDate = setDateFromInput(
+                `${currentYear}-01-${currentDay}`
+            );
+            const nextMonth = getLastMonth(inputDate);
+            return nextMonth;
+        } else {
+            const inputDate = setDateFromInput(
+                `${currentYear}-${currentMonth}-${currentDay}`
+            );
+            return inputDate;
+        }
     }
 
     return (
@@ -76,32 +124,34 @@ const DateInput: FunctionComponent<thisProps> = ({
                             ? setDateFromInput(defaultValue)
                             : undefined
                     }
-                    id={id}
+                    id={dayId}
                     min={dayMin}
                     max={dayMax}
-                    updateDay={updateDay}
+                    update={() => update("day")}
                 />
+                <span>/</span>
                 <Month
                     defaultValue={
                         defaultValue
                             ? setDateFromInput(defaultValue)
                             : undefined
                     }
-                    id={id}
+                    id={monthId}
                     min={monthMin}
                     max={monthMax}
-                    updateMonth={updateMonth}
+                    update={() => update("month")}
                 />
+                <span>/</span>
                 <Year
                     defaultValue={
                         defaultValue
                             ? setDateFromInput(defaultValue)
                             : undefined
                     }
-                    id={id}
+                    id={yearId}
                     min={yearMin}
                     max={yearMax}
-                    updateYear={updateYear}
+                    update={() => update("year")}
                 />
             </div>
         </div>

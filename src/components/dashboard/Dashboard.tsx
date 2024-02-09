@@ -5,8 +5,8 @@ import Summary from "../summary/Summary";
 import JobPanel from "../jobPanel/jobPanel";
 import styles from "./Dashboard.module.scss";
 import shiftService from "../../services/shiftService";
-import { datesAreEqual, getPastDate } from "../../services/dateService";
-import DatePickerPanel from "./datePickerPanel/DatePickerPanel";
+//import { datesAreEqual getPastDate } from "../../services/dateService";
+//import DatePickerPanel from "./datePickerPanel/DatePickerPanel";
 import { Job } from "../../classes/job/JobPosition";
 import { Shift } from "../../classes/shift/Shift";
 //#endregion
@@ -16,75 +16,66 @@ export const JobContext = createContext<Job | null>(null);
 
 const Dashboard: FunctionComponent<thisProps> = () => {
     const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-    const [endDate, setEndDate] = useState<Date>();
-    const [startDate, setStartDate] = useState<Date>();
+    //const [endDate, setEndDate] = useState<Date>();
+    //const [startDate, setStartDate] = useState<Date>();
     const [shiftList, setShiftList] = useState<Shift[]>([]);
 
-    function handleDateChange(end: Date, start: Date) {
-        setEndDate(end);
-        setStartDate(start);
-    }
+    // function handleDateChange(end: Date, start: Date) {
+    //     setEndDate(end);
+    //     setStartDate(start);
+    // }
 
-    function getDates(selectedPosition: Job) {
-        const nextPaySplit = selectedPosition.nextPaymentDate;
-        const end = nextPaySplit ?? new Date();
-        const daysBetweenPayment = selectedPosition.paymentLapse;
-        const start = getPastDate(daysBetweenPayment, end);
-        return { start, end };
-    }
+    // function getDates(selectedPosition: Job) {
+    //     const nextPaySplit = selectedPosition.nextPaymentDate;
+    //     const end = nextPaySplit ?? new Date();
+    //     const daysBetweenPayment = selectedPosition.paymentLapse;
+    //     const start = getPastDate(daysBetweenPayment, end);
+    //     return { start, end };
+    // }
 
     useEffect(() => {
         if (!selectedJob) return;
 
-        const { start, end } = getDates(selectedJob);
-        const shiftStart = startDate ?? start;
-        const shiftEnd = endDate ?? end;
-        if (
-            !startDate ||
-            !endDate ||
-            !datesAreEqual(startDate, start) ||
-            !datesAreEqual(endDate, end)
-        ) {
-            shiftService
-                .getShifts(shiftStart, shiftEnd, selectedJob.id)
-                .then((shiftList) => {
-                    const shifts = shiftList.map((shiftFromDb) =>
-                        shiftService.convertShiftFromDbToShift(
-                            shiftFromDb,
-                            selectedJob.id
-                        )
-                    );
-                    setShiftList(shifts);
-                    if (!startDate) setStartDate(shiftStart);
-                    if (!endDate) setEndDate(shiftEnd);
-                });
-        }
-    }, [selectedJob, endDate, startDate]);
+        const start = selectedJob.lastPayment;
+        const end = selectedJob.nextPayment;
+        shiftService.getShifts(start, end, selectedJob.id).then((shiftList) => {
+            const shifts = shiftList.map((shiftFromDb) =>
+                shiftService.convertShiftFromDbToShift(
+                    shiftFromDb,
+                    selectedJob.id
+                )
+            );
+            setShiftList(shifts);
+        });
+    }, [selectedJob]);
 
     return (
         <JobContext.Provider value={selectedJob}>
             <div className={styles.mainBody}>
                 <JobPanel onSetSelectedJob={setSelectedJob} />
-                {selectedJob && endDate && startDate && (
-                    <div className={styles.calendarAnimWrapper}>
-                        <DatePickerPanel
+                {selectedJob && (
+                    /*endDate && startDate &&*/ <div
+                        className={styles.calendarAnimWrapper}
+                    >
+                        {/* <DatePickerPanel
                             end={endDate}
                             onDateChange={handleDateChange}
-                        />
+                        /> */}
 
                         <div className={styles.calendarContainer}>
                             <Calendar
-                                endDate={endDate}
-                                startDate={startDate}
+                                startDate={selectedJob.lastPayment}
+                                endDate={selectedJob.nextPayment}
                                 shiftList={shiftList}
                                 onSetShiftList={setShiftList}
                             ></Calendar>
                             <Summary
                                 shiftList={shiftList}
                                 searchDates={{
-                                    start: startDate,
-                                    end: endDate,
+                                    start: selectedJob.lastPayment,
+                                    end: selectedJob.nextPayment,
                                 }}
+                                updateJob={setSelectedJob}
                             />
                         </div>
                     </div>

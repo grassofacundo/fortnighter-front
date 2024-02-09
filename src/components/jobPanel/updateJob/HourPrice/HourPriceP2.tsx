@@ -1,8 +1,8 @@
 //#region Dependency list
 import { FunctionComponent, Dispatch, SetStateAction } from "react";
-import { formAnswersType } from "../../../utils/form/types/FormTypes";
-import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
-import { time12Meridian } from "../../../utils/form/types/TimeType";
+import { formAnswersType } from "../../../utils/form/FormTypes";
+import { inputNumber } from "../../../utils/form/blocks/number/Types";
+import { time12Meridian } from "../../../utils/form/blocks/time/Types";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 import { workDayType } from "../../../../types/job/Position";
 import styles from "./HourPrice.module.scss";

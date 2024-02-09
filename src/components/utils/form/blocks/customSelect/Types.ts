@@ -1,4 +1,4 @@
-import { formAnswersType, input } from "./FormTypes";
+import { formAnswersType, input } from "../../FormTypes";
 
 export interface inputSelectType extends input {
     options: option[];

@@ -6,13 +6,14 @@ import FormCreate from "./FormCreate";
 import styles from "./CreateJob.module.scss";
 import { priceStructure, workDayStructure } from "../../../types/job/Position";
 import TextFormCreate from "./textFormCreate/TextFormCreate";
+import { getDaysBetweenDates } from "../../../services/dateService";
 //#endregion
 
 export type formData = {
     name: string;
     companyName?: string;
-    paymentLapse: number;
-    nextPaymentDate: Date;
+    startDate: Date;
+    endDate: Date;
 };
 export type textFormData = {
     prices: priceStructure;
@@ -58,8 +59,8 @@ const CreateJob: FunctionComponent<thisProps> = ({
             name: formData.name,
             hourPrice: textFormData.prices,
             workdayTimes: textFormData.workdayTimes,
-            paymentLapse: formData.paymentLapse,
-            nextPaymentDate: formData.nextPaymentDate,
+            lastPayment: formData.startDate,
+            nextPayment: formData.endDate,
             companyName: formData.companyName,
         });
 
@@ -70,7 +71,10 @@ const CreateJob: FunctionComponent<thisProps> = ({
         }
 
         if (jobRes.ok && jobRes.content) {
-            const newJob = new Job({ ...newBaseJob, id: jobRes.content });
+            const newJob = new Job({
+                ...newBaseJob,
+                id: jobRes.content,
+            });
             onEnd(newJob);
             return;
         }

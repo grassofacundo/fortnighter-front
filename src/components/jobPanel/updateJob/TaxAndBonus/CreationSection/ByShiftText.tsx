@@ -1,8 +1,8 @@
 //#region Dependency list
 import { Dispatch, FunctionComponent, SetStateAction } from "react";
 import InputNumber from "../../../../utils/form/blocks/number/InputNumber";
-import { formAnswersType } from "../../../../utils/form/types/FormTypes";
-import { inputNumber } from "../../../../utils/form/types/InputNumberTypes";
+import { formAnswersType } from "../../../../utils/form/FormTypes";
+import { inputNumber } from "../../../../utils/form/blocks/number/Types";
 import { BaseModifier } from "../../../../../classes/modifier/BaseModifier";
 //#endregion
 

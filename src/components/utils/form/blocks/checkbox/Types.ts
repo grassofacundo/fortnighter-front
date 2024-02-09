@@ -1,4 +1,4 @@
-import { input } from "./FormTypes";
+import { input } from "../../FormTypes";
 
 export interface checkbox extends input {
     checked?: boolean;

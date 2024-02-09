@@ -1,4 +1,4 @@
-import { input } from "../../components/utils/form/types/FormTypes";
+import { input } from "../../components/utils/form/FormTypes";
 
 export interface user extends input {
     email: string;

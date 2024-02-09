@@ -1,7 +1,9 @@
 import { Job } from "../classes/job/JobPosition";
 import { Modifier } from "../classes/modifier/Modifier";
 import { Shift } from "../classes/shift/Shift";
-import { hourPriceType, priceStructure } from "../types/job/Position";
+import { eventReturn } from "../types/database/databaseTypes";
+import { payment, paymentBase } from "../types/job/Payment";
+import FetchService from "./fetchService";
 import shiftService from "./shiftService";
 
 export function getSaturdays(shiftList: Shift[]): number {
@@ -157,42 +159,25 @@ export function applyByPaymentModifiers(job: Job): modifierRes[] {
     return response;
 }
 
-export function getGrossTotal(
-    shiftList: Shift[],
-    job: Job,
-    startDate: Date,
-    endDate: Date
-): number {
+export function getGrossTotal(shiftList: Shift[], job: Job): number {
     let totalGross = 0;
-    shiftList.forEach((shift) => {
-        if (shift.start >= startDate && shift.end <= endDate) {
-            totalGross += getDailyAmount(shift, job);
-        }
-    });
+    shiftList.forEach((shift) => (totalGross += getDailyAmount(shift, job)));
     return totalGross;
 }
 
-export function getNetTotal(
-    shiftList: Shift[],
-    job: Job,
-    startDate: Date,
-    endDate: Date
-): number {
-    const totalGross = getGrossTotal(shiftList, job, startDate, endDate);
+export function getNetTotal(shiftList: Shift[], job: Job): number {
+    const totalGross = getGrossTotal(shiftList, job);
     let netPay = totalGross;
-    const filteredShiftList = shiftList.filter(
-        (s) => s.start >= startDate && s.end <= endDate
-    );
     /*
      * Modifiers after daily amount
      */
-    applyByDailyAmountModifiers(job, filteredShiftList).forEach(
+    applyByDailyAmountModifiers(job, shiftList).forEach(
         (res) => (netPay += res.amount)
     );
     /*
      * Modifiers after shifts count
      */
-    applyByShiftModifiers(job, filteredShiftList.length, totalGross).forEach(
+    applyByShiftModifiers(job, shiftList.length, totalGross).forEach(
         (res) => (netPay += res.amount)
     );
 
@@ -208,4 +193,33 @@ export function getNetTotal(
     applyByPaymentModifiers(job);
 
     return netPay;
+}
+
+const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;
+
+/**
+ * Update a job position in the database
+ *
+ * @returns An eventReturn return object. If ok, the content will be a payment id.
+ */
+export async function createPayment(payment: paymentBase): Promise<
+    eventReturn<{
+        paymentId: string;
+        newLastPayment: string;
+        newNextPayment: string;
+    }>
+> {
+    const url = `${baseUrl}/payment/create`;
+    const method = "PUT";
+    const body = { ...payment };
+    const response = await FetchService.fetchPost<{
+        paymentId: string;
+        newLastPayment: string;
+        newNextPayment: string;
+    }>({
+        url,
+        method,
+        body,
+    });
+    return response;
 }

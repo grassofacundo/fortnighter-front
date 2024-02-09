@@ -1,12 +1,12 @@
-import { checkbox } from "./CheckboxTypes";
-import { dateInput } from "./DateInputTypes";
-import { inputNumber } from "./InputNumberTypes";
-import { mail } from "./MailTypes";
-import { password } from "./PasswordTypes";
-import { radio } from "./RadioTypes";
-import { tel } from "./TelTypes";
-import { text } from "./TextTypes";
-import { inputTimeType } from "./TimeType";
+import { checkbox } from "./blocks/checkbox/Types";
+import { dateInput } from "./blocks/date/Types";
+import { inputNumber } from "./blocks/number/Types";
+import { mail } from "./blocks/mail/Types";
+import { password } from "./blocks/password/Types";
+import { radio } from "./blocks/radio/Types";
+import { tel } from "./blocks/tel/Types";
+import { text } from "./blocks/text/Types";
+import { inputTimeType } from "./blocks/time/Types";
 
 export type inputType =
     | "radio"

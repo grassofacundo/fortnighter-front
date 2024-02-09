@@ -1,5 +1,5 @@
-import { input } from "./FormTypes";
-import { inputNumber } from "./InputNumberTypes";
+import { input } from "../../FormTypes";
+import { inputNumber } from "../number/Types";
 
 export interface inputTimeType extends input {
     hour: inputNumber;

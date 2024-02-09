@@ -13,8 +13,8 @@ import {
     ReactNode,
 } from "react";
 import Form from "./Form";
-import { formAnswersType, inputField, parsedAnswers } from "./types/FormTypes";
-import { checkbox } from "./types/CheckboxTypes";
+import { formAnswersType, inputField, parsedAnswers } from "./FormTypes";
+import { checkbox } from "./blocks/checkbox/Types";
 
 type thisProps = {
     inputs: inputField[];

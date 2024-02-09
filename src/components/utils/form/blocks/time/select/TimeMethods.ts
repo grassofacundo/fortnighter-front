@@ -8,7 +8,7 @@ import {
     time12,
     time12Meridian,
     time24,
-} from "../../../types/TimeType";
+} from "../Types";
 
 export function getDefaultHourValue(defaultValue: string | undefined) {
     if (!defaultValue || typeof defaultValue !== "string") return;

@@ -20,8 +20,8 @@ export class Job extends BaseJob {
         name: string;
         hourPrice: priceStructure;
         workdayTimes: workDayStructure;
-        paymentLapse: number;
-        nextPaymentDate: Date;
+        lastPayment: Date;
+        nextPayment: Date;
         companyName?: string;
         modifiers?: Modifier[];
     }) {

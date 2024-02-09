@@ -1,7 +1,7 @@
 //#region Dependency list
 import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
 import { hourNum } from "../../../../types/dateService";
-import { formAnswersType } from "../../../utils/form/types/FormTypes";
+import { formAnswersType } from "../../../utils/form/FormTypes";
 import {
     priceStructure,
     workDayStructure,
@@ -15,7 +15,7 @@ import {
 } from "../../../utils/form/blocks/time/select/TimeMethods";
 import { textFormData } from "../CreateJob";
 import styles from "./TextFormCreate.module.scss";
-import { time12Meridian } from "../../../utils/form/types/TimeType";
+import { time12Meridian } from "../../../utils/form/blocks/time/Types";
 //#endregion
 
 type thisProps = {

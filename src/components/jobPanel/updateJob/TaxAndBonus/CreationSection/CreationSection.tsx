@@ -15,7 +15,7 @@ import PayOrGain from "./PayOrGainText";
 import { BaseModifier } from "../../../../../classes/modifier/BaseModifier";
 import styles from "./CreationSection.module.scss";
 import InputText from "../../../../utils/form/blocks/text/Text";
-import { formAnswersType } from "../../../../utils/form/types/FormTypes";
+import { formAnswersType } from "../../../../utils/form/FormTypes";
 import { Job } from "../../../../../classes/job/JobPosition";
 import { Modifier } from "../../../../../classes/modifier/Modifier";
 import { JobContext } from "../../../../dashboard/Dashboard";

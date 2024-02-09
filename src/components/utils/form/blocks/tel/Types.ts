@@ -1,4 +1,4 @@
-import { input } from "./FormTypes";
+import { input } from "../../FormTypes";
 
 export interface tel extends input {
     placeholder: string;

@@ -1,10 +1,13 @@
 //#region Dependency list
 import { FunctionComponent, useState } from "react";
 import FormManager from "../../utils/form/FormManager";
-import { parsedAnswers } from "../../utils/form/types/FormTypes";
-import { inputNumber } from "../../utils/form/types/InputNumberTypes";
-import { inputTimeType, time12Meridian } from "../../utils/form/types/TimeType";
-import { checkbox } from "../../utils/form/types/CheckboxTypes";
+import { parsedAnswers } from "../../utils/form/FormTypes";
+import { inputNumber } from "../../utils/form/blocks/number/Types";
+import {
+    inputTimeType,
+    time12Meridian,
+} from "../../utils/form/blocks/time/Types";
+import { checkbox } from "../../utils/form/blocks/checkbox/Types";
 import {
     dateAsTimeStructure,
     getTime24,

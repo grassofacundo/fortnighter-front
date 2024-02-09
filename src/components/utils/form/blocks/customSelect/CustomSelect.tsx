@@ -10,8 +10,8 @@ import { createPortal } from "react-dom";
 import Icon from "./Icon";
 import CloseIcon from "./CloseIcon";
 import styles from "./CustomSelect.module.scss";
-import { inputSelectType, option } from "../../types/Select";
-import { inputProp } from "../../types/FormTypes";
+import { inputSelectType, option } from "./Types";
+import { inputProp } from "../../FormTypes";
 //#endregion
 
 interface thisProps extends inputProp {

@@ -1,7 +1,7 @@
 //#region Dependency list
 import { FunctionComponent, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { meridianValues, timeSelectProps } from "../../../types/TimeType";
+import { meridianValues, timeSelectProps } from "../Types";
 import styles from "../Time.module.scss";
 //#endregion
 

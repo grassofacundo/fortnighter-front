@@ -1,10 +1,18 @@
 //#region Dependency list
-import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import {
+    Dispatch,
+    FunctionComponent,
+    SetStateAction,
+    useCallback,
+    useEffect,
+    useState,
+} from "react";
 import styles from "./Summary.module.scss";
 import { getFutureDate, getPastDate } from "../../services/dateService";
 import DatePicker from "../datePicker/DatePicker";
 import InfoPanel from "./infoPanel/InfoPanel";
 import { Shift } from "../../classes/shift/Shift";
+import { Job } from "../../classes/job/JobPosition";
 //#endregion
 
 type thisProps = {
@@ -13,9 +21,14 @@ type thisProps = {
         start: Date;
         end: Date;
     };
+    updateJob: Dispatch<SetStateAction<Job | null>>;
 };
 
-const Summary: FunctionComponent<thisProps> = ({ shiftList, searchDates }) => {
+const Summary: FunctionComponent<thisProps> = ({
+    shiftList,
+    searchDates,
+    updateJob,
+}) => {
     const [startDate, setStartDate] = useState<Date>(searchDates.start);
     const [endDate, setEndDate] = useState<Date>(
         new Date(searchDates.end.setHours(23, 59))
@@ -37,32 +50,42 @@ const Summary: FunctionComponent<thisProps> = ({ shiftList, searchDates }) => {
             endParam?: Date;
             startParam?: Date;
         }): void => {
-            if ((moment === "start" || moment === "both") && startParam) {
-                if (startParam < getPastDate(60, endPickerDate)) {
-                    setError("Max 2 months into the past");
+            if (moment === "start" || moment === "both") {
+                if (startParam) {
+                    if (startParam < getPastDate(60, endPickerDate)) {
+                        setError("Max 2 months into the past");
+                        setDatesAreValid(false);
+                        return;
+                    }
+                    if (startParam >= endPickerDate) {
+                        setError("Start date cannot be before end date");
+                        setDatesAreValid(false);
+                        return;
+                    }
+                    setError("");
+                    setDatesAreValid(true);
+                    setStartPickerDate(startParam);
+                } else {
+                    setError("Date doesn't have a valid format");
                     setDatesAreValid(false);
-                    return;
                 }
-                if (startParam >= endPickerDate) {
-                    setError("Start date cannot be before end date");
-                    setDatesAreValid(false);
-                    return;
-                }
-                setError("");
-                setDatesAreValid(true);
-                setStartPickerDate(startParam);
             }
-            if ((moment === "end" || moment === "both") && endParam) {
-                if (endParam > getFutureDate(30)) {
-                    setError(
-                        `Cannot select a date after 30 days in the future`
-                    );
+            if (moment === "end" || moment === "both") {
+                if (endParam) {
+                    if (endParam > getFutureDate(30)) {
+                        setError(
+                            `Cannot select a date after 30 days in the future`
+                        );
+                        setDatesAreValid(false);
+                        return;
+                    }
+                    setError("");
+                    setDatesAreValid(true);
+                    setEndPickerDate(endParam);
+                } else {
+                    setError("Date doesn't have a valid format");
                     setDatesAreValid(false);
-                    return;
                 }
-                setError("");
-                setDatesAreValid(true);
-                setEndPickerDate(endParam);
             }
         },
         [endPickerDate]
@@ -83,21 +106,28 @@ const Summary: FunctionComponent<thisProps> = ({ shiftList, searchDates }) => {
 
     return (
         <div className={styles.summaryBody}>
-            <InfoPanel shiftList={shiftList} start={startDate} end={endDate} />
-            {shiftList.length > 0 && (
-                <DatePicker
-                    id="summary-dates"
-                    onChange={checkDateValidity}
-                    onSubmit={handleDateChange}
-                    endDate={endDate}
-                    pastDaysLimit={60}
-                    futureDaysLimit={30}
-                    customClass={styles.datePicker}
-                    buttonText="Change dates"
-                    areDatesValid={datesAreValid}
-                ></DatePicker>
-            )}
-            {error && <p className={styles.error}>{error}</p>}
+            <InfoPanel
+                shiftList={shiftList}
+                start={startDate}
+                end={endDate}
+                updateJob={updateJob}
+            />
+            <div className={styles.datePickerWrapper}>
+                {shiftList.length > 0 && (
+                    <DatePicker
+                        id="summary-dates"
+                        onChange={checkDateValidity}
+                        onSubmit={handleDateChange}
+                        endDate={endDate}
+                        pastDaysLimit={60}
+                        futureDaysLimit={30}
+                        customClass={styles.datePicker}
+                        buttonText="Change dates"
+                        areDatesValid={datesAreValid}
+                    ></DatePicker>
+                )}
+                {error && <p className={styles.error}>{error}</p>}
+            </div>
         </div>
     );
 };

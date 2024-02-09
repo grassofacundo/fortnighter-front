@@ -1,4 +1,4 @@
-import { time12 } from "../../components/utils/form/types/TimeType";
+import { time12 } from "../../components/utils/form/blocks/time/Types";
 import { newModifierObj } from "./Modifiers";
 
 /**
@@ -17,8 +17,8 @@ export type dbJobPositionType = {
     name: string;
     hourPrice: priceStructure;
     workdayTimes: workDayStructure;
-    paymentLapse: number;
-    nextPaymentDate: string;
+    lastPayment: string;
+    nextPayment: string;
     companyName?: string;
     modifiers: newModifierObj[];
 };

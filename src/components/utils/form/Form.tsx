@@ -20,16 +20,16 @@ import styles from "./Form.module.scss";
 import Spinner from "../../blocks/spinner/Spinner";
 import Checkbox from "./blocks/checkbox/Checkbox";
 import DateInput from "./blocks/date/DateInput";
-import { inputNumber } from "./types/InputNumberTypes";
-import { checkbox } from "./types/CheckboxTypes";
-import { error, formAnswersType, inputField } from "./types/FormTypes";
-import { text } from "./types/TextTypes";
-import { dateInput } from "./types/DateInputTypes";
-import { tel } from "./types/TelTypes";
-import { password } from "./types/PasswordTypes";
-import { mail } from "./types/MailTypes";
-import { radio } from "./types/RadioTypes";
-import { inputTimeType } from "./types/TimeType";
+import { inputNumber } from "./blocks/number/Types";
+import { checkbox } from "./blocks/checkbox/Types";
+import { error, formAnswersType, inputField } from "./FormTypes";
+import { text } from "./blocks/text/Types";
+import { dateInput } from "./blocks/date/Types";
+import { tel } from "./blocks/tel/Types";
+import { password } from "./blocks/password/Types";
+import { mail } from "./blocks/mail/Types";
+import { radio } from "./blocks/radio/Types";
+import { inputTimeType } from "./blocks/time/Types";
 import InputTime from "./blocks/time/Time";
 //#endregion
 

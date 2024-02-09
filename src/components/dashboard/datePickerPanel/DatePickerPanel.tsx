@@ -42,27 +42,38 @@ const DatePickerPanel: FunctionComponent<thisProps> = ({
         }): void => {
             let error = "";
             let dateAreValid = true;
-            if ((moment === "start" || moment === "both") && startParam) {
-                if (startParam < getPastDate(60, new Date())) {
-                    error = "Max 2 months into the past";
+            if (moment === "start" || moment === "both") {
+                if (startParam) {
+                    if (startParam < getPastDate(60, new Date())) {
+                        error = "Max 2 months into the past";
+                        dateAreValid = false;
+                    }
+                    if (startParam >= endDate) {
+                        error = "Start date cannot be before end date";
+                        dateAreValid = false;
+                    }
+                    setStartDate(startParam);
+                } else {
+                    error = "Date doesn't have a valid format";
                     dateAreValid = false;
                 }
-                if (startParam >= endDate) {
-                    error = "Start date cannot be before end date";
-                    dateAreValid = false;
-                }
-                setStartDate(startParam);
             }
-            if ((moment === "end" || moment === "both") && endParam) {
-                if (endParam > getFutureDate(30)) {
-                    error = "Cannot select a date after 30 days in the future";
+            if (moment === "end" || moment === "both") {
+                if (endParam) {
+                    if (endParam > getFutureDate(30)) {
+                        error =
+                            "Cannot select a date after 30 days in the future";
+                        dateAreValid = false;
+                    }
+                    if (endParam <= startDate) {
+                        error = "End date cannot be before start date";
+                        dateAreValid = false;
+                    }
+                    setEndDate(endParam);
+                } else {
+                    error = "Date doesn't have a valid format";
                     dateAreValid = false;
                 }
-                if (endParam <= startDate) {
-                    error = "End date cannot be before start date";
-                    dateAreValid = false;
-                }
-                setEndDate(endParam);
             }
             setError(error);
             setDatesAreValid(dateAreValid);

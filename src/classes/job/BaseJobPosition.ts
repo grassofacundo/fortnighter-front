@@ -3,7 +3,7 @@ import {
     hourStr12,
     minuteStr,
     time12Meridian,
-} from "../../components/utils/form/types/TimeType";
+} from "../../components/utils/form/blocks/time/Types";
 import FetchService from "../../services/fetchService";
 import { eventReturn } from "../../types/database/databaseTypes";
 import {
@@ -18,23 +18,23 @@ export class BaseJob {
     name: string;
     hourPrice: priceStructure;
     workdayTimes: workDayStructure;
-    paymentLapse: number;
-    nextPaymentDate: Date;
+    lastPayment: Date;
+    nextPayment: Date;
     companyName?: string;
 
     constructor(job: {
         name: string;
         hourPrice: priceStructure;
         workdayTimes: workDayStructure;
-        paymentLapse: number;
-        nextPaymentDate: Date;
+        lastPayment: Date;
+        nextPayment: Date;
         companyName?: string;
     }) {
         this.name = job.name;
         this.hourPrice = job.hourPrice;
         this.workdayTimes = job.workdayTimes;
-        this.paymentLapse = job.paymentLapse;
-        this.nextPaymentDate = job.nextPaymentDate;
+        this.lastPayment = job.lastPayment;
+        this.nextPayment = job.nextPayment;
         this.companyName = job.companyName;
     }
 

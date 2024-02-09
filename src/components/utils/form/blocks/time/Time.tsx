@@ -1,11 +1,7 @@
 //#region Dependency list
 import { FunctionComponent, ChangeEvent, useRef } from "react";
-import {
-    inputTimeType,
-    meridianValues,
-    time12Meridian,
-} from "../../types/TimeType";
-import { inputProp } from "../../types/FormTypes";
+import { inputTimeType, meridianValues, time12Meridian } from "./Types";
+import { inputProp } from "../../FormTypes";
 import TimeSelect from "./select/TimeSelect";
 import styles from "./Time.module.scss";
 import {

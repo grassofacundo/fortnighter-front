@@ -1,14 +1,14 @@
 //#region Dependency list
 import { FunctionComponent, ChangeEvent } from "react";
-import { day } from "../../types/DateInputTypes";
+import { dayNum } from "./Types";
 //#endregion
 
 type thisProps = {
     defaultValue?: Date;
     id: string;
-    min?: day;
-    max?: day;
-    updateDay(day: number): void;
+    min?: dayNum;
+    max?: dayNum;
+    update(): void;
 };
 
 const Day: FunctionComponent<thisProps> = ({
@@ -16,7 +16,7 @@ const Day: FunctionComponent<thisProps> = ({
     id,
     min,
     max,
-    updateDay,
+    update,
 }) => {
     function getDayDefaultValue(date?: Date): number {
         if (!date) return 1;
@@ -24,21 +24,26 @@ const Day: FunctionComponent<thisProps> = ({
         return day;
     }
 
-    function handleChange({ target }: ChangeEvent<HTMLInputElement>): void {
-        const { value } = target;
+    function handleChange(event: ChangeEvent<HTMLInputElement>): void {
+        const input = document.getElementById(id) as HTMLInputElement;
+        if (!input) return;
+
+        let inputDay = 0;
         try {
-            const numberValue = Number(value);
-            updateDay(numberValue);
+            inputDay = Number(event.target.value);
         } catch (error) {
-            throw new Error("Invalid input");
+            return;
         }
+        if (max && inputDay > max) input.value = max.toString();
+        if (min && inputDay < min) input.value = min.toString();
+        update();
     }
 
     return (
         <input
             type="number"
             defaultValue={getDayDefaultValue(defaultValue)}
-            id={`day-${id}`}
+            id={id}
             min={min ?? 1}
             max={max ?? 31}
             onChange={handleChange}

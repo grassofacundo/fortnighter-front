@@ -7,13 +7,13 @@ import {
     useState,
 } from "react";
 import InputTime from "../../../utils/form/blocks/time/Time";
-import { inputNumber } from "../../../utils/form/types/InputNumberTypes";
+import { inputNumber } from "../../../utils/form/blocks/number/Types";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
 import {
     inputTimeType,
     time12Meridian,
-} from "../../../utils/form/types/TimeType";
-import { formAnswersType } from "../../../utils/form/types/FormTypes";
+} from "../../../utils/form/blocks/time/Types";
+import { formAnswersType } from "../../../utils/form/FormTypes";
 import { getAs24Format } from "../../../utils/form/blocks/time/select/TimeMethods";
 import styles from "./TextFormCreate.module.scss";
 //#endregion
