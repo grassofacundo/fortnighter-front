@@ -1,0 +1,25 @@
+.calendarAnimWrapper {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    margin-top: 10px;
+
+    .calendarContainer {
+        display: flex;
+        overflow: hidden;
+    }
+}
+
+@media (max-width: 800px) {
+    .calendarAnimWrapper {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+
+        .calendarContainer {
+            display: flex;
+            flex-direction: column;
+            overflow: auto;
+        }
+    }
+}

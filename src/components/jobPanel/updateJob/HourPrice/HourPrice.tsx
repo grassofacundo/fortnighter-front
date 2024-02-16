@@ -1,5 +1,11 @@
 //#region Dependency list
-import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
+import {
+    FunctionComponent,
+    useState,
+    Dispatch,
+    SetStateAction,
+    useContext,
+} from "react";
 import Paragraph1 from "./HourPriceP1";
 import Paragraph2 from "./HourPriceP2";
 import Paragraph3 from "./HourPriceP3";
@@ -15,45 +21,42 @@ import {
 } from "../../../utils/form/blocks/time/select/TimeMethods";
 import { Job } from "../../../../classes/job/JobPosition";
 import { time12Meridian } from "../../../utils/form/blocks/time/Types";
+import { JobContext } from "../../jobPanel";
 import styles from "./HourPrice.module.scss";
 //#endregion
 
 type thisProps = {
     loading: boolean;
-    selectedJob: Job;
     onSetLoading: Dispatch<SetStateAction<boolean>>;
-    onEnd(updatedJobPosition: Job): void;
 };
 
-const HourPrice: FunctionComponent<thisProps> = ({
-    loading,
-    selectedJob,
-    onSetLoading,
-    onEnd,
-}) => {
+const HourPrice: FunctionComponent<thisProps> = ({ loading, onSetLoading }) => {
+    const jobCtx = useContext(JobContext);
+    const selectedJob = jobCtx?.selectedJob;
+    const onEnd = jobCtx?.updateList;
     const r = "week";
 
     const [workdayType, setWorkdayType] = useState<workDayType>(r);
     const [workDayTimeStart, setWorkDayTimeStart] = useState<time12Meridian>(
-        selectedJob.getTime(r, "start") ?? "00:00-AM"
+        selectedJob?.getTime(r, "start") ?? "00:00-AM"
     );
     const [workDayTimeEnd, setWorkDayTimeEnd] = useState<time12Meridian>(
-        selectedJob.getTime(r, "end") ?? "00:00-PM"
+        selectedJob?.getTime(r, "end") ?? "00:00-PM"
     );
     const [workDayLength, setWorkDayLength] = useState<number>(
-        selectedJob.workdayTimes.week.length
+        selectedJob?.workdayTimes.week.length ?? 0
     );
     const [finishNextDay, setFinishNextDay] = useState<boolean>(
-        selectedJob.workOvernight(r)
+        selectedJob?.workOvernight(r) ?? false
     );
     const [workDayPrice, setWorkDayPrice] = useState<number>(
-        selectedJob.hourPrice.week.regular
+        selectedJob?.hourPrice.week.regular ?? 0
     );
     const [overtimePrice, setOvertimeDayPrice] = useState<number>(
-        selectedJob.hourPrice.week.overtime ?? 0
+        selectedJob?.hourPrice.week.overtime ?? 0
     );
     const [overworkPrice, setOverworkDayPrice] = useState<number>(
-        selectedJob.hourPrice.week.overwork ?? 0
+        selectedJob?.hourPrice.week.overwork ?? 0
     );
     const [error, setError] = useState<string>("");
 
@@ -70,8 +73,8 @@ const HourPrice: FunctionComponent<thisProps> = ({
     }
 
     async function handleSubmit() {
-        if (selectedJob === null) {
-            setError("Couldn't find position");
+        if (!selectedJob || !onEnd) {
+            setError("Couldn't find job information");
             return;
         }
         if (
@@ -127,8 +130,8 @@ const HourPrice: FunctionComponent<thisProps> = ({
             name: selectedJob.name,
             hourPrice: hourPrice,
             workdayTimes,
-            paymentLapse: selectedJob.paymentLapse,
-            nextPaymentDate: selectedJob.nextPaymentDate,
+            lastPayment: selectedJob.lastPayment,
+            nextPayment: selectedJob.nextPayment,
         });
         const responseDb = await job.update();
         if (!responseDb.ok && responseDb.error) {

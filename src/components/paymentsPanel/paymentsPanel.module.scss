@@ -1,0 +1,43 @@
+@import "../../style/animations";
+
+.panelBody {
+    padding: 5px 0;
+    opacity: 0;
+    animation: 150ms linear slide-from-bottom forwards;
+    animation-delay: 100ms;
+
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+
+        .scrollMenu {
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            opacity: 0;
+
+            &.show-left {
+                animation: 150ms linear slide-from-left forwards;
+            }
+
+            &.show-right {
+                animation: 150ms linear slide-from-right forwards;
+            }
+
+            &.fade-left {
+                animation: 150ms linear hide-to-left forwards;
+            }
+
+            &.fade-right {
+                animation: 150ms linear hide-to-right forwards;
+            }
+
+            button {
+                white-space: nowrap;
+                padding: 5px;
+                height: fit-content;
+            }
+        }
+    }
+}

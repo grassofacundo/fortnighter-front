@@ -1,11 +1,6 @@
 import FetchService from "../../services/fetchService";
 import { eventReturn } from "../../types/database/databaseTypes";
-import {
-    amountStructure,
-    byAmount,
-    byShift,
-    newModifierObj,
-} from "../../types/job/Modifiers";
+import { newModifierObj } from "../../types/job/Modifiers";
 import { BaseModifier } from "./BaseModifier";
 
 const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;

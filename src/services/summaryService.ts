@@ -15,7 +15,6 @@ export function getSundays(shiftList: Shift[]): number {
     const sundays = shiftList.filter((shift) => shift.startsOnSunday());
     return sundays.length;
 }
-
 type modifierRes = { modifier: Modifier; amount: number };
 
 export function modificationByShift(
@@ -193,33 +192,4 @@ export function getNetTotal(shiftList: Shift[], job: Job): number {
     applyByPaymentModifiers(job);
 
     return netPay;
-}
-
-const baseUrl = `${import.meta.env.VITE_SERVER_DOMAIN}`;
-
-/**
- * Update a job position in the database
- *
- * @returns An eventReturn return object. If ok, the content will be a payment id.
- */
-export async function createPayment(payment: paymentBase): Promise<
-    eventReturn<{
-        paymentId: string;
-        newLastPayment: string;
-        newNextPayment: string;
-    }>
-> {
-    const url = `${baseUrl}/payment/create`;
-    const method = "PUT";
-    const body = { ...payment };
-    const response = await FetchService.fetchPost<{
-        paymentId: string;
-        newLastPayment: string;
-        newNextPayment: string;
-    }>({
-        url,
-        method,
-        body,
-    });
-    return response;
 }

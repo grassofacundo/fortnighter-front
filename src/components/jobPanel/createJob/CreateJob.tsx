@@ -1,12 +1,18 @@
 //#region Dependency list
-import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
+import {
+    FunctionComponent,
+    useState,
+    Dispatch,
+    SetStateAction,
+    useContext,
+} from "react";
 import { BaseJob } from "../../../classes/job/BaseJobPosition";
 import { Job } from "../../../classes/job/JobPosition";
 import FormCreate from "./FormCreate";
-import styles from "./CreateJob.module.scss";
 import { priceStructure, workDayStructure } from "../../../types/job/Position";
 import TextFormCreate from "./textFormCreate/TextFormCreate";
-import { getDaysBetweenDates } from "../../../services/dateService";
+import { JobContext } from "../jobPanel";
+import styles from "./CreateJob.module.scss";
 //#endregion
 
 export type formData = {
@@ -20,16 +26,14 @@ export type textFormData = {
     workdayTimes: workDayStructure;
 };
 type thisProps = {
-    onEnd(updatedJobPosition: Job): void;
     loading: boolean;
     onSetLoading: Dispatch<SetStateAction<boolean>>;
 };
 
-const CreateJob: FunctionComponent<thisProps> = ({
-    onEnd,
-    loading,
-    onSetLoading,
-}) => {
+const CreateJob: FunctionComponent<thisProps> = ({ loading, onSetLoading }) => {
+    const jobCtx = useContext(JobContext);
+    const onEnd = jobCtx?.updateList;
+
     const [formData, setFormData] = useState<formData | null>(null);
     const [textFormData, setTextFormData] = useState<textFormData | null>(null);
     const [error, setError] = useState<string>("");
@@ -55,6 +59,8 @@ const CreateJob: FunctionComponent<thisProps> = ({
         formData: formData,
         textFormData: textFormData
     ): Promise<void> {
+        if (!onEnd) return;
+
         const newBaseJob = new BaseJob({
             name: formData.name,
             hourPrice: textFormData.prices,

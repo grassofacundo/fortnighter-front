@@ -5,7 +5,7 @@ import {
     Dispatch,
     SetStateAction,
     useEffect,
-    useContext,
+    createContext,
 } from "react";
 import jobService from "../../services/JobService";
 import CustomSelect from "../blocks/customSelect/CustomSelect";
@@ -13,16 +13,25 @@ import Arrow from "../blocks/icons/Arrow";
 import CreateJobForm from "./createJob/CreateJob";
 import UpdateJob from "./updateJob/UpdateJob";
 import styles from "./jobPanel.module.scss";
-import { JobContext } from "../dashboard/Dashboard";
 import { Job } from "../../classes/job/JobPosition";
 //#endregion
 
 type thisProps = {
+    selectedJob: Job | null;
     onSetSelectedJob: Dispatch<SetStateAction<Job | null>>;
 };
+type jobContextType = {
+    selectedJob: Job | null;
+    jobList: Job[];
+    updateList(job: Job): void;
+};
 
-const JobPanel: FunctionComponent<thisProps> = ({ onSetSelectedJob }) => {
-    const selectedJob = useContext(JobContext);
+export const JobContext = createContext<jobContextType | null>(null);
+
+const JobPanel: FunctionComponent<thisProps> = ({
+    selectedJob,
+    onSetSelectedJob,
+}) => {
     const [jobList, setJobList] = useState<Job[]>([]);
     const [initialLoading, setInitialLoading] = useState<boolean>(true);
     const [loading, setLoading] = useState<boolean>(false);
@@ -30,7 +39,7 @@ const JobPanel: FunctionComponent<thisProps> = ({ onSetSelectedJob }) => {
     const [isExpanded, setIsExpanded] = useState<boolean>(false);
     const [isCreateMode, setIsCreateMode] = useState<boolean>(false);
 
-    function changeSelectedJob(value: string) {
+    function changeJob(value: string) {
         if (!value) return;
 
         if (value === "create") {
@@ -103,17 +112,17 @@ const JobPanel: FunctionComponent<thisProps> = ({ onSetSelectedJob }) => {
                                         : "New job position"
                                 }
                                 options={[
-                                    ...jobList.map((job) => ({
-                                        value: job.id,
-                                        label: job.name,
-                                        selected: selectedJob?.id === job.id,
+                                    ...jobList.map((j) => ({
+                                        value: j.id,
+                                        label: j.name,
+                                        selected: selectedJob?.id === j.id,
                                     })),
                                     {
                                         value: "create",
                                         label: "New job position",
                                     },
                                 ]}
-                                onChange={(val) => changeSelectedJob(val)}
+                                onChange={(val) => changeJob(val)}
                             />
                         }
                         <button
@@ -131,22 +140,27 @@ const JobPanel: FunctionComponent<thisProps> = ({ onSetSelectedJob }) => {
                                     : styles.animationOut
                             }`}
                         >
-                            {!isCreateMode && selectedJob && (
-                                <UpdateJob
-                                    key={selectedJob.id}
-                                    jobList={jobList}
-                                    onEnd={updateList}
-                                    loading={loading}
-                                    onSetLoading={setLoading}
-                                />
-                            )}
-                            {isCreateMode && isExpanded && (
-                                <CreateJobForm
-                                    onEnd={updateList}
-                                    loading={loading}
-                                    onSetLoading={setLoading}
-                                />
-                            )}
+                            <JobContext.Provider
+                                value={{
+                                    selectedJob,
+                                    jobList,
+                                    updateList,
+                                }}
+                            >
+                                {!isCreateMode && selectedJob && (
+                                    <UpdateJob
+                                        key={selectedJob.id}
+                                        loading={loading}
+                                        onSetLoading={setLoading}
+                                    />
+                                )}
+                                {isCreateMode && isExpanded && (
+                                    <CreateJobForm
+                                        loading={loading}
+                                        onSetLoading={setLoading}
+                                    />
+                                )}
+                            </JobContext.Provider>
                         </div>
                     )}
                 </>
@@ -156,22 +170,3 @@ const JobPanel: FunctionComponent<thisProps> = ({ onSetSelectedJob }) => {
 };
 
 export default JobPanel;
-
-/*
-Questions:
-
-Company name
-Address
-Job description
-Saturday price
-Sunday price
-Holiday price
-Overwork plus
-Overtime plus
-
-Any extra plus:
-Tax
-Benefit
-By time, by condition
-
-*/

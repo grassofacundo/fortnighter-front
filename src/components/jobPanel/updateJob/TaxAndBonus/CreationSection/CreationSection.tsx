@@ -13,28 +13,29 @@ import ByPaymentText from "./ByPaymentText";
 import ByAmountText from "./ByAmountText";
 import PayOrGain from "./PayOrGainText";
 import { BaseModifier } from "../../../../../classes/modifier/BaseModifier";
-import styles from "./CreationSection.module.scss";
 import InputText from "../../../../utils/form/blocks/text/Text";
 import { formAnswersType } from "../../../../utils/form/FormTypes";
 import { Job } from "../../../../../classes/job/JobPosition";
 import { Modifier } from "../../../../../classes/modifier/Modifier";
-import { JobContext } from "../../../../dashboard/Dashboard";
+import { JobContext } from "../../../jobPanel";
+import styles from "./CreationSection.module.scss";
 //#endregion
 
 type thisProps = {
     selectedOption: optionName;
     loading: boolean;
     onSetLoading: Dispatch<SetStateAction<boolean>>;
-    onEnd(updatedJobPosition: Job): void;
 };
 
 const CreationSection: FunctionComponent<thisProps> = ({
     selectedOption,
     loading,
     onSetLoading,
-    onEnd,
 }) => {
-    const selectedJob = useContext(JobContext);
+    const jobCtx = useContext(JobContext);
+    const selectedJob = jobCtx?.selectedJob;
+    const onEnd = jobCtx?.updateList;
+
     const [payGainText, setPayGainText] = useState<string>("");
     const [error, setError] = useState<string>("");
     const [modifier, setModifier] = useState<BaseModifier>(
@@ -62,6 +63,12 @@ const CreationSection: FunctionComponent<thisProps> = ({
 
     async function handleSubmit() {
         onSetLoading(true);
+
+        if (!selectedJob || !onEnd) {
+            setError("Couldn't find job information");
+            return;
+        }
+
         if (selectedOption === "shift") {
             const shifts = modifier.byShift?.forEvery;
             if (!shifts) {
@@ -128,7 +135,7 @@ const CreationSection: FunctionComponent<thisProps> = ({
             setError(response.error.message);
             onSetLoading(false);
         }
-        if (response.ok && response.content && selectedJob) {
+        if (response.ok && response.content) {
             const id = response.content.id;
             const newModifier = new Modifier({ ...modifier, id });
             const jobCopy = structuredClone(selectedJob);

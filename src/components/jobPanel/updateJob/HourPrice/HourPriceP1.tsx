@@ -1,11 +1,5 @@
 //#region Dependency list
-import {
-    FunctionComponent,
-    Dispatch,
-    SetStateAction,
-    useEffect,
-    useContext,
-} from "react";
+import { FunctionComponent, Dispatch, SetStateAction, useEffect } from "react";
 import CustomSelect from "../../../blocks/customSelect/CustomSelect";
 import InputTime from "../../../utils/form/blocks/time/Time";
 import { inputNumber } from "../../../utils/form/blocks/number/Types";
@@ -16,7 +10,6 @@ import {
 } from "../../../utils/form/blocks/time/Types";
 import { formAnswersType } from "../../../utils/form/FormTypes";
 import { getAs24Format } from "../../../utils/form/blocks/time/select/TimeMethods";
-import { JobContext } from "../../../dashboard/Dashboard";
 import { workDayType } from "../../../../types/job/Position";
 import styles from "./HourPrice.module.scss";
 //#endregion
@@ -56,8 +49,6 @@ const HourPriceP1: FunctionComponent<thisProps> = ({
     finishNextDay,
     handleNumberChange,
 }) => {
-    const selectedJob = useContext(JobContext);
-
     useEffect(() => {
         if (workDayTimeStart && workDayTimeEnd) {
             const hour1 = getAs24Format(workDayTimeStart);
@@ -123,42 +114,40 @@ const HourPriceP1: FunctionComponent<thisProps> = ({
             )}
             to
             <div className={styles.inputWithPopUp}>
-                {selectedJob && (
-                    <InputTime
-                        formAnswers={
-                            workDayTimeEnd
-                                ? [
-                                      {
-                                          id: "WorkDayEnd",
-                                          value: workDayTimeEnd,
-                                          error: "",
-                                      },
-                                  ]
-                                : []
-                        }
-                        onUpdateAnswer={(answer: formAnswersType) =>
-                            setWorkDayTimeEnd(answer.value as time12Meridian)
-                        }
-                        fields={
-                            {
-                                type: "time",
-                                id: "WorkDayEnd",
-                                defaultValue: workDayTimeEnd,
-                                hour: {
-                                    type: "number",
-                                    id: "workDayEndHour",
-                                    placeholder: "5",
-                                } as inputNumber,
-                                minute: {
-                                    type: "number",
-                                    id: `workDayEndMinute`,
-                                    placeholder: "00",
-                                    step: "30",
-                                } as inputNumber,
-                            } as inputTimeType
-                        }
-                    />
-                )}
+                <InputTime
+                    formAnswers={
+                        workDayTimeEnd
+                            ? [
+                                  {
+                                      id: "WorkDayEnd",
+                                      value: workDayTimeEnd,
+                                      error: "",
+                                  },
+                              ]
+                            : []
+                    }
+                    onUpdateAnswer={(answer: formAnswersType) =>
+                        setWorkDayTimeEnd(answer.value as time12Meridian)
+                    }
+                    fields={
+                        {
+                            type: "time",
+                            id: "WorkDayEnd",
+                            defaultValue: workDayTimeEnd,
+                            hour: {
+                                type: "number",
+                                id: "workDayEndHour",
+                                placeholder: "5",
+                            } as inputNumber,
+                            minute: {
+                                type: "number",
+                                id: `workDayEndMinute`,
+                                placeholder: "00",
+                                step: "30",
+                            } as inputNumber,
+                        } as inputTimeType
+                    }
+                />
                 {finishNextDay && (
                     <span className={styles.popUp}>The next day</span>
                 )}

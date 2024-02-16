@@ -15,10 +15,10 @@ import {
     setDateFromInput,
 } from "../../../services/dateService";
 import { parsedAnswers } from "../../utils/form/FormTypes";
-import jobService from "../../../services/JobService";
 import { dateInput } from "../../utils/form/blocks/date/Types";
-import { JobContext } from "../../dashboard/Dashboard";
 import { Job } from "../../../classes/job/JobPosition";
+import jobService from "../../../services/JobService";
+import { JobContext } from "../jobPanel";
 //#endregion
 
 type answerData = {
@@ -29,30 +29,32 @@ type answerData = {
     lastPayment: Date;
 };
 type thisProps = {
-    jobList: Job[];
-    onEnd(job: Job): void;
     loading: boolean;
     onSetLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 const BaseInfoForm: FunctionComponent<thisProps> = ({
-    onEnd,
     loading,
     onSetLoading,
 }) => {
-    const selectedJob = useContext(JobContext);
+    const jobCtx = useContext(JobContext);
+    const selectedJob = jobCtx?.selectedJob;
+    const onEnd = jobCtx?.updateList;
+
     const [errorMsg, setErrorMsg] = useState<string>("");
-    const [lastPayment, setLastPayment] = useState<string>(
-        selectedJob ? getDateAsInputValue(selectedJob.lastPayment) : ""
-    );
-    const [nextPayment, setNextPayment] = useState<string>(
-        selectedJob ? getDateAsInputValue(selectedJob.nextPayment) : ""
-    );
+    const [lastPay, setLastPay] = useState<string>(getDefault("lastPayment"));
+    const [nextPay, setNextPay] = useState<string>(getDefault("nextPayment"));
     const [minStartDate, setMinStartDate] = useState<Date>();
 
+    function getDefault(payment: "lastPayment" | "nextPayment"): string {
+        const datePath = selectedJob?.[payment];
+        const inputDate = datePath ? getDateAsInputValue(datePath) : "";
+        return inputDate;
+    }
+
     function handleUpdateAnswers(answers: parsedAnswers): void {
-        if (answers.nextPayment) setNextPayment(answers.nextPayment as string);
-        if (answers.lastPayment) setLastPayment(answers.lastPayment as string);
+        if (answers.nextPayment) setNextPay(answers.nextPayment as string);
+        if (answers.lastPayment) setLastPay(answers.lastPayment as string);
     }
 
     async function handleSubmit(answers: parsedAnswers): Promise<void> {
@@ -84,6 +86,7 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
         }
 
         if (
+            !onEnd ||
             !selectedJob ||
             !data ||
             Object.values(data).some((v) => v == null)
@@ -103,24 +106,25 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
 
         onSetLoading(true);
 
-        const job = new Job({
+        const jobObj = new Job({
             id: selectedJob.id,
             name: data.jobName,
             companyName: data.companyName,
             hourPrice: selectedJob.hourPrice,
             workdayTimes: selectedJob.workdayTimes,
-            lastPayment: data.nextPayment,
+            lastPayment: data.lastPayment,
             nextPayment: data.nextPayment,
         });
-        const responseDb = await job.update();
+        const responseDb = await jobObj.update();
         if (!responseDb.ok && responseDb.error) {
             setErrorMsg(responseDb.error.message);
             onSetLoading(false);
             return;
         }
 
-        if (responseDb.ok && responseDb.content) {
-            onEnd(job);
+        if (responseDb.ok) {
+            onEnd(jobObj);
+            setErrorMsg("");
             onSetLoading(false);
         }
     }
@@ -128,70 +132,63 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
     useEffect(() => {
         if (!selectedJob) return;
 
-        const end = selectedJob.nextPayment;
-        const start = selectedJob.lastPayment;
-        jobService
-            .getPreviousPayment(start, end, selectedJob.id)
-            .then((response) => {
-                if (response.ok && response.content)
-                    setMinStartDate(response.content.endDate);
-            });
+        jobService.getLastPayment(selectedJob.id).then((response) => {
+            if (response.ok && response.content) {
+                const payment = jobService.parseAsPayment(response.content);
+                const minStartDate = payment.endDate;
+                setMinStartDate(minStartDate);
+            }
+        });
     }, [selectedJob]);
 
     return (
         <div>
-            {selectedJob && (
-                <FormManager
-                    inputs={[
-                        {
-                            type: "text",
-                            id: "positionName",
-                            label: "Position name",
-                            defaultValue: selectedJob.name,
-                        },
-                        {
-                            type: "text",
-                            id: "companyName",
-                            placeholder: "Name of company",
-                            label: "Name of company",
-                            isOptional: true,
-                            defaultValue: selectedJob.companyName,
-                        },
-                        {
-                            type: "customDate",
-                            id: "lastPayment",
-                            label: "Date of your last payslip",
-                            yearMin: "2023",
-                            yearMax: "2024",
-                            defaultValue: getDateAsInputValue(
-                                selectedJob.lastPayment
-                            ),
-                        } as dateInput,
-                        {
-                            type: "customDate",
-                            id: "nextPayment",
-                            label: "Date of your next payslip",
-                            yearMin: "2023",
-                            yearMax: "2024",
-                            defaultValue: getDateAsInputValue(
-                                selectedJob.nextPayment
-                            ),
-                        },
-                    ]}
-                    submitCallback={handleSubmit}
-                    updateAnswers={handleUpdateAnswers}
-                    submitText={"Update job"}
-                    loading={loading}
-                    serverErrorMsg={errorMsg}
-                >
-                    {lastPayment && nextPayment && (
-                        <p>{`Getting paid every ${getDaysBetweenDates(
-                            setDateFromInput(lastPayment),
-                            setDateFromInput(nextPayment)
-                        )} days?`}</p>
-                    )}
-                </FormManager>
-            )}
+            <FormManager
+                inputs={[
+                    {
+                        type: "text",
+                        id: "positionName",
+                        label: "Position name",
+                        defaultValue: selectedJob?.name,
+                    },
+                    {
+                        type: "text",
+                        id: "companyName",
+                        placeholder: "Name of company",
+                        label: "Name of company",
+                        isOptional: true,
+                        defaultValue: selectedJob?.companyName,
+                    },
+                    {
+                        type: "customDate",
+                        id: "lastPayment",
+                        label: "Date of your last payslip",
+                        yearMin: "2023",
+                        yearMax: "2024",
+                        defaultValue: getDefault("lastPayment"),
+                    } as dateInput,
+                    {
+                        type: "customDate",
+                        id: "nextPayment",
+                        label: "Date of your next payslip",
+                        yearMin: "2023",
+                        yearMax: "2024",
+                        defaultValue: getDefault("nextPayment"),
+                    },
+                ]}
+                submitCallback={handleSubmit}
+                updateAnswers={handleUpdateAnswers}
+                submitText={"Update job"}
+                loading={loading}
+                serverErrorMsg={errorMsg}
+            >
+                {lastPay && nextPay && (
+                    <p>{`Getting paid every ${getDaysBetweenDates(
+                        setDateFromInput(lastPay),
+                        setDateFromInput(nextPay)
+                    )} days?`}</p>
+                )}
+            </FormManager>
         </div>
     );
 };

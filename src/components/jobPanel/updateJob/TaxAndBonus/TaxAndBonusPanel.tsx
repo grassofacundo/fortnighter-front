@@ -3,28 +3,20 @@ import {
     Dispatch,
     FunctionComponent,
     SetStateAction,
-    useContext,
     useEffect,
     useState,
 } from "react";
 import { optionName, options } from "../../../../types/job/Modifiers";
 import ActiveTaxAndBonus from "./ActiveTaxAndBonus/ActiveTaxAndBonus";
-import { JobContext } from "../../../dashboard/Dashboard";
 import CreationSection from "./CreationSection/CreationSection";
 import styles from "./TaxAndBonusPanel.module.scss";
-import { Job } from "../../../../classes/job/JobPosition";
 //#endregion
 
 type thisProps = {
     onSetHide: Dispatch<SetStateAction<boolean>>;
-    onEnd(updatedJobPosition: Job): void;
 };
 
-const TaxAndBonusPanel: FunctionComponent<thisProps> = ({
-    onSetHide,
-    onEnd,
-}) => {
-    const selectedJob = useContext(JobContext);
+const TaxAndBonusPanel: FunctionComponent<thisProps> = ({ onSetHide }) => {
     const [selectedOption, setSelectedOption] = useState<optionName | "">("");
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -84,7 +76,7 @@ const TaxAndBonusPanel: FunctionComponent<thisProps> = ({
                     })}
                 </div>
             )}
-            {selectedOption && selectedJob && (
+            {selectedOption && (
                 <div className={styles.modifierWrapper}>
                     <button
                         className={styles.changeSectionButton}
@@ -97,11 +89,8 @@ const TaxAndBonusPanel: FunctionComponent<thisProps> = ({
                         selectedOption={selectedOption}
                         loading={loading}
                         onSetLoading={setLoading}
-                        onEnd={onEnd}
                     />
-                    {selectedJob.modifiers.length > 0 && (
-                        <ActiveTaxAndBonus onEnd={onEnd} />
-                    )}
+                    <ActiveTaxAndBonus />
                 </div>
             )}
         </div>

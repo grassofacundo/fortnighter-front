@@ -2,13 +2,11 @@
 import { Dispatch, FunctionComponent, SetStateAction, useContext } from "react";
 import styles from "./InfoPanel.module.scss";
 import { getStringDMY } from "../../../services/dateService";
-import { JobContext } from "../../dashboard/Dashboard";
 import { Shift } from "../../../classes/shift/Shift";
 import {
     applyByDailyAmountModifiers,
     applyByShiftModifiers,
     applyByTotalAmountModifiers,
-    createPayment,
     getGrossTotal,
     getNetTotal,
     getSaturdays,
@@ -16,6 +14,8 @@ import {
 } from "../../../services/summaryService";
 import { payment, paymentBase } from "../../../types/job/Payment";
 import { Job } from "../../../classes/job/JobPosition";
+import { ContentContext } from "../../dashboard/Dashboard";
+import jobService from "../../../services/JobService";
 //#endregion
 
 type thisProps = {
@@ -31,7 +31,7 @@ const InfoPanel: FunctionComponent<thisProps> = ({
     end,
     updateJob,
 }) => {
-    const job = useContext(JobContext);
+    const { job } = useContext(ContentContext);
 
     async function savePayment() {
         if (!job) return;
@@ -45,13 +45,12 @@ const InfoPanel: FunctionComponent<thisProps> = ({
             jobId: job.id,
         };
 
-        const response = await createPayment(basePayment);
+        const response = await jobService.createPayment(basePayment);
         if (response.ok && response.content) {
             const payment: payment = {
                 ...basePayment,
                 id: response.content.paymentId,
             };
-            console.log(payment);
             const lastPayment = new Date(response.content.newLastPayment);
             const nextPayment = new Date(response.content.newNextPayment);
             const updatedJob = new Job(

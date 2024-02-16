@@ -5,12 +5,12 @@ import {
     getStringDMY,
     parseDateAsId,
 } from "../../../services/dateService";
-import { JobContext } from "../../dashboard/Dashboard";
 import { Shift } from "../../../classes/shift/Shift";
 import ShiftForm from "./ShiftForm";
 import ShiftSummary from "./ShiftSummary/ShiftSummary";
 import styles from "./Workday.module.scss";
 import Arrow from "../../blocks/icons/Arrow";
+import { ContentContext } from "../../dashboard/Dashboard";
 //#endregion
 
 type thisProps = {
@@ -26,7 +26,7 @@ const Workday: FunctionComponent<thisProps> = ({
     onUpdateShift,
     onCreateShift,
 }) => {
-    const selectedJob = useContext(JobContext);
+    const { job } = useContext(ContentContext);
     const [isExpanded, setIsExpanded] = useState(false);
 
     function updateShiftList(shiftToSave: Shift): void {
@@ -61,10 +61,10 @@ const Workday: FunctionComponent<thisProps> = ({
                 </button>
             </div>
             <div className={styles.contentContainer}>
-                {isExpanded && selectedJob && (
+                {isExpanded && job && (
                     <>
                         <ShiftForm
-                            jobId={selectedJob.id}
+                            jobId={job.id}
                             id={parseDateAsId(day)}
                             date={getDateAsInputValue(day)}
                             onEnd={updateShiftList}
@@ -73,7 +73,7 @@ const Workday: FunctionComponent<thisProps> = ({
                         {shift && (
                             <ShiftSummary
                                 shift={shift}
-                                job={selectedJob}
+                                job={job}
                                 id={parseDateAsId(day)}
                                 onEnd={updateShiftList}
                             />
