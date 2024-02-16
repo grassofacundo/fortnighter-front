@@ -2,9 +2,18 @@ BREAKING Handle the new job structure and combine it with the payment model.
 This should mean to do many changes on both the front and the back.
 Good luck!
 
+Get the job position from DB and pre fill the hour price text-form in the update section:
+- Regular is working, not the rest
+- Handle changing the values when switching from regular to any other workday type
+
+Job:
+    - Make jobList state an array of job ids?
+
+Payment
+- Allow saving a current payment information, making it uneditable.
+- After a payment is saved, I should retrieve it with the job to set last payment date
+
 Form:
-    * Date input
-        - Port logic and validation from date picker to here. It is not working right.
     * Time input
         - Add focus on time dropdown
         - Fix close when clicking outside in time input
@@ -13,14 +22,6 @@ Form:
         UPDATE: Make the width dynamically change maybe update a css variable with every key
     * Checkbox input
         - Add hover style on checkbox
-
-Get the job position from DB and pre fill the hour price text-form in the update section:
-- Regular is working, not the rest
-- Handle changing the values when switching from regular to any other workday type
-
-Payment
-- Allow saving a current payment information, making it uneditable.
-- After a payment is saved, I should retrieve it with the job to set last payment date
 
 Tax and bonus
  - Implement by payment
