@@ -3,6 +3,7 @@ Get the job position from DB and pre fill the hour price text-form in the update
 - Handle changing the values when switching from regular to any other workday type
 
 Payment
+- Payment panel doesn't update when a payment is created
 - Think if information is editable or not
 - Think ways of showing that a past payment is active
 
