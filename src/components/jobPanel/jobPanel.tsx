@@ -76,7 +76,7 @@ const JobPanel: FunctionComponent<thisProps> = ({
         jobService.getJobPositions().then((jobList) => {
             if (jobList.length > 0) {
                 const parsedJobList = jobList.map((job) =>
-                    jobService.parseAsJobPosition(job)
+                    jobService.parseDbJobAsJob(job)
                 );
                 setJobList(parsedJobList);
                 onSetSelectedJob(parsedJobList[0]);

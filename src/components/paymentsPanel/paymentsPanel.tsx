@@ -86,7 +86,7 @@ const PaymentsPanel: FunctionComponent<thisProps> = ({
             if (response.ok && response.content) {
                 const paymentResDb = response.content;
                 const paymentRes = paymentResDb.map((p) =>
-                    jobService.parseAsPayment(p)
+                    jobService.parseDbPaymentAsPayment(p)
                 ) as Partial<payArr>;
                 const cache = structuredClone(savedPayments);
                 cache[index] = paymentRes;
@@ -133,7 +133,15 @@ const PaymentsPanel: FunctionComponent<thisProps> = ({
                     onAnimationEnd={(e) => handleAnimationEnd(e)}
                 >
                     {payments.map(
-                        (p) => p && <button key={p.id}>{getDate(p)}</button>
+                        (p) =>
+                            p && (
+                                <button
+                                    key={p.id}
+                                    onClick={() => onSetSelectedPayment(p)}
+                                >
+                                    {getDate(p)}
+                                </button>
+                            )
                     )}
                 </div>
                 <button

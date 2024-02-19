@@ -1,5 +1,5 @@
 //#region Dependency list
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 import {
     getLastDayOfMonth,
     getLastMonth,

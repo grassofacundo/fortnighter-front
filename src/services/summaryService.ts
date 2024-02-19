@@ -1,9 +1,6 @@
 import { Job } from "../classes/job/JobPosition";
 import { Modifier } from "../classes/modifier/Modifier";
 import { Shift } from "../classes/shift/Shift";
-import { eventReturn } from "../types/database/databaseTypes";
-import { payment, paymentBase } from "../types/job/Payment";
-import FetchService from "./fetchService";
 import shiftService from "./shiftService";
 
 export function getSaturdays(shiftList: Shift[]): number {
@@ -153,7 +150,7 @@ export function applyByPaymentModifiers(job: Job): modifierRes[] {
     const response: modifierRes[] = [];
 
     job.modifiers.filter((m) => m.paymentId);
-    console.log("Login not implemented");
+    console.log("Logic not implemented");
 
     return response;
 }

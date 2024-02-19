@@ -1,13 +1,9 @@
 //#region Dependency list
 import { Job } from "../classes/job/JobPosition";
 import { Modifier } from "../classes/modifier/Modifier";
+import { Shift } from "../classes/shift/Shift";
 import { eventReturn } from "../types/database/databaseTypes";
-import {
-    payment,
-    paymentBase,
-    paymentBaseInterface,
-    paymentDb,
-} from "../types/job/Payment";
+import { payment, paymentBase, paymentDb } from "../types/job/Payment";
 import { dbJobPositionType } from "../types/job/Position";
 import FetchService from "./fetchService";
 //#endregion
@@ -32,7 +28,7 @@ class JobService {
         }
     }
 
-    parseAsJobPosition(dbJobPosition: dbJobPositionType): Job {
+    parseDbJobAsJob(dbJobPosition: dbJobPositionType): Job {
         const modifiers: Modifier[] = [];
         if (dbJobPosition.modifiers) {
             dbJobPosition.modifiers.forEach((m) =>
@@ -48,13 +44,29 @@ class JobService {
         return job;
     }
 
-    parseAsPayment(dbPayment: paymentDb): payment {
+    parseDbPaymentAsPayment(dbPayment: paymentDb): payment {
         const payment: payment = {
             ...dbPayment,
+            jobId: dbPayment.job,
             startDate: new Date(dbPayment.startDate),
             endDate: new Date(dbPayment.endDate),
         };
         return payment;
+    }
+
+    parsePaymentAsJob(payment: payment): Job {
+        const archivedJob = new Job({
+            id: payment.jobId,
+            name: "",
+            hourPrice: payment.hourPrice,
+            workdayTimes: payment.workdayTimes,
+            lastPayment: payment.startDate,
+            nextPayment: payment.endDate,
+            companyName: "",
+            modifiers: payment.modifiers,
+        });
+
+        return archivedJob;
     }
 
     /**
@@ -62,7 +74,10 @@ class JobService {
      *
      * @returns An eventReturn return object. If ok, the content will be a payment id.
      */
-    async createPayment(payment: paymentBase): Promise<
+    async createPayment(
+        shifts: Shift[],
+        jobId: string
+    ): Promise<
         eventReturn<{
             paymentId: string;
             newLastPayment: string;
@@ -71,7 +86,7 @@ class JobService {
     > {
         const url = `${this.baseUrl}/payment/create`;
         const method = "PUT";
-        const body = { ...payment };
+        const body = { shifts, jobId };
         const response = await FetchService.fetchPost<{
             paymentId: string;
             newLastPayment: string;
@@ -113,29 +128,6 @@ class JobService {
             [paymentDb, paymentDb, paymentDb, paymentDb, paymentDb]
         >(url);
         return response;
-    }
-
-    parsePaymentAsJob(payment: payment): Job {
-        const archivedJob = new Job({
-            id: payment.jobId,
-            name: "",
-            hourPrice: payment.hourPrice,
-            workdayTimes: {
-                week: {
-                    startTime: "00:00",
-                    startMeridian: "AM",
-                    endTime: "00:00",
-                    endMeridian: "AM",
-                    length: 0,
-                },
-            },
-            lastPayment: payment.startDate,
-            nextPayment: payment.endDate,
-            companyName: "",
-            modifiers: payment.modifiers,
-        });
-
-        return archivedJob;
     }
 }
 

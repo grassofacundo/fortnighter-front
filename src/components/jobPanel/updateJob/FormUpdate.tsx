@@ -134,7 +134,9 @@ const BaseInfoForm: FunctionComponent<thisProps> = ({
 
         jobService.getLastPayment(selectedJob.id).then((response) => {
             if (response.ok && response.content) {
-                const payment = jobService.parseAsPayment(response.content);
+                const payment = jobService.parseDbPaymentAsPayment(
+                    response.content
+                );
                 const minStartDate = payment.endDate;
                 setMinStartDate(minStartDate);
             }

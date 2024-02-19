@@ -18,8 +18,10 @@ import PaymentsPanel from "../paymentsPanel/paymentsPanel";
 type thisProps = unknown;
 type contentContextType = {
     job: Job;
+    isPay: boolean;
     setJob: Dispatch<SetStateAction<Job | null>>;
 };
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 export const ContentContext = createContext<contentContextType>(null!);
 
 const Dashboard: FunctionComponent<thisProps> = () => {
@@ -46,6 +48,7 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                             job: selectedPayment
                                 ? jobService.parsePaymentAsJob(selectedPayment)
                                 : selectedJob,
+                            isPay: !!selectedPayment,
                             setJob: setSelectedJob,
                         }}
                     >
