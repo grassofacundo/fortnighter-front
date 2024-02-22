@@ -3,6 +3,7 @@ import { eventReturn } from "../../types/database/databaseTypes";
 import {
     amountStructure,
     byAmount,
+    byPayment,
     byShift,
     newBaseModifierObj,
 } from "../../types/job/Modifiers";
@@ -14,7 +15,7 @@ export class BaseModifier {
     name: string;
     byShift?: byShift;
     byAmount?: byAmount;
-    paymentId?: string;
+    byPayment?: byPayment;
     amount: amountStructure;
     jobId: string;
 
@@ -22,7 +23,7 @@ export class BaseModifier {
         this.name = modifier.name;
         this.byShift = modifier.byShift;
         this.byAmount = modifier.byAmount;
-        this.paymentId = modifier.paymentId;
+        this.byPayment = modifier.byPayment;
         this.amount = modifier.amount;
         this.jobId = modifier.jobId;
     }

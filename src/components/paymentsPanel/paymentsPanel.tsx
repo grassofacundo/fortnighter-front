@@ -11,27 +11,29 @@ import jobService from "../../services/JobService";
 import { Job } from "../../classes/job/JobPosition";
 import { payment } from "../../types/job/Payment";
 import styles from "./paymentsPanel.module.scss";
-import { getDateAsInputValue } from "../../services/dateService";
+import { getDateAsInputValue, parseDateAsId } from "../../services/dateService";
 //#endregion
 
 type thisProps = {
     selectedJob: Job;
+    selectedPayment: payment | null;
     onSetSelectedPayment: Dispatch<SetStateAction<payment | null>>;
 };
 type payArr = [payment, payment, payment, payment, payment];
 type savedPayments = {
-    [index: number]: Partial<payArr>;
+    [index: number]: { payments: Partial<payArr>; dateKey: string };
 };
 
 const PaymentsPanel: FunctionComponent<thisProps> = ({
     selectedJob,
+    selectedPayment,
     onSetSelectedPayment,
 }) => {
     const [index, setIndex] = useState<number>(1);
     const [indexLimit, setIndexLimit] = useState<{
         left: number;
         right: number;
-    }>({ left: 1, right: 10 });
+    }>({ left: 1, right: 2 });
     const [direction, setDirection] = useState<"left" | "right" | "">("left");
     const [show, setShow] = useState<boolean>(true);
     const [animName, setAnimName] = useState<string>("");
@@ -62,6 +64,14 @@ const PaymentsPanel: FunctionComponent<thisProps> = ({
         }
     }
 
+    function handlePaymentClick(payment: payment): void {
+        if (selectedPayment && payment.id === selectedPayment.id) {
+            onSetSelectedPayment(null);
+        } else {
+            onSetSelectedPayment(payment);
+        }
+    }
+
     function getDate(payment: payment): string {
         const start = getDateAsInputValue(payment.startDate);
         const end = getDateAsInputValue(payment.endDate);
@@ -69,9 +79,12 @@ const PaymentsPanel: FunctionComponent<thisProps> = ({
     }
 
     useEffect(() => {
+        const dateId = `${parseDateAsId(
+            selectedJob.lastPayment
+        )}${parseDateAsId(selectedJob.nextPayment)}`;
         const cachedElem = savedPayments[index];
-        if (cachedElem) {
-            const filtered = cachedElem.filter(
+        if (cachedElem && cachedElem.dateKey === dateId) {
+            const filtered = cachedElem.payments.filter(
                 (c) => c !== undefined
             ) as Partial<payArr>;
             setPayments(filtered);
@@ -83,13 +96,14 @@ const PaymentsPanel: FunctionComponent<thisProps> = ({
                 setPayments([]);
             }
 
-            if (response.ok && response.content) {
-                const paymentResDb = response.content;
+            const paymentResDb = response.content;
+            if (response.ok && paymentResDb && paymentResDb?.length > 0) {
                 const paymentRes = paymentResDb.map((p) =>
                     jobService.parseDbPaymentAsPayment(p)
                 ) as Partial<payArr>;
                 const cache = structuredClone(savedPayments);
-                cache[index] = paymentRes;
+
+                cache[index] = { payments: paymentRes, dateKey: dateId };
                 setSavedPayments(cache);
                 setPayments(paymentRes);
                 if (paymentRes.length < 5) {
@@ -99,12 +113,12 @@ const PaymentsPanel: FunctionComponent<thisProps> = ({
                 }
             }
 
-            if (response.ok && !response.content) {
-                if (index === 5) return;
+            if (response.ok && paymentResDb && paymentResDb?.length <= 0) {
+                if (index === 1) return;
 
                 const lastDirection = direction === "left" ? "right" : "left";
                 const lastValidIndex =
-                    index + (lastDirection === "left" ? 5 : -5);
+                    index + (lastDirection === "left" ? 1 : -1);
                 const newLimit = structuredClone(indexLimit);
                 newLimit[lastDirection] = lastValidIndex;
                 setIndexLimit(newLimit);
@@ -137,7 +151,7 @@ const PaymentsPanel: FunctionComponent<thisProps> = ({
                             p && (
                                 <button
                                     key={p.id}
-                                    onClick={() => onSetSelectedPayment(p)}
+                                    onClick={() => handlePaymentClick(p)}
                                 >
                                     {getDate(p)}
                                 </button>

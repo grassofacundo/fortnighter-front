@@ -20,7 +20,7 @@ const ByShiftText: FunctionComponent<thisProps> = ({
             const forEvery = Number(answer.value);
             const modifierCopy = structuredClone(modifier);
             delete modifierCopy.byAmount;
-            delete modifierCopy.paymentId;
+            delete modifierCopy.byPayment;
             const newModifier = new BaseModifier({
                 ...modifierCopy,
                 byShift: { forEvery },

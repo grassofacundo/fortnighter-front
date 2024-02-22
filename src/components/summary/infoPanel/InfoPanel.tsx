@@ -5,6 +5,7 @@ import { getStringDMY } from "../../../services/dateService";
 import { Shift } from "../../../classes/shift/Shift";
 import {
     applyByDailyAmountModifiers,
+    applyByPaymentModifiers,
     applyByShiftModifiers,
     applyByTotalAmountModifiers,
     getGrossTotal,
@@ -12,7 +13,6 @@ import {
     getSaturdays,
     getSundays,
 } from "../../../services/summaryService";
-import { payment, paymentBase } from "../../../types/job/Payment";
 import { Job } from "../../../classes/job/JobPosition";
 import { ContentContext } from "../../dashboard/Dashboard";
 import jobService from "../../../services/JobService";
@@ -97,6 +97,14 @@ const InfoPanel: FunctionComponent<thisProps> = ({
                         }): $${res.amount}`}</p>
                     ))}
                     {applyByTotalAmountModifiers(
+                        job,
+                        getGrossTotal(shifts, job)
+                    ).map((res, i) => (
+                        <p key={i}>{`${res.modifier.name} (${
+                            res.modifier.amount.increase ? "Bonus" : "Tax"
+                        }): $${res.amount}`}</p>
+                    ))}
+                    {applyByPaymentModifiers(
                         job,
                         getGrossTotal(shifts, job)
                     ).map((res, i) => (

@@ -3,7 +3,7 @@ import { Job } from "../classes/job/JobPosition";
 import { Modifier } from "../classes/modifier/Modifier";
 import { Shift } from "../classes/shift/Shift";
 import { eventReturn } from "../types/database/databaseTypes";
-import { payment, paymentBase, paymentDb } from "../types/job/Payment";
+import { payment, paymentDb } from "../types/job/Payment";
 import { dbJobPositionType } from "../types/job/Position";
 import FetchService from "./fetchService";
 //#endregion

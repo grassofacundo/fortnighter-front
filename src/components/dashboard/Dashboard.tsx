@@ -41,6 +41,7 @@ const Dashboard: FunctionComponent<thisProps> = () => {
                 <>
                     <PaymentsPanel
                         selectedJob={selectedJob}
+                        selectedPayment={selectedPayment}
                         onSetSelectedPayment={setSelectedPayment}
                     />
                     <ContentContext.Provider

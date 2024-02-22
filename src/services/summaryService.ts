@@ -146,11 +146,32 @@ export function applyByTotalAmountModifiers(
 
     return response;
 }
-export function applyByPaymentModifiers(job: Job): modifierRes[] {
+
+export function modificationByPayment(
+    modifier: Modifier,
+    total: number
+): number {
+    let taxableAmount = 0;
+    const a = modifier.amount;
+    const taxAmount = a.isFixed ? a.amount : (a.amount * total) / 100;
+    taxableAmount += taxAmount * (a.increase ? +1 : -1);
+    return taxableAmount;
+}
+export function applyByPaymentModifiers(
+    job: Job,
+    total: number
+): modifierRes[] {
     const response: modifierRes[] = [];
 
-    job.modifiers.filter((m) => m.paymentId);
-    console.log("Logic not implemented");
+    job.modifiers
+        .filter((m) => m.byPayment?.isByPayment)
+        .forEach((m) => {
+            const responseObject: modifierRes = {
+                modifier: m,
+                amount: modificationByPayment(m, total),
+            };
+            response.push(responseObject);
+        });
 
     return response;
 }
@@ -186,7 +207,9 @@ export function getNetTotal(shiftList: Shift[], job: Job): number {
     /*
      * Modifiers by payment
      */
-    applyByPaymentModifiers(job);
+    applyByPaymentModifiers(job, totalGross).forEach(
+        (res) => (netPay += res.amount)
+    );
 
     return netPay;
 }

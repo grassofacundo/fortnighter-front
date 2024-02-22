@@ -81,7 +81,7 @@ const CreationSection: FunctionComponent<thisProps> = ({
                 return;
             }
 
-            if (modifier.byAmount || modifier.paymentId) {
+            if (modifier.byAmount || modifier.byPayment) {
                 setError(
                     "A shift based tax or bonus should only handle shift logic"
                 );
@@ -93,6 +93,13 @@ const CreationSection: FunctionComponent<thisProps> = ({
             const byAmount = modifier.byAmount;
             if (!byAmount) {
                 setError("Complete all fields first");
+                return;
+            }
+
+            if (modifier.byShift || modifier.byPayment) {
+                setError(
+                    "An amount based tax or bonus should only handle amount logic"
+                );
                 return;
             }
 
@@ -110,6 +117,15 @@ const CreationSection: FunctionComponent<thisProps> = ({
 
             if (byAmount.amount < 0) {
                 setError("Amount cannot be negative");
+                return;
+            }
+        }
+
+        if (selectedOption === "payment") {
+            if (modifier.byShift || modifier.byAmount) {
+                setError(
+                    "A payment based tax or bonus should only handle payment logic"
+                );
                 return;
             }
         }
@@ -157,7 +173,7 @@ const CreationSection: FunctionComponent<thisProps> = ({
             const text = "of my daily gain.";
             if (payGainText !== text) setPayGainText(text);
         }
-        if (selectedOption === "amount") {
+        if (selectedOption === "amount" || selectedOption === "payment") {
             const text = `of my ${
                 modifier.byAmount?.daily ? "daily" : "total"
             } gain.`;
@@ -184,8 +200,8 @@ const CreationSection: FunctionComponent<thisProps> = ({
             )}
             {selectedOption === "payment" && (
                 <ByPaymentText
-                    onSetPayGainText={setPayGainText}
-                    payGainText={payGainText}
+                    modifier={modifier}
+                    onSetModifier={setModifier}
                 />
             )}
             {selectedOption === "amount" && (

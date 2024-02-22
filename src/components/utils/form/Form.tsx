@@ -90,9 +90,9 @@ const Form: FunctionComponent<thisProps> = ({
         return getEmptyAnswers.length > 0 || erroredFields.length > 0;
     }, [formAnswers, getEmptyAnswers]);
 
-    function hasServerError() {
-        return serverErrorMsg;
-    }
+    // function hasServerError() {
+    //     return serverErrorMsg;
+    // }
 
     function getError(): error | void {
         const errorObj: error = {
