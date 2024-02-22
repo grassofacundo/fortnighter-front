@@ -2,8 +2,11 @@ Get the job position from DB and pre fill the hour price text-form in the update
 - Regular is working, not the rest
 - Handle changing the values when switching from regular to any other workday type
 
+Tax and bonus
+ - Implement by payment
+ - Implement an exclamation mark that shows a tooltip with the tax content in a text format
+
 Payment
-- Payment panel doesn't update when a payment is created
 - Think if information is editable or not
 - Think ways of showing that a past payment is active
 
@@ -16,10 +19,6 @@ Form:
         UPDATE: Make the width dynamically change maybe update a css variable with every key
     * Checkbox input
         - Add hover style on checkbox
-
-Tax and bonus
- - Implement by payment
- - Implement an exclamation mark that shows a tooltip with the tax content in a text format
 
 Summary:
     - Decide what information should I show
