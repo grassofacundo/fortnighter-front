@@ -36,34 +36,15 @@ const InfoPanel: FunctionComponent<thisProps> = ({
     async function savePayment() {
         if (!job) return;
 
-        /*
-         *
-         *
-         * I don't have to create a new payment,
-         * just checking that the information is ok, I only need to send the job information to the server
-         *
-         */
-        // const basePayment: paymentBase = {
-        //     startDate: job.lastPayment,
-        //     endDate: job.nextPayment,
-        //     hourPrice: job.hourPrice,
-        //     workdayTimes: job.workdayTimes,
-        //     modifiers: job.modifiers,
-        //     shifts: shiftList,
-        //     jobId: job.id,
-        // };
-
         const response = await jobService.createPayment(shiftList, job.id);
         if (response.ok && response.content) {
-            // const payment: payment = {
-            //     ...basePayment,
-            //     id: response.content.paymentId,
-            // };
             const lastPayment = new Date(response.content.newLastPayment);
             const nextPayment = new Date(response.content.newNextPayment);
+            const modifiers = job.modifiers.filter((m) => !m.byPayment);
             const updatedJob = new Job(
                 structuredClone({
                     ...job,
+                    modifiers,
                     lastPayment,
                     nextPayment,
                 })

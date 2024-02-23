@@ -48,6 +48,7 @@ const CreationSection: FunctionComponent<thisProps> = ({
                 isFixed: true,
                 amount: 0,
             },
+            byPayment: false,
             jobId: selectedJob?.id ?? "",
         })
     );

@@ -3,7 +3,6 @@ import { eventReturn } from "../../types/database/databaseTypes";
 import {
     amountStructure,
     byAmount,
-    byPayment,
     byShift,
     newBaseModifierObj,
 } from "../../types/job/Modifiers";
@@ -15,7 +14,7 @@ export class BaseModifier {
     name: string;
     byShift?: byShift;
     byAmount?: byAmount;
-    byPayment?: byPayment;
+    byPayment: boolean;
     amount: amountStructure;
     jobId: string;
 

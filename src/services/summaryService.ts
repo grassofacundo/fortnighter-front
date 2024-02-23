@@ -164,7 +164,7 @@ export function applyByPaymentModifiers(
     const response: modifierRes[] = [];
 
     job.modifiers
-        .filter((m) => m.byPayment?.isByPayment)
+        .filter((m) => m.byPayment)
         .forEach((m) => {
             const responseObject: modifierRes = {
                 modifier: m,

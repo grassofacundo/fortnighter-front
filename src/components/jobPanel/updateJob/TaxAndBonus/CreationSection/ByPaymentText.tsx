@@ -12,13 +12,13 @@ const ByPaymentText: FunctionComponent<thisProps> = ({
     onSetModifier,
 }) => {
     useEffect(() => {
-        if (!modifier.byPayment?.isByPayment) {
+        if (!modifier.byPayment) {
             const modifierCopy = structuredClone(modifier);
             delete modifierCopy.byAmount;
             delete modifierCopy.byShift;
             const newModifier = new BaseModifier({
                 ...modifierCopy,
-                byPayment: { isByPayment: true, paymentId: "" },
+                byPayment: true,
             });
             onSetModifier(newModifier);
         }

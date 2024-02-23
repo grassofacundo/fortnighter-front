@@ -11,11 +11,6 @@ export type byShift = {
     forEvery: number;
 };
 
-export type byPayment = {
-    isByPayment: boolean;
-    paymentId: string;
-};
-
 export type byAmount = {
     moreThan: boolean;
     lessThan: boolean;
@@ -36,7 +31,7 @@ export type newBaseModifierObj = {
     name: string;
     byShift?: byShift;
     byAmount?: byAmount;
-    byPayment?: byPayment;
+    byPayment: boolean;
     amount: amountStructure;
     jobId: string;
 };
