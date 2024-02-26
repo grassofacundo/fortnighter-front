@@ -6,7 +6,6 @@ import InOutAnim from "../utils/InOutAnim";
 import Login from "../login/Login";
 import Dashboard from "../dashboard/Dashboard";
 import ThemeContext from "../contexts/ThemeContext";
-import authService from "../../services/authService";
 import styles from "./Landing.module.scss";
 //#endregion
 
