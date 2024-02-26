@@ -45,7 +45,10 @@ class AuthService {
     setSessionId() {
         const cookies = this.getCookiesObject();
         const refresh = cookies.refreshToken;
-        const splittedToken = refresh.split(".")[1];
+        const access = cookies.accessToken;
+        const splittedToken = refresh
+            ? refresh.split(".")[1]
+            : access.split(".")[1];
         const atobValue = window.atob(splittedToken);
         const payload = JSON.parse(atobValue);
         if (payload.sessionId) this.sessionId = payload.sessionId;
