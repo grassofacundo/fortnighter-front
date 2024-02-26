@@ -7,6 +7,7 @@ import {
     useRef,
     useMemo,
     ReactNode,
+    useCallback,
 } from "react";
 import { createPortal } from "react-dom";
 import InOutAnim from "../InOutAnim";
@@ -94,7 +95,7 @@ const Form: FunctionComponent<thisProps> = ({
     //     return serverErrorMsg;
     // }
 
-    function getError(): error | void {
+    const getError = useCallback((): error | void => {
         const errorObj: error = {
             message: "",
             field: null,
@@ -131,7 +132,7 @@ const Form: FunctionComponent<thisProps> = ({
 
         //Lastly, set coordinates and update error state
         return errorObj;
-    }
+    }, [formAnswers, getEmptyAnswers, serverErrorMsg]);
 
     function setCoordinates(field: HTMLElement | null): void {
         if (!field) return;
@@ -169,7 +170,7 @@ const Form: FunctionComponent<thisProps> = ({
                 setErrorMsg(error.message);
             }
         }
-    }, [showError]);
+    }, [showError, getError]);
 
     //Check if form is ready for submit
     useEffect(() => {

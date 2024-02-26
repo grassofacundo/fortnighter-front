@@ -13,7 +13,14 @@ import {
     ReactNode,
 } from "react";
 import Form from "./Form";
-import { formAnswersType, inputField, parsedAnswers } from "./FormTypes";
+import {
+    action,
+    actionType,
+    formAnswersType,
+    inputField,
+    inputValues,
+    parsedAnswers,
+} from "./FormTypes";
 import { checkbox } from "./blocks/checkbox/Types";
 
 type thisProps = {
@@ -100,7 +107,7 @@ const FormManager: FunctionComponent<thisProps> = ({
 
     function handleAddAnswer({ id, value, error }: formAnswersType) {
         dispatch({
-            type: "added",
+            type: "added" as actionType,
             id,
             value,
             error,
@@ -123,7 +130,7 @@ const FormManager: FunctionComponent<thisProps> = ({
         });
     }
 
-    function fieldsReducer(formAnswers: formAnswersType[], action: any) {
+    function fieldsReducer(formAnswers: formAnswersType[], action: action) {
         //Eliminate possible duplicates IDs
         let index = 0;
         const duplicatedAnswers = [];
@@ -151,7 +158,7 @@ const FormManager: FunctionComponent<thisProps> = ({
                     ...sanitizedAnswers,
                     {
                         id: action.id,
-                        value: action.value,
+                        value: action.value as inputValues,
                         error: action.error,
                     },
                 ];
@@ -162,7 +169,7 @@ const FormManager: FunctionComponent<thisProps> = ({
                     if (f.id === action.id) {
                         return {
                             id: action.id,
-                            value: action.value,
+                            value: action.value as inputValues,
                             error: action.error,
                         };
                     } else {

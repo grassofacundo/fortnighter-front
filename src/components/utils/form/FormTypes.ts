@@ -53,8 +53,10 @@ export type parsedAnswers = {
     [answerId: string]: inputValues;
 };
 
+export type actionType = "added" | "changed" | "deleted";
+
 export type action = {
-    type: "added" | "changed" | "deleted";
+    type: actionType;
     id: string;
     value?: inputValues;
     error?: string;
