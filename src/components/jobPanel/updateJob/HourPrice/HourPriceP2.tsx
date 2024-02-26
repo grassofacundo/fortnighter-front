@@ -1,5 +1,5 @@
 //#region Dependency list
-import { FunctionComponent, Dispatch, SetStateAction } from "react";
+import { FunctionComponent } from "react";
 import { formAnswersType } from "../../../utils/form/FormTypes";
 import { inputNumber } from "../../../utils/form/blocks/number/Types";
 import { time12Meridian } from "../../../utils/form/blocks/time/Types";
@@ -9,15 +9,15 @@ import styles from "./HourPrice.module.scss";
 //#endregion
 
 type thisProps = {
-    setOvertimeDayPrice: Dispatch<SetStateAction<number>>;
+    setOvertimeDayPrice: (v: number) => void;
     workdayType: workDayType;
-    workDayTimeEnd: time12Meridian;
-    workDayTimeStart: time12Meridian;
-    workDayPrice: number;
-    overtimePrice: number;
+    workDayTimeEnd: time12Meridian | undefined;
+    workDayTimeStart: time12Meridian | undefined;
+    workDayPrice: number | undefined;
+    overtimePrice: number | undefined;
     handleNumberChange(
         answer: formAnswersType,
-        callback: Dispatch<SetStateAction<number>>
+        callback: (v: number) => void
     ): void;
 };
 
@@ -56,7 +56,7 @@ const HourPriceP2: FunctionComponent<thisProps> = ({
                             min: 0,
                             max: 23,
                             placeholder: "20",
-                            defaultValue: overtimePrice.toString(),
+                            defaultValue: overtimePrice?.toString(),
                         } as inputNumber
                     }
                 />

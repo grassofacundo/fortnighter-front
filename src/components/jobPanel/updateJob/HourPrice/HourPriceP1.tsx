@@ -1,6 +1,5 @@
 //#region Dependency list
-import { FunctionComponent, Dispatch, SetStateAction, useEffect } from "react";
-import CustomSelect from "../../../blocks/customSelect/CustomSelect";
+import { FunctionComponent, ReactElement, useEffect } from "react";
 import InputTime from "../../../utils/form/blocks/time/Time";
 import { inputNumber } from "../../../utils/form/blocks/number/Types";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
@@ -10,44 +9,36 @@ import {
 } from "../../../utils/form/blocks/time/Types";
 import { formAnswersType } from "../../../utils/form/FormTypes";
 import { getAs24Format } from "../../../utils/form/blocks/time/select/TimeMethods";
-import { workDayType } from "../../../../types/job/Position";
 import styles from "./HourPrice.module.scss";
 //#endregion
 
 type thisProps = {
-    setWorkdayType: Dispatch<SetStateAction<workDayType>>;
-    setWorkDayTimeStart: Dispatch<SetStateAction<time12Meridian>>;
-    setWorkDayTimeEnd: Dispatch<SetStateAction<time12Meridian>>;
-    setWorkDayPrice: Dispatch<SetStateAction<number>>;
-    setFinishNextDay: Dispatch<SetStateAction<boolean>>;
-    workDayPrice: number;
+    setWorkDayTimeStart: (v: time12Meridian) => void;
+    setWorkDayTimeEnd: (v: time12Meridian) => void;
+    setWorkDayPrice: (v: number) => void;
+    setFinishNextDay: (v: boolean) => void;
+    handleNumberChange(
+        answer: formAnswersType,
+        callback: (v: number) => void
+    ): void;
+    workDayPrice: number | undefined;
     workDayTimeStart: time12Meridian | undefined;
     workDayTimeEnd: time12Meridian | undefined;
     finishNextDay: boolean;
-    handleNumberChange(
-        answer: formAnswersType,
-        callback: Dispatch<SetStateAction<number>>
-    ): void;
+    children: ReactElement;
 };
 
-const workdayOptions = [
-    { label: "weekday", value: "regular" },
-    { label: "saturday", value: "saturday" },
-    { label: "sunday", value: "sunday" },
-    { label: "holiday", value: "holiday" },
-];
-
 const HourPriceP1: FunctionComponent<thisProps> = ({
-    setWorkdayType,
     setWorkDayTimeStart,
     setWorkDayTimeEnd,
     setWorkDayPrice,
     setFinishNextDay,
+    handleNumberChange,
     workDayPrice,
     workDayTimeStart,
     workDayTimeEnd,
     finishNextDay,
-    handleNumberChange,
+    children,
 }) => {
     useEffect(() => {
         if (workDayTimeStart && workDayTimeEnd) {
@@ -59,59 +50,45 @@ const HourPriceP1: FunctionComponent<thisProps> = ({
 
     return (
         <div className={`${styles.paragraph} ${styles.show}`}>
-            During a
-            <CustomSelect
-                placeHolder={"Weekday type"}
-                options={workdayOptions.map((day) => {
-                    return {
-                        value: day.value,
-                        label: day.label,
-                        selected: day.value === "regular",
-                    };
-                })}
-                onChange={(value) => setWorkdayType(value as workDayType)}
-                customClass={styles.inlineSelect}
-            />
+            {children}
             if I work from
-            {workDayTimeStart && (
-                <InputTime
-                    formAnswers={
-                        workDayTimeStart
-                            ? [
-                                  {
-                                      id: "WorkDayStart",
-                                      value: workDayTimeStart,
-                                      error: "",
-                                  },
-                              ]
-                            : []
-                    }
-                    onUpdateAnswer={(answer: formAnswersType) =>
-                        setWorkDayTimeStart(answer.value as time12Meridian)
-                    }
-                    fields={
-                        {
-                            type: "time",
-                            id: "WorkDayStart",
-                            defaultValue: workDayTimeStart,
-                            hour: {
-                                type: "number",
-                                id: "WorkDayStartHour",
-                                placeholder: "8",
-                            } as inputNumber,
-                            minute: {
-                                type: "number",
-                                id: `WorkDayStartMinute`,
-                                placeholder: "00",
-                                step: "30",
-                            } as inputNumber,
-                            meridian: {
-                                isAm: true,
-                            },
-                        } as inputTimeType
-                    }
-                />
-            )}
+            <InputTime
+                formAnswers={
+                    workDayTimeStart
+                        ? [
+                              {
+                                  id: "WorkDayStart",
+                                  value: workDayTimeStart,
+                                  error: "",
+                              },
+                          ]
+                        : []
+                }
+                onUpdateAnswer={(answer: formAnswersType) =>
+                    setWorkDayTimeStart(answer.value as time12Meridian)
+                }
+                fields={
+                    {
+                        type: "time",
+                        id: "WorkDayStart",
+                        defaultValue: workDayTimeStart,
+                        hour: {
+                            type: "number",
+                            id: "WorkDayStartHour",
+                            placeholder: "8",
+                        } as inputNumber,
+                        minute: {
+                            type: "number",
+                            id: `WorkDayStartMinute`,
+                            placeholder: "00",
+                            step: "30",
+                        } as inputNumber,
+                        meridian: {
+                            isAm: true,
+                        },
+                    } as inputTimeType
+                }
+            />
             to
             <div className={styles.inputWithPopUp}>
                 <InputTime
@@ -153,24 +130,22 @@ const HourPriceP1: FunctionComponent<thisProps> = ({
                 )}
             </div>
             I get paid $
-            {workDayPrice && (
-                <InputNumber
-                    formAnswers={[]}
-                    onUpdateAnswer={(answer: formAnswersType) =>
-                        handleNumberChange(answer, setWorkDayPrice)
-                    }
-                    fields={
-                        {
-                            type: "number",
-                            id: "priceOfWork",
-                            min: 0,
-                            max: 23,
-                            placeholder: "10",
-                            defaultValue: workDayPrice.toString(),
-                        } as inputNumber
-                    }
-                />
-            )}
+            <InputNumber
+                formAnswers={[]}
+                onUpdateAnswer={(answer: formAnswersType) =>
+                    handleNumberChange(answer, setWorkDayPrice)
+                }
+                fields={
+                    {
+                        type: "number",
+                        id: "priceOfWork",
+                        min: 0,
+                        max: 23,
+                        placeholder: "10",
+                        defaultValue: workDayPrice?.toString(),
+                    } as inputNumber
+                }
+            />
             the hour.
         </div>
     );

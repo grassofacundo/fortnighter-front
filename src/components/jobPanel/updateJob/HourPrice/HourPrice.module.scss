@@ -1,5 +1,13 @@
 @import "../../../../style/animations";
 
+.show {
+    display: block;
+}
+
+.hide {
+    display: none;
+}
+
 .priceFormBody {
     padding: 0 10%;
     font-size: 19px;

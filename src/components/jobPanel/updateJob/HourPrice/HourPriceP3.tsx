@@ -16,8 +16,8 @@ import styles from "./HourPrice.module.scss";
 //#endregion
 
 type thisProps = {
-    setWorkDayLength: Dispatch<SetStateAction<number>>;
-    setOverworkDayPrice: Dispatch<SetStateAction<number>>;
+    setWorkDayLength: (v: number) => void;
+    setOverworkDayPrice: (v: number) => void;
     overtimePrice: number | undefined;
     overworkPrice: number | undefined;
     workdayType: workDayType | undefined;
@@ -26,7 +26,7 @@ type thisProps = {
     workDayTimeEnd: time12Meridian | undefined;
     handleNumberChange(
         answer: formAnswersType,
-        callback: Dispatch<SetStateAction<number>>
+        callback: (v: number) => void
     ): void;
 };
 
