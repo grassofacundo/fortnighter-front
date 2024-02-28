@@ -1,6 +1,6 @@
 //#region Dependency list
 import { FunctionComponent, useState, Dispatch, SetStateAction } from "react";
-import { hourNum } from "../../../../types/dateService";
+import { hourNum } from "../../../../types/typesDateService";
 import { formAnswersType } from "../../../utils/form/FormTypes";
 import {
     priceStructure,

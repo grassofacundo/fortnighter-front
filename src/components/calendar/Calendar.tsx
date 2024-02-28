@@ -12,6 +12,7 @@ import {
     getDaysBetweenDates,
     getPastDate,
     getPlainDate,
+    getTomorrow,
     parseDateAsId,
 } from "../../services/dateService";
 import Workday from "./Workday/Workday";
@@ -42,12 +43,11 @@ const Calendar: FunctionComponent<thisProps> = ({
     const setDays = useCallback(
         (shifts: Shift[]): shiftGrid => {
             let localEndDate: Date = structuredClone(endDate);
-            const localStartDate: Date = structuredClone(startDate);
+            const localStartDate: Date = structuredClone(
+                getTomorrow(startDate)
+            );
 
-            const daysNum =
-                getDaysBetweenDates(localStartDate, localEndDate) + 1; //Necessary offset apparently.
-            //I think when JS calculates the past date, it starts subtracting from the day before.
-            //meaning there is an implicit -1 there.
+            const daysNum = getDaysBetweenDates(localStartDate, localEndDate);
             const days: shiftGrid = Array(daysNum);
             for (let i = daysNum; i > 0; i--) {
                 const index = shifts.findIndex((shift) =>

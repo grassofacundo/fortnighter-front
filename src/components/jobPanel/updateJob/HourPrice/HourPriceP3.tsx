@@ -7,7 +7,7 @@ import {
     useCallback,
 } from "react";
 import InputNumber from "../../../utils/form/blocks/number/InputNumber";
-import { hourNum } from "../../../../types/dateService";
+import { hourNum } from "../../../../types/typesDateService";
 import { formAnswersType } from "../../../utils/form/FormTypes";
 import { inputNumber } from "../../../utils/form/blocks/number/Types";
 import { time12Meridian } from "../../../utils/form/blocks/time/Types";

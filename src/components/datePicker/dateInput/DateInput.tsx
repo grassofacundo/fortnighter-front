@@ -13,7 +13,7 @@ import Day from "./Day";
 import Month from "./Month";
 import Year from "./Year";
 import styles from "./DateInput.module.scss";
-import { monthNum, year } from "../../../types/dateService";
+import { monthNum, year } from "../../../types/typesDateService";
 //#endregion
 
 type thisProps = {

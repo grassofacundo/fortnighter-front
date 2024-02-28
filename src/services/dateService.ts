@@ -6,7 +6,7 @@ import {
     monthStr,
     timeParams,
     year,
-} from "../types/dateService";
+} from "../types/typesDateService";
 
 export function isValid(date: Date): boolean {
     return date.toString() !== "Invalid Date";

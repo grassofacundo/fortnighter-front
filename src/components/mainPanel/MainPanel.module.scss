@@ -3,10 +3,12 @@
     flex-direction: column;
     overflow: hidden;
     margin-top: 10px;
+    height: 100%;
 
     .calendarContainer {
         display: flex;
         overflow: hidden;
+        height: 100%;
     }
 }
 

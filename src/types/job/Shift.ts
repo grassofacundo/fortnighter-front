@@ -1,4 +1,4 @@
-import { hourNum } from "../dateService";
+import { hourNum } from "../typesDateService";
 import { workDayType } from "./Position";
 
 export interface shiftDb {

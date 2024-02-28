@@ -5,7 +5,7 @@ import {
     dateAsTimeStructure,
     getAs24Format,
 } from "../components/utils/form/blocks/time/select/TimeMethods";
-import { hourNum } from "../types/dateService";
+import { hourNum } from "../types/typesDateService";
 import { workDayType } from "../types/job/Position";
 import { shiftDb } from "../types/job/Shift";
 import { getDateAsInputValue, getPlainDate } from "./dateService";
