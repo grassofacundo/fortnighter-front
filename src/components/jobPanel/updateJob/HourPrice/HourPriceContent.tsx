@@ -96,20 +96,30 @@ const HourPriceContent: FunctionComponent<thisProps> = ({
         setError("");
 
         const hourPrice: priceStructure = {
-            week: {
-                regular: selectedJob.hourPrice.week.regular,
-            },
+            week: selectedJob.hourPrice.week,
         };
+        if (selectedJob.hourPrice.saturday)
+            hourPrice.saturday = selectedJob.hourPrice.saturday;
+        if (selectedJob.hourPrice.sunday)
+            hourPrice.sunday = selectedJob.hourPrice.sunday;
+        if (selectedJob.hourPrice.holiday)
+            hourPrice.holiday = selectedJob.hourPrice.holiday;
 
         hourPrice[workdayType] = {
             regular: workDayPrice,
             overtime: overtimePrice,
-            overwork: overtimePrice,
+            overwork: overworkPrice,
         };
 
         const workdayTimes: workDayStructure = {
             week: selectedJob.workdayTimes.week,
         };
+        if (selectedJob.workdayTimes.saturday)
+            workdayTimes.saturday = selectedJob.workdayTimes.saturday;
+        if (selectedJob.workdayTimes.sunday)
+            workdayTimes.sunday = selectedJob.workdayTimes.sunday;
+        if (selectedJob.workdayTimes.holiday)
+            workdayTimes.holiday = selectedJob.workdayTimes.holiday;
 
         workdayTimes[workdayType] = {
             startTime: getTime12(workDayTimeStart),
@@ -135,6 +145,7 @@ const HourPriceContent: FunctionComponent<thisProps> = ({
 
         if (responseDb.ok && responseDb.content) {
             onEnd(job);
+            setError("");
             onSetLoading(false);
         }
     }
