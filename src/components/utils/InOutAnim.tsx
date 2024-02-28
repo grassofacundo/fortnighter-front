@@ -1,10 +1,4 @@
-import {
-    useRef,
-    FunctionComponent,
-    useEffect,
-    ReactElement,
-    Children,
-} from "react";
+import { useRef, FunctionComponent, useEffect, ReactElement } from "react";
 import { Transition } from "react-transition-group";
 
 type thisProps = {
