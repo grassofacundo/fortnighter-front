@@ -1,6 +1,5 @@
-Get the job position from DB and pre fill the hour price text-form in the update section:
-- Regular is working, not the rest
-- Handle changing the values when switching from regular to any other workday type
+Job:
+- Why does the whole panel got re rendered when I edit the hour price
 
 Tax and bonus
  - Implement by payment
@@ -24,6 +23,9 @@ Summary:
     - Decide what information should I show
     - General testing.
     - Use summary service methods to calculate daily shift amount to avoid duplicate code
+
+Shift:
+    - Always show day name at the top bar (I only show the name if it has info and it is weekend or holiday)
 
 Miscellaneous
     - Create a new hook that handle a setState of an instanced object.
