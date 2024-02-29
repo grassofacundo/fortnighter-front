@@ -80,7 +80,7 @@ class ShiftService {
         for (let i = 0; i < hoursWorked; i = i + 0.5) {
             const timeWorked = shiftStart + i;
             if (timeWorked >= workShiftStart && timeWorked <= workShiftEnd)
-                regularHoursWorked = regularHoursWorked + 0.5;
+                regularHoursWorked = (regularHoursWorked + 0.5) as hourNum;
         }
 
         return regularHoursWorked as hourNum;
