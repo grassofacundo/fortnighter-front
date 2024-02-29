@@ -38,12 +38,15 @@ export const UserProvider: FunctionComponent<thisProps> = ({ children }) => {
     }, []);
 
     const checkUnauthenticatedError = useCallback(() => {
+        console.log("Setting event listener");
         removeEventListener(customEvent, logOut); //To avoid duplicates
         addEventListener(customEvent, logOut);
     }, [logOut]);
 
     const handleLogIn = useCallback(() => {
+        console.log("Handling log in");
         checkUnauthenticatedError();
+        console.log("Setting auth as true");
         setIsAuth(true);
     }, [checkUnauthenticatedError]);
 
@@ -52,12 +55,17 @@ export const UserProvider: FunctionComponent<thisProps> = ({ children }) => {
             email: string,
             password: string
         ): Promise<eventReturn<logInResponse>> => {
+            console.log(`Logging ${email} in`);
             const response = await authService.logIn({ email, password });
             if (response.ok && response.content && authService.hasSession()) {
+                console.log("Logging in correct. Setting user");
                 const { user } = response.content as logInResponse;
+                console.log("The user is");
+                console.log(user);
                 authService.setUser(user);
                 handleLogIn();
             }
+            console.log("Returning...");
             return response;
         },
         [handleLogIn]

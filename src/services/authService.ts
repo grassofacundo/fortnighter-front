@@ -100,10 +100,15 @@ class AuthService {
     }: credentials): Promise<eventReturn<logInResponse>> {
         const url = `${this.url}/login`;
         const body = { email, password };
+        console.log(
+            `Accessing auth method from ${this.url}/login with ${email} and password info`
+        );
         const response = await FetchService.fetchPost<logInResponse>({
             url,
             body,
         });
+        console.log("response got");
+        console.log(response);
         return response;
     }
 

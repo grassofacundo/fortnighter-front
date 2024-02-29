@@ -57,14 +57,20 @@ const Login: FunctionComponent = () => {
             return;
         }
         if (hasAccount) {
+            console.log("User has account");
             setLoading(true);
 
+            console.log("Starting request");
             const logInResponse = await authContext.logIn(email, password);
+            console.log("The response from the service is");
+            console.log(logInResponse);
             if (!logInResponse.ok) {
+                console.log("LogInResponse is not ok");
                 setErrorMsg(logInResponse?.error?.message ?? "Couldn't log in");
                 setLoading(false);
                 return;
             }
+            console.log("Last return");
             return;
         }
     }
