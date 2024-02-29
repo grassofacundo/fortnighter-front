@@ -42,16 +42,21 @@ class AuthService {
         return hasSession;
     }
 
-    setSessionId() {
-        const cookies = this.getCookiesObject();
-        const refresh = cookies.refreshToken;
-        const access = cookies.accessToken;
-        const splittedToken = refresh
-            ? refresh.split(".")[1]
-            : access.split(".")[1];
-        const atobValue = window.atob(splittedToken);
-        const payload = JSON.parse(atobValue);
-        if (payload.sessionId) this.sessionId = payload.sessionId;
+    setSessionId(sessionId?: string) {
+        if (sessionId) {
+            this.sessionId = sessionId;
+            return;
+        } else {
+            const cookies = this.getCookiesObject();
+            const refresh = cookies.refreshToken;
+            const access = cookies.accessToken;
+            const splittedToken = refresh
+                ? refresh.split(".")[1]
+                : access.split(".")[1];
+            const atobValue = window.atob(splittedToken);
+            const payload = JSON.parse(atobValue);
+            if (payload.sessionId) this.sessionId = payload.sessionId;
+        }
     }
 
     removeSessionId() {

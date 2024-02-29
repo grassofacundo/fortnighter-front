@@ -57,7 +57,10 @@ export const UserProvider: FunctionComponent<thisProps> = ({ children }) => {
         ): Promise<eventReturn<logInResponse>> => {
             console.log(`Logging ${email} in`);
             const response = await authService.logIn({ email, password });
-            if (response.ok && response.content && authService.hasSession()) {
+            if (response.ok && response.content) {
+                const id = response.content.user.id;
+                if (id) authService.setSessionId(id);
+
                 console.log("Logging in correct. Setting user");
                 const { user } = response.content as logInResponse;
                 console.log("The user is");

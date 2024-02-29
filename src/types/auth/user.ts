@@ -1,6 +1,7 @@
 import { input } from "../../components/utils/form/FormTypes";
 
 export interface user extends input {
+    id: string;
     email: string;
     name?: string;
     job?: string;
